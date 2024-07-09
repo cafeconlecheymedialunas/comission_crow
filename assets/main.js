@@ -1,25 +1,31 @@
-// Webpack Imports
-import * as bootstrap from 'bootstrap';
+jQuery(function ($) {
+    'use strict';
 
-(function () {
-	'use strict';
+    function handleAjaxFormSubmit(formId, action, successCallback) {
+        $(formId).on('submit', function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: 'POST',
+                url: ajax_object.ajax_url,
+                data: $(this).serialize() + '&action=' + action,
+                success: function (response) {
+                    if (response.success) {
+                        successCallback(response);
+                    } else {
+                        $(formId + '_message').html('<p>' + response.data + '</p>');
+                    }
+                }
+            });
+        });
+    }
 
-	// Focus input if Searchform is empty
-	[].forEach.call(document.querySelectorAll('.search-form'), (el) => {
-		el.addEventListener('submit', function (e) {
-			var search = el.querySelector('input');
-			if (search.value.length < 1) {
-				e.preventDefault();
-				search.focus();
-			}
-		});
-	});
+    $(document).ready(function () {
+        handleAjaxFormSubmit('#register_form', 'user_register', function (response) {
+            $('#register_message').html('<p>' + response.data + '</p>');
+        });
 
-	// Initialize Popovers: https://getbootstrap.com/docs/5.0/components/popovers
-	var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
-	var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-		return new bootstrap.Popover(popoverTriggerEl, {
-			trigger: 'focus',
-		});
-	});
-})();
+        handleAjaxFormSubmit('#login_form', 'user_login', function () {
+            window.location.href = '/dashboard';
+        });
+    });
+});

@@ -55,16 +55,24 @@
 							)
 						);
 
-						if ( '1' === $search_enabled ) :
+						
 					?>
-							<form class="search-form my-2 my-lg-0" role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>">
-								<div class="input-group">
-									<input type="text" name="s" class="form-control" placeholder="<?php esc_attr_e( 'Search', 'comission_crow' ); ?>" title="<?php esc_attr_e( 'Search', 'comission_crow' ); ?>" />
-									<button type="submit" name="submit" class="btn btn-outline-secondary"><?php esc_html_e( 'Search', 'comission_crow' ); ?></button>
-								</div>
-							</form>
+							 
+								<ul class="navbar-nav">
+									<?php if (!is_user_logged_in()): ?>
+										<li class="nav-item"><a class="nav-link" href="<?php echo site_url('/login'); ?>">Login</a></li>
+										<li class="nav-item"><a class="nav-link" href="<?php echo site_url('/register'); ?>">Register</a></li>
+									<?php else: ?>
+										<li class="nav-item"><a class="nav-link" href="<?php echo site_url('/dashboard'); ?>">Dashboard</a></li>
+										<li><a href="<?php echo site_url('/dashboard/overview'); ?>">Overview</a></li>
+										<li><a href="<?php echo site_url('/dashboard/profile'); ?>">Profile</a></li>
+										<li><a href="<?php echo site_url('/dashboard/settings'); ?>">Settings</a></li>
+										<li class="nav-item"><a class="nav-link" href="<?php echo wp_logout_url(home_url()); ?>">Logout</a></li>
+									<?php endif; ?>
+								</ul>
+							
 					<?php
-						endif;
+						
 					?>
 				</div><!-- /.navbar-collapse -->
 			</div><!-- /.container -->

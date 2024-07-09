@@ -1,5 +1,6 @@
 <?php
 use Carbon_Fields\Container\Container;
+
 // Clase para manejar la creación y configuración de campos personalizados con Carbon Fields
 class Container_Custom_Fields {
 
@@ -22,22 +23,28 @@ class Container_Custom_Fields {
         foreach ($fields_config as $container_type => $configs) {
             foreach ($configs as $config) {
                 $container_name = $config['container_name'];
-                $post_type = $config['post_type'];
+                $conditions = $config['conditions'];
                 $fields = $config['fields'];
 
                 // Registrar campos personalizados utilizando Carbon Fields
-                add_action('carbon_fields_register_fields', function() use ($container_type, $container_name, $post_type, $fields) {
-                    Container::make($container_type, $container_name)
-                        ->where('post_type', '=', $post_type)
-                        ->add_fields($fields);
+                add_action('carbon_fields_register_fields', function() use ($container_type, $container_name, $conditions, $fields) {
+                    $container = Container::make($container_type, $container_name);
+
+                    // Añadir condiciones si las hay
+                    if (!empty($conditions)) {
+                        foreach ($conditions as $condition) {
+                            $container->where($condition[0], $condition[1], $condition[2]);
+                        }
+                    }
+
+                    // Añadir campos
+                    $container->add_fields($fields);
                 });
             }
         }
     }
 
-    // Método para bootear Carbon Fields
-    public function boot_carbon_fields() {
-        require_once get_template_directory().'vendor/autoload.php';
-        \Carbon_Fields\Carbon_Fields::boot();
-    }
 }
+
+// Bootear Carbon Fields
+
