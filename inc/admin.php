@@ -113,11 +113,270 @@ class Admin
         'yo' => 'Yoruba',
         'zu' => 'Zulu',
     );
+    private $countries = array(
+        'AF' => 'Afghanistan',
+        'AL' => 'Albania',
+        'DZ' => 'Algeria',
+        'AS' => 'American Samoa',
+        'AD' => 'Andorra',
+        'AO' => 'Angola',
+        'AI' => 'Anguilla',
+        'AQ' => 'Antarctica',
+        'AG' => 'Antigua and Barbuda',
+        'AR' => 'Argentina',
+        'AM' => 'Armenia',
+        'AW' => 'Aruba',
+        'AU' => 'Australia',
+        'AT' => 'Austria',
+        'AZ' => 'Azerbaijan',
+        'BS' => 'Bahamas',
+        'BH' => 'Bahrain',
+        'BD' => 'Bangladesh',
+        'BB' => 'Barbados',
+        'BY' => 'Belarus',
+        'BE' => 'Belgium',
+        'BZ' => 'Belize',
+        'BJ' => 'Benin',
+        'BM' => 'Bermuda',
+        'BT' => 'Bhutan',
+        'BO' => 'Bolivia',
+        'BQ' => 'Bonaire, Sint Eustatius and Saba',
+        'BA' => 'Bosnia and Herzegovina',
+        'BW' => 'Botswana',
+        'BV' => 'Bouvet Island',
+        'BR' => 'Brazil',
+        'IO' => 'British Indian Ocean Territory',
+        'BN' => 'Brunei Darussalam',
+        'BG' => 'Bulgaria',
+        'BF' => 'Burkina Faso',
+        'BI' => 'Burundi',
+        'CV' => 'Cabo Verde',
+        'KH' => 'Cambodia',
+        'CM' => 'Cameroon',
+        'CA' => 'Canada',
+        'KY' => 'Cayman Islands',
+        'CF' => 'Central African Republic',
+        'TD' => 'Chad',
+        'CL' => 'Chile',
+        'CN' => 'China',
+        'CX' => 'Christmas Island',
+        'CC' => 'Cocos (Keeling) Islands',
+        'CO' => 'Colombia',
+        'KM' => 'Comoros',
+        'CG' => 'Congo',
+        'CD' => 'Congo, Democratic Republic of the',
+        'CK' => 'Cook Islands',
+        'CR' => 'Costa Rica',
+        'HR' => 'Croatia',
+        'CU' => 'Cuba',
+        'CW' => 'Curaçao',
+        'CY' => 'Cyprus',
+        'CZ' => 'Czech Republic',
+        'CI' => "Côte d'Ivoire",
+        'DK' => 'Denmark',
+        'DJ' => 'Djibouti',
+        'DM' => 'Dominica',
+        'DO' => 'Dominican Republic',
+        'EC' => 'Ecuador',
+        'EG' => 'Egypt',
+        'SV' => 'El Salvador',
+        'GQ' => 'Equatorial Guinea',
+        'ER' => 'Eritrea',
+        'EE' => 'Estonia',
+        'SZ' => 'Eswatini',
+        'ET' => 'Ethiopia',
+        'FK' => 'Falkland Islands (Malvinas)',
+        'FO' => 'Faroe Islands',
+        'FJ' => 'Fiji',
+        'FI' => 'Finland',
+        'FR' => 'France',
+        'GF' => 'French Guiana',
+        'PF' => 'French Polynesia',
+        'TF' => 'French Southern Territories',
+        'GA' => 'Gabon',
+        'GM' => 'Gambia',
+        'GE' => 'Georgia',
+        'DE' => 'Germany',
+        'GH' => 'Ghana',
+        'GI' => 'Gibraltar',
+        'GR' => 'Greece',
+        'GL' => 'Greenland',
+        'GD' => 'Grenada',
+        'GP' => 'Guadeloupe',
+        'GU' => 'Guam',
+        'GT' => 'Guatemala',
+        'GG' => 'Guernsey',
+        'GN' => 'Guinea',
+        'GW' => 'Guinea-Bissau',
+        'GY' => 'Guyana',
+        'HT' => 'Haiti',
+        'HM' => 'Heard Island and McDonald Islands',
+        'VA' => 'Holy See',
+        'HN' => 'Honduras',
+        'HK' => 'Hong Kong',
+        'HU' => 'Hungary',
+        'IS' => 'Iceland',
+        'IN' => 'India',
+        'ID' => 'Indonesia',
+        'IR' => 'Iran, Islamic Republic of',
+        'IQ' => 'Iraq',
+        'IE' => 'Ireland',
+        'IM' => 'Isle of Man',
+        'IL' => 'Israel',
+        'IT' => 'Italy',
+        'JM' => 'Jamaica',
+        'JP' => 'Japan',
+        'JE' => 'Jersey',
+        'JO' => 'Jordan',
+        'KZ' => 'Kazakhstan',
+        'KE' => 'Kenya',
+        'KI' => 'Kiribati',
+        'KP' => "Korea, Democratic People's Republic of",
+        'KR' => 'Korea, Republic of',
+        'KW' => 'Kuwait',
+        'KG' => 'Kyrgyzstan',
+        'LA' => "Lao People's Democratic Republic",
+        'LV' => 'Latvia',
+        'LB' => 'Lebanon',
+        'LS' => 'Lesotho',
+        'LR' => 'Liberia',
+        'LY' => 'Libya',
+        'LI' => 'Liechtenstein',
+        'LT' => 'Lithuania',
+        'LU' => 'Luxembourg',
+        'MO' => 'Macao',
+        'MG' => 'Madagascar',
+        'MW' => 'Malawi',
+        'MY' => 'Malaysia',
+        'MV' => 'Maldives',
+        'ML' => 'Mali',
+        'MT' => 'Malta',
+        'MH' => 'Marshall Islands',
+        'MQ' => 'Martinique',
+        'MR' => 'Mauritania',
+        'MU' => 'Mauritius',
+        'YT' => 'Mayotte',
+        'MX' => 'Mexico',
+        'FM' => 'Micronesia (Federated States of)',
+        'MD' => 'Moldova (Republic of)',
+        'MC' => 'Monaco',
+        'MN' => 'Mongolia',
+        'ME' => 'Montenegro',
+        'MS' => 'Montserrat',
+        'MA' => 'Morocco',
+        'MZ' => 'Mozambique',
+        'MM' => 'Myanmar',
+        'NA' => 'Namibia',
+        'NR' => 'Nauru',
+        'NP' => 'Nepal',
+        'NL' => 'Netherlands',
+        'NC' => 'New Caledonia',
+        'NZ' => 'New Zealand',
+        'NI' => 'Nicaragua',
+        'NE' => 'Niger',
+        'NG' => 'Nigeria',
+        'NU' => 'Niue',
+        'NF' => 'Norfolk Island',
+        'MK' => 'North Macedonia',
+        'MP' => 'Northern Mariana Islands',
+        'NO' => 'Norway',
+        'OM' => 'Oman',
+        'PK' => 'Pakistan',
+        'PW' => 'Palau',
+        'PS' => 'Palestine, State of',
+        'PA' => 'Panama',
+        'PG' => 'Papua New Guinea',
+        'PY' => 'Paraguay',
+        'PE' => 'Peru',
+        'PH' => 'Philippines',
+        'PN' => 'Pitcairn',
+        'PL' => 'Poland',
+        'PT' => 'Portugal',
+        'PR' => 'Puerto Rico',
+        'QA' => 'Qatar',
+        'RE' => 'Réunion',
+        'RO' => 'Romania',
+        'RU' => 'Russian Federation',
+        'RW' => 'Rwanda',
+        'BL' => 'Saint Barthélemy',
+        'SH' => 'Saint Helena, Ascension and Tristan da Cunha',
+        'KN' => 'Saint Kitts and Nevis',
+        'LC' => 'Saint Lucia',
+        'MF' => 'Saint Martin (French part)',
+        'PM' => 'Saint Pierre and Miquelon',
+        'VC' => 'Saint Vincent and the Grenadines',
+        'WS' => 'Samoa',
+        'SM' => 'San Marino',
+        'ST' => 'Sao Tome and Principe',
+        'SA' => 'Saudi Arabia',
+        'SN' => 'Senegal',
+        'RS' => 'Serbia',
+        'SC' => 'Seychelles',
+        'SL' => 'Sierra Leone',
+        'SG' => 'Singapore',
+        'SX' => 'Sint Maarten (Dutch part)',
+        'SK' => 'Slovakia',
+        'SI' => 'Slovenia',
+        'SB' => 'Solomon Islands',
+        'SO' => 'Somalia',
+        'ZA' => 'South Africa',
+        'GS' => 'South Georgia and the South Sandwich Islands',
+        'SS' => 'South Sudan',
+        'ES' => 'Spain',
+        'LK' => 'Sri Lanka',
+        'SD' => 'Sudan',
+        'SR' => 'Suriname',
+        'SJ' => 'Svalbard and Jan Mayen',
+        'SE' => 'Sweden',
+        'CH' => 'Switzerland',
+        'SY' => 'Syrian Arab Republic',
+        'TW' => 'Taiwan, Province of China',
+        'TJ' => 'Tajikistan',
+        'TZ' => 'Tanzania, United Republic of',
+        'TH' => 'Thailand',
+        'TL' => 'Timor-Leste',
+        'TG' => 'Togo',
+        'TK' => 'Tokelau',
+        'TO' => 'Tonga',
+        'TT' => 'Trinidad and Tobago',
+        'TN' => 'Tunisia',
+        'TR' => 'Turkey',
+        'TM' => 'Turkmenistan',
+        'TC' => 'Turks and Caicos Islands',
+        'TV' => 'Tuvalu',
+        'UG' => 'Uganda',
+        'UA' => 'Ukraine',
+        'AE' => 'United Arab Emirates',
+        'GB' => 'United Kingdom of Great Britain and Northern Ireland',
+        'UM' => 'United States Minor Outlying Islands',
+        'US' => 'United States of America',
+        'UY' => 'Uruguay',
+        'UZ' => 'Uzbekistan',
+        'VU' => 'Vanuatu',
+        'VE' => 'Venezuela (Bolivarian Republic of)',
+        'VN' => 'Viet Nam',
+        'VG' => 'Virgin Islands (British)',
+        'VI' => 'Virgin Islands (U.S.)',
+        'WF' => 'Wallis and Futuna',
+        'EH' => 'Western Sahara',
+        'YE' => 'Yemen',
+        'ZM' => 'Zambia',
+        'ZW' => 'Zimbabwe',
+    );
+
+    private $selling_methods = array(
+        'cold_calling' => 'Cold Calling',
+        'email' => 'Email',
+        'face_to_face' => 'Face to Face',
+        'online_demos' => 'Online Demos',
+        'appointment_setting' => 'Appointment Setting',
+    );
+
     public function __construct()
     {
-        add_action('admin_head', array($this,'custom_admin_css_for_post_types' ) );
+        add_action('admin_head', array($this, 'custom_admin_css_for_post_types'));
         $this->create_post_types();
-        
+
         add_action('init', array($this, 'create_role_business'));
         add_action('init', array($this, 'create_role_agent'));
 
@@ -125,6 +384,21 @@ class Admin
         add_action('carbon_fields_register_fields', array($this, 'register_commercial_agent_fields'));
         add_action('carbon_fields_register_fields', array($this, 'register_company_fields'));
         add_action('carbon_fields_register_fields', array($this, 'register_deal_fields'));
+    }
+
+    public function get_languages()
+    {
+        return $this->languages;
+    }
+
+    public function get_countries()
+    {
+        return $this->countries;
+    }
+
+    public function get_selling_methods()
+    {
+        return $this->selling_methods;
     }
     public function create_post_types()
     {
@@ -179,153 +453,149 @@ class Admin
         }
     }
 
-    public function register_opportunity_fields(){
-       
+    public function register_opportunity_fields()
+    {
+
         Container::make('post_meta', __('Oportunity Info'))
-                ->add_tab(__('Info'), array(
-                    Field::make('text', 'sector', __('Sector')),
-                    Field::make('radio', 'target_audience', __('Target Audience'))->set_options(array(
-                        'empresas' => "Companies",
-                        'individuals' => "Individuals",
-                    )),
-                    Field::make('text', 'company_type', __('Company Type')),
-                    Field::make('text', 'language', __('Language')),
-                    Field::make('text', 'location', __('Location')),
-                    Field::make('text', 'age', __('Age')),
-                    Field::make('text', 'currency', __('Currency')),
-    
-                ))
-                ->add_tab(__('Pricing'), array(
-                    Field::make('text', 'price', __('Price')),
-                    Field::make('text', 'commission', __('Commission')),
-                    Field::make('checkbox', 'deliver_leads', 'Deliver Leads?')
-                        ->set_option_value('yes'),
-                    Field::make('text', 'sales_cycle_estimation', __('Sales cycle estimation')),
-                ))->add_tab(__('Advanced'), array(
-    
-                Field::make('media_gallery', 'supporting_materials', __('Supporting materials'))->set_type('text'),
-                Field::make('complex', 'videos', __('Videos urls'))
-                    ->add_fields(array(
-                        Field::make('oembed', 'video', __('Url Video')),
-                    )),
-                Field::make('rich_text', 'tips', __('Tips')),
-    
-            ))->where('post_type', '=', 'opportunity');
-    
-        
-      
-    
+            ->add_tab(__('Info'), array(
+                Field::make('text', 'sector', __('Sector')),
+                Field::make('radio', 'target_audience', __('Target Audience'))->set_options(array(
+                    'empresas' => "Companies",
+                    'individuals' => "Individuals",
+                )),
+                Field::make('text', 'company_type', __('Company Type')),
+                Field::make('text', 'language', __('Language')),
+                Field::make('text', 'location', __('Location')),
+                Field::make('text', 'age', __('Age')),
+                Field::make('text', 'currency', __('Currency')),
+
+            ))
+            ->add_tab(__('Pricing'), array(
+                Field::make('text', 'price', __('Price')),
+                Field::make('text', 'commission', __('Commission')),
+                Field::make('checkbox', 'deliver_leads', 'Deliver Leads?')
+                    ->set_option_value('yes'),
+                Field::make('text', 'sales_cycle_estimation', __('Sales cycle estimation')),
+            ))->add_tab(__('Advanced'), array(
+
+            Field::make('media_gallery', 'supporting_materials', __('Supporting materials'))->set_type('text'),
+            Field::make('complex', 'videos', __('Videos urls'))
+                ->add_fields(array(
+                    Field::make('oembed', 'video', __('Url Video')),
+                )),
+            Field::make('rich_text', 'tips', __('Tips')),
+
+        ))->where('post_type', '=', 'opportunity');
+
     }
 
-    public function register_company_fields(){
+    public function register_company_fields()
+    {
 
         Container::make('post_meta', __('Company Info'))
-        ->add_fields( array(
-            
-            Field::make('media_gallery', 'company_logo', __('Company Logo'))->set_type('image'),
-           
-            Field::make( 'text', 'business_name', __( 'Company Name' ) ),
-            Field::make( 'text', 'sector', __( 'Sector' ) ),
-            Field::make( 'text', 'activity', __( 'Activity' ) ),
-            Field::make('rich_text', 'description', __('Description')),
-            Field::make( 'text', 'location', __( 'Location' ) ),
-            Field::make( 'text', 'employees_number', __( 'Number of Employees' ) ),
-            Field::make( 'text', 'instagram_url', __( 'Instagram Url' ) ),
+            ->add_fields(array(
 
-        )) ->where( 'post_type', '=', 'company' );
+                Field::make('media_gallery', 'company_logo', __('Company Logo'))->set_type('image'),
+
+                Field::make('text', 'business_name', __('Company Name')),
+                Field::make('text', 'sector', __('Sector')),
+                Field::make('text', 'activity', __('Activity')),
+                Field::make('rich_text', 'description', __('Description')),
+                Field::make('select', 'location', __('Location')),
+                Field::make('text', 'employees_number', __('Number of Employees')),
+                Field::make('text', 'instagram_url', __('Instagram Url')),
+
+            ))->where('post_type', '=', 'company');
     }
 
-    public function register_commercial_agent_fields(){
-        
+    public function register_commercial_agent_fields()
+    {
+
         Container::make('post_meta', __('Agent Info'))
-           
-        ->add_fields( array(
-            Field::make( 'association', 'agent', __( 'Commercial Agent' ) )
-            ->set_types( array(
-                array(
-                    'type'      => 'user',
-                )
-            ) ),
-            Field::make('media_gallery', 'avatar', __('Profile Image'))->set_type('image'),
-            Field::make( 'rich_text', 'description', __( 'Description' ) ),
-            Field::make('multiselect', 'language', __('Languages'))
-            ->set_options($this->languages),
-            Field::make('text', 'location', __('Location')),
-            Field::make('select', 'seller_type', __('Seller Type'))
-            ->set_options(array("agency" => "Agency","freelance"=>"Freelance")),
-            Field::make('select', 'selling_methods', __('Selling Methods'))
-            ->set_options(array(
-                'cold_calling' => 'Cold Calling',
-                'email' => 'Email',
-                'face_to_face' => 'Face to Face',
-                'online_demos' => 'Online Demos',
-                'appointment_setting' => 'Appointment Setting'
-            )),
-            Field::make( 'date_time', 'date', 'Deal Date' ),
-            
 
-        ))->where( 'post_type', '=', 'commercial_agent' );
+            ->add_fields(array(
+                Field::make('association', 'agent', __('Commercial Agent'))
+                    ->set_types(array(
+                        array(
+                            'type' => 'user',
+                        ),
+                    )),
+                Field::make('media_gallery', 'avatar', __('Profile Image'))->set_type('image'),
+                Field::make('rich_text', 'description', __('Description')),
+                Field::make('multiselect', 'language', __('Languages'))
+                    ->set_options($this->languages),
+                Field::make('select', 'location', __('Location'))
+                ->set_options($this->countries),
+                Field::make('select', 'seller_type', __('Seller Type'))
+                    ->set_options(array("agency" => "Agency", "freelance" => "Freelance")),
+                Field::make('select', 'selling_methods', __('Selling Methods'))
+                    ->set_options($this->selling_methods),
+
+            ))->where('post_type', '=', 'commercial_agent');
     }
 
-    public function register_deal_fields(){
+    public function register_deal_fields()
+    {
         Container::make('post_meta', __('Deal Conditions'))
-           
-        ->add_fields( array(
-            Field::make( 'association', 'agent', __( 'Commercial Agent' ) )
-            ->set_types( array(
-                array(
-                    'type'      => 'post',
-                    'post_type' => 'agent',
-                )
-            ) ),
-            Field::make( 'association', 'company', __( 'Company' ) )
-            ->set_types( array(
-                array(
-                    'type'      => 'post',
-                    'post_type' => 'company',
-                )
-            ) ),
-            Field::make( 'association', 'opportunity', __( 'Opportunity' ) )
-            ->set_types( array(
-                array(
-                    'type'      => 'post',
-                    'post_type' => 'opportunity',
-                )
-            ) ),
-            Field::make( 'date_time', 'date', 'Deal Date' ),
-            Field::make( 'text', 'commission', 'Commission' ),
 
-        ))->where( 'post_type', '=', 'deal' );
+            ->add_fields(array(
+                Field::make('association', 'agent', __('Commercial Agent'))
+                    ->set_types(array(
+                        array(
+                            'type' => 'post',
+                            'post_type' => 'agent',
+                        ),
+                    )),
+                Field::make('association', 'company', __('Company'))
+                    ->set_types(array(
+                        array(
+                            'type' => 'post',
+                            'post_type' => 'company',
+                        ),
+                    )),
+                Field::make('association', 'opportunity', __('Opportunity'))
+                    ->set_types(array(
+                        array(
+                            'type' => 'post',
+                            'post_type' => 'opportunity',
+                        ),
+                    )),
+                Field::make('date_time', 'date', 'Deal Date'),
+                Field::make('text', 'commission', 'Commission'),
+
+            ))->where('post_type', '=', 'deal');
     }
 
-    public function register_review_fields(){
+    public function register_review_fields()
+    {
         Container::make('post_meta', __('Review'))
-           
-        ->add_fields( array(
-            Field::make( 'association', 'agent', __( 'Commercial Agent' ) )
-            ->set_types( array(
-                array(
-                    'type'      => 'post',
-                    'post_type' => 'agent',
-                )
-            ) ),
-            Field::make('select', 'seller_type', __('Seller Type'))
-            ->set_options(array(
-                "1" => 1,
-                "2"=>2,
-                "3" =>3,
-                "4"=>4,
-                "5"=>5
-            )),
-        ))->where( 'post_type', '=', 'deal' );
+
+            ->add_fields(array(
+                Field::make('association', 'agent', __('Commercial Agent'))
+                    ->set_types(array(
+                        array(
+                            'type' => 'post',
+                            'post_type' => 'agent',
+                        ),
+                    )),
+                Field::make('select', 'seller_type', __('Seller Type'))
+                    ->set_options(array(
+                        "1" => 1,
+                        "2" => 2,
+                        "3" => 3,
+                        "4" => 4,
+                        "5" => 5,
+                    )),
+            ))->where('post_type', '=', 'deal');
     }
 
-    public function custom_admin_css_for_post_types() {
+    public function custom_admin_css_for_post_types()
+    {
         global $typenow;
-    
+
         // Lista de tipos de publicaciones personalizadas
-        $custom_post_types = array('opportunity', 'review', 'deal',"company","commercial_agent","payment");
-    
+        $custom_post_types = array('opportunity', 'review', 'deal', "company", "commercial_agent", "payment");
+
         // Verificar si el tipo de publicación actual está en la lista
         if (in_array($typenow, $custom_post_types)) {
             echo '
@@ -343,8 +613,5 @@ class Admin
             ';
         }
     }
-  
 
 }
-
-

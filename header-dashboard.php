@@ -3,17 +3,17 @@
 <head>
 	<meta charset="<?php bloginfo('charset');?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
 	<?php wp_head();?>
 </head>
 
 <body <?php body_class();?>>
 
 <?php wp_body_open();?>
-<header class="frontend-dashboard-header">
+<header class="dashboard-header">
 		<div class="container-fluid">
-			<div class="row">
-				<div class="col-xl-2 col-lg-2 col-md-3 col-sm-8 col-8 col-xs-10 my-auto">
+			<div class="d-flex justify-content-between">
+				<div class="site-link">
                 <a href="<?php echo home_url(); ?>" class="custom-logo-link" rel="home">
                 <?php
 					if (has_custom_logo()) {
@@ -25,40 +25,37 @@
 				?>
                 </a>
 			    </div>
-                <div class="col-xl-2 col-lg-2 col-md-3 col-sm-1 col-1 d-none d-md-block my-auto offset-xl-4 offset-lg-3 text-center">
-                    <div class="balance-in-navbar">
-						<span class="woocommerce-Price-amount amount"><bdi>0,00&nbsp;<span class="woocommerce-Price-currencySymbol">€</span></bdi></span>                    </div>
-                </div>
-				<div class="col-md-2 col-sm-4 col-4 my-auto">
-					<div class="d-flex float-end">
+               
+				<div class="menu-account">
+					<div class="d-flex jus">
+						<span class="balance">123 $</span>
 						<div class="notifications-widget">
 	                        <div class="notifications-button">
 	                        	<i class="fas fa-fw fa-envelope"></i>
 
 	                        </div>
-	                        	                    </div>
+	                    </div>
 						<div class="notifications-widget">
 	                        <div class="notifications-button">
-	                        	<i class="fas fa-fw fa-bell-on"></i>
-	                        		                        </div>
-	                    		                    </div>
-						<div class="my-account-widget">
-	                        <div class="my-account-button">
-	                        <img width="50" src="<?php echo carbon_get_post_meta(3966, "avatar"); ?>" alt="" style="cursor: default;">	                                	                        </div>
-	                        <div class="my-account-content">
-	                            <div class="header-profile">
-	                                <div class="header-profile-content">
-	                                    <h6>nicoreyes7</h6>
-	                                    <p>nicoreyes7@hotmail.com</p>
-	                                </div>
-	                            </div>
-	                            <ul class="list-unstyled">
-	                            
-	                                 <li>
-	                                    <a href="<?php echo wp_logout_url() ?>">Logout</a>
-	                                </li>
-	                            </ul>
+							<i class="fa-solid fa-bell"></i>
 	                        </div>
+	                    </div>
+						<div class="my-account">
+						<?php if (is_user_logged_in()) : ?>
+							<?php $current_user = wp_get_current_user(); ?>
+							<div class="dropdown">
+								<button class="btn btn-secondary dropdown-toggle" type="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+									<?php echo esc_html($current_user->display_name); ?>
+								</button>
+								<ul class="dropdown-menu" aria-labelledby="accountDropdown">
+									<li><a class="dropdown-item" href="<?php echo esc_url(home_url('/dashboard')); ?>">Dashboard</a></li>
+									<li><a class="dropdown-item" href="<?php echo esc_url(wp_logout_url(home_url())); ?>">Logout</a></li>
+								</ul>
+							</div>
+						<?php else : ?>
+							<a class="btn btn-primary" href="<?php echo esc_url(wp_login_url()); ?>">Login</a>
+							<a class="btn btn-secondary" href="<?php echo esc_url(wp_registration_url()); ?>">Register</a>
+						<?php endif; ?>
 	                    </div>
                     </div>
 				</div>

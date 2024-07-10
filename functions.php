@@ -18,7 +18,7 @@ $files_to_require = array(
     __DIR__ . '/inc/setup/customizer.php',
     __DIR__ . '/inc/setup/setup-theme.php',
     __DIR__ . '/inc/admin.php',
-
+    __DIR__ . '/inc/auth.php',
 );
 function require_files(array $files)
 {
@@ -31,62 +31,104 @@ function require_files(array $files)
 
 require_files($files_to_require);
 
-new Admin();
+$admin = new Admin();
 
 
 
-function my_theme_enqueue_styles() {
 
- wp_enqueue_style('my-theme-extra-style', get_stylesheet_directory_uri(). "/extra.css" );
-}
-add_action( 'wp_enqueue_scripts', 'my_theme_enqueue_styles' );
+// Función para manejar la actualización del perfil del vendedor
+add_action('wp_ajax_update_seller_profile', 'update_seller_profile');
+add_action('wp_ajax_nopriv_update_seller_profile', 'update_seller_profile');  // Para usuarios no autenticados
 
+function update_seller_profile() {
+    check_ajax_referer('update_seller_profile', 'update_seller_profile_nonce');
 
-
-add_action('wp_ajax_nopriv_user_register', 'user_register');
-add_action('wp_ajax_user_register', 'user_register');
-
-function user_register() {
-    $user_login = $_POST['user_login'];
-    $user_email = $_POST['user_email'];
-    $user_pass  = $_POST['user_pass'];
-
-    if (username_exists($user_login) || email_exists($user_email)) {
-        wp_send_json_error('Username or email already exists.');
-    } else {
-        $user_id = wp_create_user($user_login, $user_pass, $user_email);
-        if (is_wp_error($user_id)) {
-            wp_send_json_error($user_id->get_error_message());
-        } else {
-            wp_send_json_success('User registered successfully.');
-        }
+    if (!current_user_can('edit_user', $_POST['user_id'])) {
+        wp_send_json_error(__('Permission denied.', 'textdomain'));
     }
-}
 
-add_action('wp_ajax_nopriv_user_login', 'user_login');
-add_action('wp_ajax_user_login', 'user_login');
+    $user_id = intval($_POST['user_id']);
+    $errors = array();
 
-function user_login() {
-    $creds = array(
-        'user_login'    => $_POST['log'],
-        'user_password' => $_POST['pwd'],
-        'remember'      => true,
+    // Validaciones
+    if (empty($_POST['first_name'])) {
+        $errors['first_name'] = __('First name is required.', 'textdomain');
+    }
+
+    if (empty($_POST['last_name'])) {
+        $errors['last_name'] = __('Last name is required.', 'textdomain');
+    }
+
+    if (empty($_POST['user_email']) || !is_email($_POST['user_email'])) {
+        $errors['user_email'] = __('Valid email address is required.', 'textdomain');
+    }
+
+    if (empty($_POST['description'])) {
+        $errors['description'] = __('Description is required.', 'textdomain');
+    }
+
+    if (empty($_POST['location'])) {
+        $errors['location'] = __('Location is required.', 'textdomain');
+    }
+
+    if (empty($_POST['seller_type'])) {
+        $errors['seller_type'] = __('Seller type is required.', 'textdomain');
+    }
+
+    if (empty($_POST['language'])) {
+        $errors['language'] = __('At least one language must be selected.', 'textdomain');
+    }
+
+    if (empty($_POST['selling_methods'])) {
+        $errors['selling_methods'] = __('At least one selling method must be selected.', 'textdomain');
+    }
+
+    if (!empty($errors)) {
+        wp_send_json_error($errors);
+    }
+
+    // Actualización si no hay errores
+    $args = array(
+        'post_type'   => 'commercial_agent',
+        'meta_query'  => array(
+            array(
+                'key'     => 'agent',
+                'value'   => $user_id,
+                'compare' => '=',
+            ),
+        ),
     );
 
-    $user = wp_signon($creds, false);
+    $agent_query = new WP_Query($args);
 
-    if (is_wp_error($user)) {
-        wp_send_json_error($user->get_error_message());
-    } else {
-        wp_send_json_success('Login successful.');
+    if (!$agent_query->have_posts()) {
+        wp_send_json_error(__('Commercial agent not found for this user.', 'textdomain'));
     }
-}
 
+    while ($agent_query->have_posts()) {
+        $agent_query->the_post();
+        $agent_id = get_the_ID();
 
-function redirect_non_logged_users() {
-    if (is_page('dashboard') && !is_user_logged_in()) {
-        wp_redirect(home_url('/login'));
-        exit;
+        // Actualizar los campos de Carbon Fields
+        carbon_set_post_meta($agent_id, 'description', sanitize_textarea_field($_POST['description']));
+        carbon_set_post_meta($agent_id, 'language', $_POST['language']);  // Asegúrate de que $_POST['language'] es un array
+        carbon_set_post_meta($agent_id, 'location', sanitize_text_field($_POST['location']));
+        carbon_set_post_meta($agent_id, 'seller_type', sanitize_text_field($_POST['seller_type']));
+        carbon_set_post_meta($agent_id, 'selling_methods', $_POST['selling_methods']);  // Asegúrate de que $_POST['selling_methods'] es un array
+
+        // Actualizar los campos de usuario
+        $update_user_data = array(
+            'ID'           => $user_id,
+            'first_name'   => sanitize_text_field($_POST['first_name']),
+            'last_name'    => sanitize_text_field($_POST['last_name']),
+            'user_email'   => sanitize_email($_POST['user_email']),
+        );
+
+        wp_update_user($update_user_data);
+
+        wp_send_json_success(__('Profile updated successfully.', 'textdomain'));
     }
+
+    wp_reset_postdata();
+    wp_die();
 }
-add_action('template_redirect', 'redirect_non_logged_users');
