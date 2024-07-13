@@ -23,7 +23,7 @@ get_header("login");
                                 if (has_custom_logo()) {
                                     the_custom_logo();
                                 }
-                                ?>
+?>
                                 <h1 class="site-title">Login</h1>
                                 <form method="post" action="">
                                     <label for="username">Username:</label>

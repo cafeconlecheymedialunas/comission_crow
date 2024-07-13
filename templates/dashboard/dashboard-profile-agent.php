@@ -43,10 +43,10 @@ $selling_method_terms = get_terms([
                 <option value="">Select a language</option>
                 <?php
                 $language = carbon_get_user_meta($current_user->ID, 'language') ?? [];
-                foreach ($languages as $key => $value) {
-                    echo '<option value="' . esc_attr($key) . '"' . (in_array($key, $language) ? ' selected' : '') . '>' . esc_html($value) . '</option>';
-                }
-                ?>
+foreach ($languages as $key => $value) {
+    echo '<option value="' . esc_attr($key) . '"' . (in_array($key, $language) ? ' selected' : '') . '>' . esc_html($value) . '</option>';
+}
+?>
             </select>
         </div>
         <div class="col-md-6">
@@ -54,11 +54,11 @@ $selling_method_terms = get_terms([
             <select name="location" class="form-control custom-select">
                 <option value="">Select a country</option>
                 <?php
-                $location = carbon_get_user_meta($current_user->ID, 'location');
-                foreach ($countries as $key => $value) {
-                    echo '<option value="' . esc_attr($key) . '"' . (esc_attr($key) === esc_attr($location) ? ' selected' : '') . '>' . esc_html($value) . '</option>';
-                }
-                ?>
+$location = carbon_get_user_meta($current_user->ID, 'location');
+foreach ($countries as $key => $value) {
+    echo '<option value="' . esc_attr($key) . '"' . (esc_attr($key) === esc_attr($location) ? ' selected' : '') . '>' . esc_html($value) . '</option>';
+}
+?>
             </select>
         </div>
 
@@ -67,22 +67,22 @@ $selling_method_terms = get_terms([
             <label>Skills</label>
             <select name="skills[]" class="form-control custom-select" multiple>
                 <?php
-                $skill = carbon_get_user_meta($current_user->ID, 'skills') ?? [];
-                foreach ($skill_terms as $term) {
-                    echo '<option value="' . esc_attr($term->term_id) . '"' . (in_array($term->term_id, $skill) ? ' selected' : '') . '>' . esc_html($term->name) . '</option>';
-                }
-                ?>
+$skill = carbon_get_user_meta($current_user->ID, 'skills') ?? [];
+foreach ($skill_terms as $term) {
+    echo '<option value="' . esc_attr($term->term_id) . '"' . (in_array($term->term_id, $skill) ? ' selected' : '') . '>' . esc_html($term->name) . '</option>';
+}
+?>
             </select>
         </div>
         <div class="col-md-6">
             <label>Industry</label>
             <select name="industry[]" class="form-control custom-select">
                 <?php
-                $industry = carbon_get_user_meta($current_user->ID, 'industries') ?? [];
-                foreach ($industry_terms as $term) {
-                    echo '<option value="' . esc_attr($term->term_id) . '"' . (in_array($term->term_id, $industry) ? ' selected' : '') . '>' . esc_html($term->name) . '</option>';
-                }
-                ?>
+$industry = carbon_get_user_meta($current_user->ID, 'industries') ?? [];
+foreach ($industry_terms as $term) {
+    echo '<option value="' . esc_attr($term->term_id) . '"' . (in_array($term->term_id, $industry) ? ' selected' : '') . '>' . esc_html($term->name) . '</option>';
+}
+?>
             </select>
         </div>
         <div class="col-md-6">
@@ -96,11 +96,11 @@ $selling_method_terms = get_terms([
             <label>Selling Methods</label>
             <select name="selling_methods[]" class="form-control custom-select" multiple>
                 <?php
-                $selling_method = carbon_get_user_meta($current_user->ID, 'selling_methods') ?? [];
-                foreach ($selling_method_terms as $term) {
-                    echo '<option value="' . esc_attr($term->term_id) . '"' . (in_array($term->term_id, $selling_method) ? ' selected' : '') . '>' . esc_html($term->name) . '</option>';
-                }
-                ?>
+$selling_method = carbon_get_user_meta($current_user->ID, 'selling_methods') ?? [];
+foreach ($selling_method_terms as $term) {
+    echo '<option value="' . esc_attr($term->term_id) . '"' . (in_array($term->term_id, $selling_method) ? ' selected' : '') . '>' . esc_html($term->name) . '</option>';
+}
+?>
             </select>
         </div>
         <div class="col-md-6">

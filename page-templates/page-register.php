@@ -14,16 +14,16 @@ get_header("login");
                 <div class="container">
                     <div class="row">
                         <div class="col-md-8">
-                        <h2 class="auth-title"><?php echo "Welcome to ". get_bloginfo( 'name' ); ?></h2>
-                        <p class="auth-description"><?php echo get_bloginfo( 'description' ); ?></p>
+                        <h2 class="auth-title"><?php echo "Welcome to ". get_bloginfo('name'); ?></h2>
+                        <p class="auth-description"><?php echo get_bloginfo('description'); ?></p>
                         </div>
                         <div class="col-md-4">
                             <div class="form-wrap">
                                 <?php
                                     if (has_custom_logo()) {
                                         the_custom_logo();
-                                    } 
-                                ?>
+                                    }
+?>
                                 <h1 class="site-title">Register</h1>
                                 <form id="register_form">
                                     <input class="form-field" type="text" id="user_login" name="user_login" placeholder="Username" required>

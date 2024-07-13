@@ -1,14 +1,17 @@
 <?php
-class Crud {
+class Crud
+{
     protected $post_type;
 
-    public function __construct($post_type) {
+    public function __construct($post_type)
+    {
         $this->post_type = $post_type;
     }
 
     // Método privado para actualizar campos personalizados con validaciones
-    protected function update_custom_fields($post_id, $data, $field_mappings) {
-        $errors = array();
+    protected function update_custom_fields($post_id, $data, $field_mappings)
+    {
+        $errors = [];
 
         // Iterar sobre los campos definidos y actualizar cada uno
         foreach ($field_mappings as $meta_key => $field_label) {
@@ -30,24 +33,26 @@ class Crud {
     }
 
     // Método privado para formatear los datos de una publicación
-    protected function format_post_data($post) {
+    protected function format_post_data($post)
+    {
         // Implementación genérica para formatear datos de una publicación
-        return array(
+        return [
             'ID' => $post->ID,
             'title' => $post->post_title,
             'content' => $post->post_content,
             // Puedes agregar más campos generales aquí si es necesario
-        );
+        ];
     }
 
     // Método para crear una nueva publicación
-    public function create($data, $field_mappings) {
-        $post_id = wp_insert_post(array(
+    public function create($data, $field_mappings)
+    {
+        $post_id = wp_insert_post([
             'post_type' => $this->post_type,
             'post_title' => $data['title'],
             'post_content' => $data['content'],
             'post_status' => 'publish',
-        ));
+        ]);
 
         if (is_wp_error($post_id)) {
             return $post_id; // Retornar WP_Error
@@ -67,7 +72,8 @@ class Crud {
     }
 
     // Método para leer una publicación por su ID
-    public function read($post_id) {
+    public function read($post_id)
+    {
         $post = get_post($post_id);
         if (!$post || $post->post_type !== $this->post_type) {
             return new WP_Error($this->post_type . '_not_found', __('Post not found for ') . $this->post_type);
@@ -77,12 +83,13 @@ class Crud {
     }
 
     // Método para actualizar una publicación por su ID
-    public function update($post_id, $data, $field_mappings) {
-        $post = array(
+    public function update($post_id, $data, $field_mappings)
+    {
+        $post = [
             'ID' => $post_id,
             'post_title' => $data['title'],
             'post_content' => $data['content'],
-        );
+        ];
 
         $updated = wp_update_post($post);
 
@@ -104,7 +111,8 @@ class Crud {
     }
 
     // Método para eliminar una publicación por su ID
-    public function delete($post_id) {
+    public function delete($post_id)
+    {
         $deleted = wp_delete_post($post_id, true);
         if (!$deleted) {
             return new WP_Error($this->post_type . '_delete_failed', __('Delete failed for ') . $this->post_type);

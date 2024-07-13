@@ -7,18 +7,18 @@
 
 get_header();
 
-$search_enabled = get_theme_mod( 'search_enabled', '1' ); // Get custom meta-value.
+$search_enabled = get_theme_mod('search_enabled', '1'); // Get custom meta-value.
 ?>
 <div id="post-0" class="content error404 not-found">
-	<h1 class="entry-title"><?php esc_html_e( 'Not found', 'comission_crow' ); ?></h1>
+	<h1 class="entry-title"><?php esc_html_e('Not found', 'comission_crow'); ?></h1>
 	<div class="entry-content">
-		<p><?php esc_html_e( 'It looks like nothing was found at this location.', 'comission_crow' ); ?></p>
+		<p><?php esc_html_e('It looks like nothing was found at this location.', 'comission_crow'); ?></p>
 		<div>
 			<?php
-				if ( '1' === $search_enabled ) :
-					get_search_form();
-				endif;
-			?>
+                if ('1' === $search_enabled) :
+                    get_search_form();
+                endif;
+?>
 		</div>
 	</div><!-- /.entry-content -->
 </div><!-- /#post-0 -->

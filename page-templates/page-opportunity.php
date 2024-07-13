@@ -35,12 +35,12 @@ if (is_user_logged_in()):
 						                            <div class="col-md-12">
 														<div class="card">
 														<?php
-						
-															// Es un commercial_agent, cargar el formulario de perfil de agente
-														include get_template_directory() . '/templates/opportunity/create.php';
-														
-														
-														?>
+                        
+                                                            // Es un commercial_agent, cargar el formulario de perfil de agente
+                                                        include get_template_directory() . '/templates/opportunity/create.php';
+                                                        
+                                                        
+    ?>
 
 													</div>
 

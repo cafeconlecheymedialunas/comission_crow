@@ -16,13 +16,13 @@
 				<div class="site-link">
                 <a href="<?php echo home_url(); ?>" class="custom-logo-link" rel="home">
                 <?php
-					if (has_custom_logo()) {
-						the_custom_logo();
-					} else {
-						// O simplemente muestra el nombre del sitio
-						echo esc_attr(get_bloginfo('name', 'display'));
-					}
-				?>
+                    if (has_custom_logo()) {
+                        the_custom_logo();
+                    } else {
+                        // O simplemente muestra el nombre del sitio
+                        echo esc_attr(get_bloginfo('name', 'display'));
+                    }
+?>
                 </a>
 			    </div>
                

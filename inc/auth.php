@@ -4,7 +4,7 @@
 function kamerpower_registration_form()
 {
     if (!is_user_logged_in()) {
-     
+
 
         $registration_enabled = get_option('users_can_register');
         if ($registration_enabled) {
@@ -35,7 +35,7 @@ add_shortcode('login_form', 'kamerpower_login_form');
 function kamerpower_password_reset_form()
 {
     if (!is_user_logged_in()) {
-    
+
         $output = kamerpower_password_reset_form_fields();
         return $output;
     }
@@ -229,11 +229,11 @@ function kamerpower_register_user($role = 'agent')
 
     if (is_wp_error($agent_post_id)) {
         wp_send_json_error($agent_post_id->get_error_messages());
-    } 
-    
+    }
+
     carbon_set_post_meta( $agent_post_id, 'agent', $user_id );
-    
-    
+
+
 
     wp_send_json_success(__('Registration successful.'));
 
@@ -348,7 +348,3 @@ add_action('wp_ajax_nopriv_kamerpower_set_new_password', 'kamerpower_set_new_pas
 
 
 */
-
-
-
-

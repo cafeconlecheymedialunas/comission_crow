@@ -1,25 +1,25 @@
 <?php
 // Obtener todos los términos de la taxonomía 'language'
-$languages_terms = get_terms(array(
+$languages_terms = get_terms([
     'taxonomy' => 'language',
     'hide_empty' => false,
-));
-$sectors_terms = get_terms(array(
+]);
+$sectors_terms = get_terms([
     'taxonomy' => 'sector',
     'hide_empty' => false,
-));
-$language_terms = get_terms(array(
+]);
+$language_terms = get_terms([
     'taxonomy' => 'language',
     'hide_empty' => false,
-));
-$country_terms = get_terms(array(
+]);
+$country_terms = get_terms([
     'taxonomy' => 'country',
     'hide_empty' => false,
-));
-$currency_terms = get_terms(array(
+]);
+$currency_terms = get_terms([
     'taxonomy' => 'currency',
     'hide_empty' => false,
-));
+]);
 /*
 Field::make('radio', 'target_audience', __('Target Audience'))->set_options(array(
 'companies' => "Companies",

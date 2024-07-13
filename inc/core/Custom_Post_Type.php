@@ -4,14 +4,18 @@ if (!defined('ABSPATH')) {
 }
 
 if (!class_exists('Custom_Post_Type')) {
-    class Custom_Post_Type {
+    class Custom_Post_Type
+    {
         private static $instance = null;
 
         // Constructor privado para prevenir instanciación directa
-        private function __construct() {}
+        private function __construct()
+        {
+        }
 
         // Método para obtener la instancia única
-        public static function get_instance() {
+        public static function get_instance()
+        {
             if (self::$instance === null) {
                 self::$instance = new self();
             }
@@ -19,13 +23,14 @@ if (!class_exists('Custom_Post_Type')) {
         }
 
         // Método para registrar un Custom Post Type
-        public function register($type, $singular, $plural, $custom_args = array()) {
+        public function register($type, $singular, $plural, $custom_args = [])
+        {
             $labels = $this->get_labels($singular, $plural);
 
-            $default_args = array(
+            $default_args = [
                 'labels'                => $labels,
-                'supports'              => array('title', 'editor', 'excerpt', 'author', 'thumbnail', 'comments', 'revisions', 'custom-fields'),
-                'taxonomies'            => array(),
+                'supports'              => ['title', 'editor', 'excerpt', 'author', 'thumbnail', 'comments', 'revisions', 'custom-fields'],
+                'taxonomies'            => [],
                 'hierarchical'          => false,
                 'public'                => true,
                 'show_ui'               => true,
@@ -39,23 +44,25 @@ if (!class_exists('Custom_Post_Type')) {
                 'publicly_queryable'    => true,
                 'capability_type'       => 'page',
                 'show_in_rest'          => true,
-            );
+            ];
 
             $args = array_merge($default_args, $custom_args);
 
-            add_action('init', function() use ($type, $args) {
+            add_action('init', function () use ($type, $args) {
                 $this->register_post_type($type, $args);
             });
         }
 
         // Método para registrar el Custom Post Type
-        private function register_post_type($type, $args) {
+        private function register_post_type($type, $args)
+        {
             register_post_type($type, $args);
         }
 
         // Método para crear etiquetas
-        private function get_labels($singular, $plural) {
-            $labels = array(
+        private function get_labels($singular, $plural)
+        {
+            $labels = [
                 'name'                  => _x($plural, 'Post Type General Name', 'text_domain'),
                 'singular_name'         => _x($singular, 'Post Type Singular Name', 'text_domain'),
                 'menu_name'             => __($plural, 'text_domain'),
@@ -83,7 +90,7 @@ if (!class_exists('Custom_Post_Type')) {
                 'items_list'            => __($plural . ' list', 'text_domain'),
                 'items_list_navigation' => __($plural . ' list navigation', 'text_domain'),
                 'filter_items_list'     => __('Filter ' . $plural . ' list', 'text_domain'),
-            );
+            ];
 
             return $labels;
         }

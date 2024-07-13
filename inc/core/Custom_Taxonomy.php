@@ -4,14 +4,18 @@ if (!defined('ABSPATH')) {
 }
 
 if (!class_exists('Custom_Taxonomy')) {
-    class Custom_Taxonomy {
+    class Custom_Taxonomy
+    {
         private static $instance = null;
 
         // Constructor privado para prevenir instanciación directa
-        private function __construct() {}
+        private function __construct()
+        {
+        }
 
         // Método para obtener la instancia única
-        public static function get_instance() {
+        public static function get_instance()
+        {
             if (self::$instance === null) {
                 self::$instance = new self();
             }
@@ -19,10 +23,11 @@ if (!class_exists('Custom_Taxonomy')) {
         }
 
         // Método para registrar una taxonomía personalizada
-        public function register($taxonomy, $object_type, $singular, $plural, $custom_args = array()) {
+        public function register($taxonomy, $object_type, $singular, $plural, $custom_args = [])
+        {
             $labels = $this->get_labels($singular, $plural);
 
-            $default_args = array(
+            $default_args = [
                 'labels'            => $labels,
                 'hierarchical'      => true,
                 'public'            => true,
@@ -33,23 +38,25 @@ if (!class_exists('Custom_Taxonomy')) {
                 'show_in_quick_edit'=> true,
                 'show_admin_column' => true,
                 'show_in_rest'      => true,
-            );
+            ];
 
             $args = array_merge($default_args, $custom_args);
 
-            add_action('init', function() use ($taxonomy, $object_type, $args) {
+            add_action('init', function () use ($taxonomy, $object_type, $args) {
                 $this->register_taxonomy($taxonomy, $object_type, $args);
             });
         }
 
         // Método para registrar la taxonomía
-        private function register_taxonomy($taxonomy, $object_type, $args) {
+        private function register_taxonomy($taxonomy, $object_type, $args)
+        {
             register_taxonomy($taxonomy, $object_type, $args);
         }
 
         // Método para crear etiquetas
-        private function get_labels($singular, $plural) {
-            $labels = array(
+        private function get_labels($singular, $plural)
+        {
+            $labels = [
                 'name'                       => _x($plural, 'Taxonomy General Name', 'text_domain'),
                 'singular_name'              => _x($singular, 'Taxonomy Singular Name', 'text_domain'),
                 'menu_name'                  => __($plural, 'text_domain'),
@@ -70,7 +77,7 @@ if (!class_exists('Custom_Taxonomy')) {
                 'no_terms'                   => __('No ' . $plural, 'text_domain'),
                 'items_list'                 => __($plural . ' list', 'text_domain'),
                 'items_list_navigation'      => __($plural . ' list navigation', 'text_domain'),
-            );
+            ];
 
             return $labels;
         }
@@ -78,4 +85,3 @@ if (!class_exists('Custom_Taxonomy')) {
 }
 
 // Ejemplo de uso
-
