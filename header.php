@@ -60,8 +60,8 @@
 							 
 								<ul class="navbar-nav">
 									<?php if (!is_user_logged_in()): ?>
-										<li class="nav-item"><a class="nav-link" href="<?php echo site_url('/login'); ?>">Login</a></li>
-										<li class="nav-item"><a class="nav-link" href="<?php echo site_url('/register'); ?>">Register</a></li>
+										<a class="btn btn-primary" href="<?php echo esc_url(home_url("/auth?action=login")); ?>">Login</a>
+										<a class="btn btn-secondary" href="<?php echo esc_url(home_url("/auth?action=register")); ?>">Register</a>
 									<?php else: ?>
 										<li class="nav-item"><a class="nav-link" href="<?php echo site_url('/dashboard'); ?>">Dashboard</a></li>
 										<li><a href="<?php echo site_url('/dashboard/overview'); ?>">Overview</a></li>

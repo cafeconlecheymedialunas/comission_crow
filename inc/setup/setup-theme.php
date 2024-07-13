@@ -536,9 +536,11 @@ function comission_crow_scripts_loader() {
 	}
 	wp_enqueue_script('jquery');
 	// 2. Scripts.
+
 	wp_enqueue_script( 'mainjs', get_theme_file_uri( 'build/main.js' ), array("jquery"), $theme_version, true );
 
 	wp_localize_script('mainjs', 'ajax_object', array('ajax_url' => admin_url('admin-ajax.php')));
+	
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
 		wp_enqueue_script( 'comment-reply' );
 	}

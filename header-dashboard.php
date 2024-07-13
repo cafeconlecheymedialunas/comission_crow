@@ -53,8 +53,8 @@
 								</ul>
 							</div>
 						<?php else : ?>
-							<a class="btn btn-primary" href="<?php echo esc_url(wp_login_url()); ?>">Login</a>
-							<a class="btn btn-secondary" href="<?php echo esc_url(wp_registration_url()); ?>">Register</a>
+							<a class="btn btn-primary" href="<?php echo esc_url(home_url("/auth?action=login")); ?>">Login</a>
+							<a class="btn btn-secondary" href="<?php echo esc_url(home_url("/auth?action=register")); ?>">Register</a>
 						<?php endif; ?>
 	                    </div>
                     </div>

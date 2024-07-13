@@ -1,13 +1,15 @@
 <?php
+/*
 // Shortcode para mostrar el formulario de registro
-function kamerpower_registration_form() {
-    if(!is_user_logged_in()) {
-        global $kamerpower_load_css;
-        $kamerpower_load_css = true;
+function kamerpower_registration_form()
+{
+    if (!is_user_logged_in()) {
+     
 
         $registration_enabled = get_option('users_can_register');
-        if($registration_enabled) {
-            $output = kamerpower_registration_form_fields();
+        if ($registration_enabled) {
+            $role = isset($_GET['role']) ? sanitize_text_field($_GET['role']) : 'agent';
+            $output = kamerpower_registration_form_fields($role);
         } else {
             $output = __('User registration is not enabled');
         }
@@ -16,32 +18,34 @@ function kamerpower_registration_form() {
 }
 add_shortcode('register_form', 'kamerpower_registration_form');
 
-
 // Shortcode para mostrar el formulario de inicio de sesión
-function kamerpower_login_form() {
-    if(!is_user_logged_in()) {
-        global $kamerpower_load_css;
-        $kamerpower_load_css = true;
+function kamerpower_login_form()
+{
+    if (!is_user_logged_in()) {
+
         $output = kamerpower_login_form_fields();
     } else {
-        $output = 'Already Logged-In <a id="kamerpower_logout" href="'. wp_logout_url( get_permalink() ) .'" title="Logout">Logout</a>';
+        $output = 'Already Logged-In <a id="kamerpower_logout" href="' . wp_logout_url(get_permalink()) . '" title="Logout">Logout</a>';
     }
     return $output;
 }
 add_shortcode('login_form', 'kamerpower_login_form');
 
-function kamerpower_password_reset_form() {
+// Shortcode para mostrar el formulario de recuperación de contraseña
+function kamerpower_password_reset_form()
+{
     if (!is_user_logged_in()) {
-        global $kamerpower_load_css;
-        $kamerpower_load_css = true;
+    
         $output = kamerpower_password_reset_form_fields();
         return $output;
     }
 }
 add_shortcode('password_reset_form', 'kamerpower_password_reset_form');
 
-function kamerpower_new_password_form() {
-    if (!is_user_logged_in() && isset($_GET['action']) && $_GET['action'] == 'reset_password' && isset($_GET['key']) && isset($_GET['login'])) {
+// Shortcode para mostrar el formulario de restablecimiento de contraseña
+function kamerpower_new_password_form()
+{
+    if (!is_user_logged_in() && isset($_GET['action']) && $_GET['action'] == 'new_password' && isset($_GET['key']) && isset($_GET['login'])) {
         global $kamerpower_load_css;
         $kamerpower_load_css = true;
         $output = kamerpower_new_password_form_fields();
@@ -49,66 +53,62 @@ function kamerpower_new_password_form() {
     }
 }
 add_shortcode('new_password_form', 'kamerpower_new_password_form');
+
 // Campos del formulario de registro
-function kamerpower_registration_form_fields() {
+function kamerpower_registration_form_fields($role)
+{
+    $title = $role === 'business' ? __('Register as a Company') : __('Register as a Commercial Agent');
     ob_start(); ?>
-    <h3 class="kamerpower_header"><?php _e('Register New Account'); ?></h3>
+    <h1 class="site-title"><?php echo $title; ?></h1>
     <div id="kamerpower_registration_errors"></div>
-    <form id="kamerpower_registration_form" class="kamerpower_form">
-        <fieldset>
-            <p>
-                <label for="kamerpower_user_login"><?php _e('Username'); ?></label>
-                <input name="kamerpower_user_login" id="kamerpower_user_login" class="required" type="text"/>
-            </p>
-            <p>
-                <label for="kamerpower_user_email"><?php _e('Email'); ?></label>
-                <input name="kamerpower_user_email" id="kamerpower_user_email" class="required" type="email"/>
-            </p>
-            <p>
-                <label for="kamerpower_user_first"><?php _e('First Name'); ?></label>
-                <input name="kamerpower_user_first" id="kamerpower_user_first" class="required" type="text"/>
-            </p>
-            <p>
-                <label for="kamerpower_user_last"><?php _e('Last Name'); ?></label>
-                <input name="kamerpower_user_last" id="kamerpower_user_last" class="required" type="text"/>
-            </p>
-            <p>
-                <label for="password"><?php _e('Password'); ?></label>
-                <input name="kamerpower_user_pass" id="password" class="required" type="password"/>
-            </p>
-            <p>
-                <label for="password_again"><?php _e('Password Again'); ?></label>
-                <input name="kamerpower_user_pass_confirm" id="password_again" class="required" type="password"/>
-            </p>
-            <p>
-                <input type="hidden" name="kamerpower_register_nonce" value="<?php echo wp_create_nonce('kamerpower-register-nonce'); ?>"/>
-                <input type="submit" value="<?php _e('Register Your Account'); ?>"/>
-            </p>
-        </fieldset>
+    <form id="kamerpower_registration_form">
+        <div class="row  gx-1">
+            <div class="col-md-6">
+                <input name="kamerpower_user_first" placeholder="First Name" id="kamerpower_user_first" class="form-control" type="text"/>
+            </div>
+            <div class="col-md-6">
+                <input name="kamerpower_user_last" placeholder="Last Name" id="kamerpower_user_last" class="form-control" type="text"/>
+            </div>
+            <div class="col-md-6">
+                <input name="kamerpower_user_email" placeholder="Email" id="kamerpower_user_email" class="form-control" type="email"/>
+            </div>
+            <div class="col-md-6">
+                <input name="kamerpower_user_pass" placeholder="Password" id="password" class="form-control" type="password"/>
+            </div>
+            <div class="col-md-6">
+                <input name="kamerpower_user_pass_confirm" placeholder="Repeat Password" id="password_again" class="form-control" type="password"/>
+            </div>
+        </div>
+        <p>
+            <input type="hidden" name="role" value="<?php echo $role; ?>"/>
+            <input type="hidden" name="security" value="<?php echo wp_create_nonce('kamerpower-register-nonce'); ?>"/>
+            <button type="submit"><?php _e('Save'); ?></button>
+        </p>
+        <p class="another-pages">Already have an account? <a href="<?php echo esc_url(home_url("/auth?action=login")); ?>">Login</a></p>
     </form>
     <?php
     return ob_get_clean();
 }
 
 // Campos del formulario de inicio de sesión
-function kamerpower_login_form_fields() {
+function kamerpower_login_form_fields()
+{
     ob_start(); ?>
-    <h3 class="kamerpower_header"><?php _e('Login'); ?></h3>
+    <h1 class="site-title"><?php _e('Login'); ?></h1>
     <div id="kamerpower_login_errors"></div>
     <form id="kamerpower_login_form" class="kamerpower_form">
         <fieldset>
             <p>
-                <label for="kamerpower_user_login">Username</label>
-                <input name="kamerpower_user_login" id="kamerpower_user_login" class="required" type="text"/>
+                <input name="kamerpower_user_login" placeholder="Email" id="kamerpower_user_login" class="form-control" type="text"/>
             </p>
             <p>
-                <label for="kamerpower_user_pass">Password</label>
-                <input name="kamerpower_user_pass" id="kamerpower_user_pass" class="required" type="password"/>
+                <input name="kamerpower_user_pass" placeholder="Password" id="kamerpower_user_pass" class="form-control" type="password"/>
             </p>
             <p>
-                <input type="hidden" name="kamerpower_login_nonce" value="<?php echo wp_create_nonce('kamerpower-login-nonce'); ?>"/>
-                <input id="kamerpower_login_submit" type="submit" value="Login"/>
+                <input type="hidden" name="security" value="<?php echo wp_create_nonce('kamerpower-login-nonce'); ?>"/>
+                <button id="kamerpower_login_submit" type="submit"><?php _e('Save'); ?></button>
             </p>
+            <p class="another-pages"><a href="<?php echo esc_url(home_url("/auth?action=register")); ?>">Register</a> | <a href="<?php echo esc_url(home_url("/auth?action=password_reset")); ?>">Lost your password?</a></p>
         </fieldset>
     </form>
     <?php
@@ -117,19 +117,19 @@ function kamerpower_login_form_fields() {
 
 
 // Campos del formulario de recuperación de contraseña
-function kamerpower_password_reset_form_fields() {
+function kamerpower_password_reset_form_fields()
+{
     ob_start(); ?>
-    <h3 class="kamerpower_header"><?php _e('Reset Password'); ?></h3>
+    <h1 class="site-title"><?php _e('Reset Password'); ?></h1>
     <div id="kamerpower_reset_errors"></div>
     <form id="kamerpower_reset_form" class="kamerpower_form">
         <fieldset>
             <p>
-                <label for="kamerpower_user_email"><?php _e('Email'); ?></label>
-                <input name="kamerpower_user_email" id="kamerpower_user_email" class="required" type="email"/>
+                <input name="kamerpower_user_email" placeholder="Email" id="kamerpower_user_email" class="form-control" type="email"/>
             </p>
             <p>
-                <input type="hidden" name="kamerpower_reset_nonce" value="<?php echo wp_create_nonce('kamerpower-reset-nonce'); ?>"/>
-                <input type="submit" value="<?php _e('Reset Password'); ?>"/>
+                <input type="hidden" name="security" value="<?php echo wp_create_nonce('kamerpower-reset-nonce'); ?>"/>
+                <button type="submit"><?php _e('Save'); ?></button>
             </p>
         </fieldset>
     </form>
@@ -137,27 +137,25 @@ function kamerpower_password_reset_form_fields() {
     return ob_get_clean();
 }
 
-
 // Campos del formulario de restablecimiento de contraseña
-function kamerpower_new_password_form_fields() {
+function kamerpower_new_password_form_fields()
+{
     ob_start(); ?>
-    <h3 class="kamerpower_header"><?php _e('Set a New Password'); ?></h3>
+    <h1 class="site-title"><?php _e('Set a New Password'); ?></h1>
     <div id="kamerpower_new_password_errors"></div>
     <form id="kamerpower_new_password_form" class="kamerpower_form">
         <fieldset>
             <p>
-                <label for="new_password"><?php _e('New Password'); ?></label>
-                <input name="new_password" id="new_password" class="required" type="password"/>
+                <input name="new_password" placeholder="Password" id="new_password" class="form-control" type="password"/>
             </p>
             <p>
-                <label for="confirm_password"><?php _e('Confirm Password'); ?></label>
-                <input name="confirm_password" id="confirm_password" class="required" type="password"/>
+                <input name="confirm_password" placeholder="Confirm Password" id="confirm_password" class="form-control" type="password"/>
             </p>
             <p>
                 <input type="hidden" name="reset_key" value="<?php echo esc_attr($_GET['key']); ?>"/>
                 <input type="hidden" name="reset_login" value="<?php echo esc_attr($_GET['login']); ?>"/>
-                <input type="hidden" name="kamerpower_new_password_nonce" value="<?php echo wp_create_nonce('kamerpower-new-password-nonce'); ?>"/>
-                <input type="submit" value="<?php _e('Reset Password'); ?>"/>
+                <input type="hidden" name="security" value="<?php echo wp_create_nonce('kamerpower-new-password-nonce'); ?>"/>
+                <button type="submit"><?php _e('Save'); ?></button>
             </p>
         </fieldset>
     </form>
@@ -166,181 +164,191 @@ function kamerpower_new_password_form_fields() {
 }
 
 // Manejo de registro por AJAX
-function kamerpower_register_user() {
-    check_ajax_referer('kamerpower-register-nonce', 'kamerpower_register_nonce');
+function kamerpower_register_user($role = 'agent')
+{
+    check_ajax_referer('kamerpower-register-nonce', 'security');
 
-    $user_login = sanitize_text_field($_POST['kamerpower_user_login']);
-    $user_email = sanitize_email($_POST['kamerpower_user_email']);
-    $user_first = sanitize_text_field($_POST['kamerpower_user_first']);
-    $user_last = sanitize_text_field($_POST['kamerpower_user_last']);
-    $user_pass = $_POST['kamerpower_user_pass'];
-    $pass_confirm = $_POST['kamerpower_user_pass_confirm'];
+    $first_name = sanitize_text_field($_POST['kamerpower_user_first']);
+    $last_name = sanitize_text_field($_POST['kamerpower_user_last']);
+    $email = sanitize_email($_POST['kamerpower_user_email']);
+    $password = sanitize_text_field($_POST['kamerpower_user_pass']);
+    $password_confirm = sanitize_text_field($_POST['kamerpower_user_pass_confirm']);
+    $role = isset($_POST['role']) ? sanitize_text_field($_POST['role']) : 'agent';
 
     $errors = new WP_Error();
 
-    if(username_exists($user_login)) {
-        $errors->add('username_unavailable', __('Username already taken'));
-    }
-    if(!validate_username($user_login)) {
-        $errors->add('username_invalid', __('Invalid username'));
-    }
-    if($user_login == '') {
-        $errors->add('username_empty', __('Please enter a username'));
-    }
-    if(!is_email($user_email)) {
-        $errors->add('email_invalid', __('Invalid email'));
-    }
-    if(email_exists($user_email)) {
-        $errors->add('email_used', __('Email already registered'));
-    }
-    if($user_pass == '') {
-        $errors->add('password_empty', __('Please enter a password'));
-    }
-    if($user_pass != $pass_confirm) {
-        $errors->add('password_mismatch', __('Passwords do not match'));
+    if (empty($first_name)) {
+        $errors->add('empty_first_name', __('Please enter your first name.'));
     }
 
-    if(empty($errors->errors)) {
-        $new_user_id = wp_insert_user(array(
-            'user_login'    => $user_login,
-            'user_pass'     => $user_pass,
-            'user_email'    => $user_email,
-            'first_name'    => $user_first,
-            'last_name'     => $user_last,
-            'role'          => 'subscriber'
-        ));
-
-        if(!is_wp_error($new_user_id)) {
-            wp_new_user_notification($new_user_id);
-            wp_set_current_user($new_user_id);
-            wp_set_auth_cookie($new_user_id);
-            echo json_encode(array('registered' => true));
-        } else {
-            $errors->add('registration_failed', __('Registration failed'));
-        }
+    if (empty($last_name)) {
+        $errors->add('empty_last_name', __('Please enter your last name.'));
     }
 
-    if(!empty($errors->errors)) {
-        $error_messages = '';
-        foreach($errors->get_error_messages() as $error) {
-            $error_messages .= '<p>' . $error . '</p>';
-        }
-        echo json_encode(array('registered' => false, 'message' => $error_messages));
+    if (empty($email)) {
+        $errors->add('empty_email', __('Please enter your email.'));
+    } elseif (!is_email($email)) {
+        $errors->add('invalid_email', __('Invalid email address.'));
+    } elseif (email_exists($email)) {
+        $errors->add('email_exists', __('Email already exists. Please choose another one.'));
     }
 
-    wp_die();
+    if (empty($password)) {
+        $errors->add('empty_password', __('Please enter a password.'));
+    } elseif (strlen($password) < 6) {
+        $errors->add('password_too_short', __('Password should be at least 6 characters long.'));
+    } elseif ($password !== $password_confirm) {
+        $errors->add('password_mismatch', __('Passwords do not match.'));
+    }
+
+    if (!empty($errors->get_error_messages())) {
+        wp_send_json_error($errors);
+    }
+
+    $user_id = wp_insert_user(array(
+        'user_login' => $email,
+        'user_email' => $email,
+        'user_pass' => $password,
+        'first_name' => $first_name,
+        'last_name' => $last_name,
+        'role' => $role,
+    ));
+
+    if (is_wp_error($user_id)) {
+        wp_send_json_error($user_id->get_error_messages());
+    }
+
+    $post_type = $role == 'agent' ? 'commercial_agent' : 'company';
+
+    $agent_post_id = wp_insert_post(array(
+        'post_title' => $first_name . ' ' . $last_name,
+        'post_type' => $post_type,
+        'post_status' => 'publish',
+        'post_author' => $user_id,
+    ));
+
+    if (is_wp_error($agent_post_id)) {
+        wp_send_json_error($agent_post_id->get_error_messages());
+    } 
+    
+    carbon_set_post_meta( $agent_post_id, 'agent', $user_id );
+    
+    
+
+    wp_send_json_success(__('Registration successful.'));
+
+    die();
 }
+
 add_action('wp_ajax_nopriv_kamerpower_register_user', 'kamerpower_register_user');
 
-
-// Manejo de inicio de sesión por AJAX
-function kamerpower_login_user() {
-    check_ajax_referer('kamerpower-login-nonce', 'kamerpower_login_nonce');
+// Iniciar sesión por AJAX
+// Iniciar sesión por AJAX
+function kamerpower_login_user()
+{
+    check_ajax_referer('kamerpower-login-nonce', 'security');
 
     $user_login = sanitize_text_field($_POST['kamerpower_user_login']);
-    $user_pass = $_POST['kamerpower_user_pass'];
+    $user_password = sanitize_text_field($_POST['kamerpower_user_pass']);
+    $remember = (isset($_POST['remember_me']) && $_POST['remember_me'] == 'true') ? true : false;
 
-    $creds = array(
-        'user_login' => $user_login,
-        'user_password' => $user_pass,
-        'remember' => true
-    );
+    $login_data = array();
+    $login_data['user_login'] = $user_login;
+    $login_data['user_password'] = $user_password;
+    $login_data['remember'] = $remember;
 
-    $user = wp_signon($creds, false);
+    $user = wp_signon($login_data, false);
 
-    if(is_wp_error($user)) {
-        echo json_encode(array('loggedin' => false, 'message' => __('Invalid login credentials')));
+    if (is_wp_error($user)) {
+        wp_send_json_error(array('message' => $user->get_error_message()));
     } else {
-        echo json_encode(array('loggedin' => true, 'message' => __('Login successful')));
+        wp_send_json_success(__('Login successful.'));
     }
 
-    wp_die();
+    die();
 }
 add_action('wp_ajax_nopriv_kamerpower_login_user', 'kamerpower_login_user');
 
 
-// Manejo de recuperación de contraseña por AJAX
-function kamerpower_reset_password() {
-    check_ajax_referer('kamerpower-reset-nonce', 'kamerpower_reset_nonce');
+// Resetear contraseña por AJAX
+function kamerpower_reset_password()
+{
+    check_ajax_referer('kamerpower-reset-nonce', 'security');
 
     $user_email = sanitize_email($_POST['kamerpower_user_email']);
-
-    if (!is_email($user_email)) {
-        echo json_encode(array('reset' => false, 'message' => __('Invalid email address')));
-        wp_die();
-    }
-
     $user = get_user_by('email', $user_email);
+
     if (!$user) {
-        echo json_encode(array('reset' => false, 'message' => __('Email address not found')));
-        wp_die();
+        wp_send_json_error(__('Email not found.'));
     }
 
+    // Generate the password reset key
     $reset_key = get_password_reset_key($user);
+
     if (is_wp_error($reset_key)) {
-        echo json_encode(array('reset' => false, 'message' => __('An error occurred, please try again')));
-        wp_die();
+        wp_send_json_error($reset_key->get_error_message());
     }
 
-    $reset_url = add_query_arg(array(
-        'action' => 'reset_password',
-        'key' => $reset_key,
-        'login' => rawurlencode($user->user_login)
-    ), site_url('/'));
+    // Enviar correo electrónico de restablecimiento de contraseña
+    $reset_link = home_url("/auth?action=new_password&key=$reset_key&login=" . rawurlencode($user->user_login));
+    $email_subject = __('Password Reset Request');
+    $email_content = __('Click on the following link to reset your password:') . "\r\n\r\n" . $reset_link;
 
-    $message = __('Someone has requested a password reset for the following account:') . "\r\n\r\n";
-    $message .= network_site_url() . "\r\n\r\n";
-    $message .= sprintf(__('Username: %s'), $user->user_login) . "\r\n\r\n";
-    $message .= __('If this was a mistake, just ignore this email and nothing will happen.') . "\r\n\r\n";
-    $message .= __('To reset your password, visit the following address:') . "\r\n\r\n";
-    $message .= '<' . $reset_url . ">\r\n";
+    $sent = wp_mail($user_email, $email_subject, $email_content);
 
-    if (wp_mail($user_email, __('Password Reset'), $message)) {
-        echo json_encode(array('reset' => true, 'message' => __('Check your email for the confirmation link')));
+    if ($sent) {
+        wp_send_json_success(__('Password reset email sent.'));
     } else {
-        echo json_encode(array('reset' => false, 'message' => __('Email could not be sent, please try again')));
+        wp_send_json_error(__('Failed to send password reset email.'));
     }
 
-    wp_die();
+    die();
 }
+
 add_action('wp_ajax_nopriv_kamerpower_reset_password', 'kamerpower_reset_password');
 
-// Manejo del restablecimiento de contraseña por AJAX
-function kamerpower_set_new_password() {
-    check_ajax_referer('kamerpower-new-password-nonce', 'kamerpower_new_password_nonce');
+// Establecer nueva contraseña por AJAX
+function kamerpower_set_new_password()
+{
+    check_ajax_referer('kamerpower-new-password-nonce', 'security');
 
-    $reset_key = sanitize_text_field($_POST['reset_key']);
-    $reset_login = sanitize_text_field($_POST['reset_login']);
+    $reset_key = $_POST['reset_key'];
+    $reset_login = $_POST['reset_login'];
     $new_password = sanitize_text_field($_POST['new_password']);
     $confirm_password = sanitize_text_field($_POST['confirm_password']);
 
-    if ($new_password !== $confirm_password) {
-        echo json_encode(array('reset' => false, 'message' => __('Passwords do not match')));
-        wp_die();
+    $errors = new WP_Error();
+
+    if (empty($new_password)) {
+        $errors->add('empty_password', __('Please enter a password.'));
+    } elseif (strlen($new_password) < 6) {
+        $errors->add('password_too_short', __('Password should be at least 6 characters long.'));
+    } elseif ($new_password !== $confirm_password) {
+        $errors->add('password_mismatch', __('Passwords do not match.'));
+    }
+
+    if (!empty($errors->get_error_messages())) {
+        wp_send_json_error($errors);
     }
 
     $user = check_password_reset_key($reset_key, $reset_login);
 
     if (is_wp_error($user)) {
-        echo json_encode(array('reset' => false, 'message' => __('Invalid reset key')));
-        wp_die();
+        wp_send_json_error($user->get_error_message());
     }
 
     reset_password($user, $new_password);
 
-    echo json_encode(array('reset' => true, 'message' => __('Password has been reset')));
-    wp_die();
+    wp_send_json_success(__('Password reset successfully.'));
+
+    die();
 }
+
 add_action('wp_ajax_nopriv_kamerpower_set_new_password', 'kamerpower_set_new_password');
 
 
+*/
 
-function enqueue_scripts() {
-    wp_enqueue_script('jquery');
-    wp_enqueue_script('authjs', get_template_directory_uri() . '/assets/auth.js', array('jquery'), null, true);
 
-    wp_localize_script('authjs', 'authjs_ajax', array(
-        'ajax_url' => admin_url('admin-ajax.php')
-    ));
-}
-add_action('wp_enqueue_scripts', 'enqueue_scripts');
+
+

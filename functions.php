@@ -12,13 +12,15 @@ require_once get_template_directory() . '/vendor/autoload.php';
 // Array de rutas de archivos
 $files_to_require = array(
     __DIR__ . '/inc/core/Custom_Post_Type.php',
-   
+    __DIR__ . '/inc/core/Custom_Taxonomy.php',
     __DIR__ . '/inc/setup/wp-bootstrap-navwalker.php',
     __DIR__ . '/inc/setup/wp-bootstrap-navwalker-footer.php',
     __DIR__ . '/inc/setup/customizer.php',
     __DIR__ . '/inc/setup/setup-theme.php',
     __DIR__ . '/inc/admin.php',
-    __DIR__ . '/inc/auth.php',
+    __DIR__ . '/inc/public.php',
+     __DIR__ . '/inc/auth.php',
+    __DIR__ . '/inc/public.php',
 );
 function require_files(array $files)
 {
@@ -32,103 +34,82 @@ function require_files(array $files)
 require_files($files_to_require);
 
 $admin = new Admin();
+$public = new PublicFront();
 
 
+add_action('wp_ajax_create_opportunity', 'create_opportunity_callback');
+add_action('wp_ajax_nopriv_create_opportunity', 'create_opportunity_callback');
 
-
-// Función para manejar la actualización del perfil del vendedor
-add_action('wp_ajax_update_seller_profile', 'update_seller_profile');
-add_action('wp_ajax_nopriv_update_seller_profile', 'update_seller_profile');  // Para usuarios no autenticados
-
-function update_seller_profile() {
-    check_ajax_referer('update_seller_profile', 'update_seller_profile_nonce');
-
-    if (!current_user_can('edit_user', $_POST['user_id'])) {
-        wp_send_json_error(__('Permission denied.', 'textdomain'));
-    }
-
-    $user_id = intval($_POST['user_id']);
-    $errors = array();
-
-    // Validaciones
-    if (empty($_POST['first_name'])) {
-        $errors['first_name'] = __('First name is required.', 'textdomain');
-    }
-
-    if (empty($_POST['last_name'])) {
-        $errors['last_name'] = __('Last name is required.', 'textdomain');
-    }
-
-    if (empty($_POST['user_email']) || !is_email($_POST['user_email'])) {
-        $errors['user_email'] = __('Valid email address is required.', 'textdomain');
-    }
-
-    if (empty($_POST['description'])) {
-        $errors['description'] = __('Description is required.', 'textdomain');
-    }
-
-    if (empty($_POST['location'])) {
-        $errors['location'] = __('Location is required.', 'textdomain');
-    }
-
-    if (empty($_POST['seller_type'])) {
-        $errors['seller_type'] = __('Seller type is required.', 'textdomain');
-    }
-
-    if (empty($_POST['language'])) {
-        $errors['language'] = __('At least one language must be selected.', 'textdomain');
-    }
-
-    if (empty($_POST['selling_methods'])) {
-        $errors['selling_methods'] = __('At least one selling method must be selected.', 'textdomain');
-    }
-
-    if (!empty($errors)) {
-        wp_send_json_error($errors);
-    }
-
-    // Actualización si no hay errores
-    $args = array(
-        'post_type'   => 'commercial_agent',
-        'meta_query'  => array(
-            array(
-                'key'     => 'agent',
-                'value'   => $user_id,
-                'compare' => '=',
-            ),
-        ),
+function create_opportunity_callback() {
+   
+    $post_title = sanitize_text_field($_POST['title']);
+    $content = sanitize_textarea_field($_POST['content']);
+    $post_data = array(
+        'post_title'    => $post_title,
+        'post_status'   => 'publish',
+        'post_type'     => 'opportunity',
+        "post_content" => $content
     );
 
-    $agent_query = new WP_Query($args);
+    $post_id = wp_insert_post($post_data);
 
-    if (!$agent_query->have_posts()) {
-        wp_send_json_error(__('Commercial agent not found for this user.', 'textdomain'));
+    if (is_wp_error($post_id)) {
+
+        wp_send_json_error("Opportunity could not be created");
+        // Respuesta de éxito
+
     }
+    carbon_set_post_meta( $post_id, 'target_audience', $_POST['target_audience']  );
+    carbon_set_post_meta( $post_id, 'languages', $_POST['languages']  );
+    carbon_set_post_meta( $post_id, 'location', $_POST['location'] );
+    carbon_set_post_meta( $post_id, 'age', $_POST['age'] );
+    carbon_set_post_meta( $post_id, 'gender', $_POST['gender'] );
+    carbon_set_post_meta( $post_id, 'currency', $_POST['currency'] );
 
-    while ($agent_query->have_posts()) {
-        $agent_query->the_post();
-        $agent_id = get_the_ID();
+    carbon_set_post_meta( $post_id, 'price', $_POST['price'] ); 
+    carbon_set_post_meta( $post_id, 'age', $_POST['age'] );
+    carbon_set_post_meta( $post_id, 'commission', $_POST['commission'] ); 
+    carbon_set_post_meta( $post_id, 'deliver_leads', $_POST['deliver_leads'] );
+    carbon_set_post_meta( $post_id, 'sales_cycle_estimation', $_POST['sales_cycle_estimation'] );
+    carbon_set_post_meta( $post_id, 'images', $_POST['images'] ); 
+    carbon_set_post_meta( $post_id, 'supporting_materials', $_POST['supporting_materials'] );
+    carbon_set_post_meta( $post_id, 'videos', $_POST['videos'] );
 
-        // Actualizar los campos de Carbon Fields
-        carbon_set_post_meta($agent_id, 'description', sanitize_textarea_field($_POST['description']));
-        carbon_set_post_meta($agent_id, 'language', $_POST['language']);  // Asegúrate de que $_POST['language'] es un array
-        carbon_set_post_meta($agent_id, 'location', sanitize_text_field($_POST['location']));
-        carbon_set_post_meta($agent_id, 'seller_type', sanitize_text_field($_POST['seller_type']));
-        carbon_set_post_meta($agent_id, 'selling_methods', $_POST['selling_methods']);  // Asegúrate de que $_POST['selling_methods'] es un array
+    carbon_set_post_meta( $post_id, 'tips', $_POST['tips'] );
+    carbon_set_post_meta( $post_id, 'question_1', $_POST['question_1'] );
+    carbon_set_post_meta( $post_id, 'question_2', $_POST['question_2'] );
+    carbon_set_post_meta( $post_id, 'question_3', $_POST['question_3'] );
+    carbon_set_post_meta( $post_id, 'question_4', $_POST['question_4'] );
+    carbon_set_post_meta( $post_id, 'question_5', $_POST['question_5'] );
+    carbon_set_post_meta( $post_id, 'question_6', $_POST['question_6'] );
+    
 
-        // Actualizar los campos de usuario
-        $update_user_data = array(
-            'ID'           => $user_id,
-            'first_name'   => sanitize_text_field($_POST['first_name']),
-            'last_name'    => sanitize_text_field($_POST['last_name']),
-            'user_email'   => sanitize_email($_POST['user_email']),
-        );
-
-        wp_update_user($update_user_data);
-
-        wp_send_json_success(__('Profile updated successfully.', 'textdomain'));
-    }
-
-    wp_reset_postdata();
+    wp_send_json_success("Se creo con exito");
     wp_die();
 }
+
+// En functions.php
+function custom_rewrite_rules() {
+    add_rewrite_rule('^dashboard/([^/]*)/?', 'index.php?pagename=dashboard&subpage=$matches[1]', 'top');
+}
+add_action('init', 'custom_rewrite_rules');
+
+function add_query_vars($vars) {
+    $vars[] = 'subpage';
+    return $vars;
+}
+add_filter('query_vars', 'add_query_vars');
+
+function load_custom_template($template) {
+    if (get_query_var('pagename') == 'dashboard' && get_query_var('subpage')) {
+        $new_template = locate_template(array('template-dashboard.php'));
+        if ('' != $new_template) {
+            return $new_template;
+        }
+    }
+    return $template;
+}
+add_filter('template_include', 'load_custom_template');
+
+
+
