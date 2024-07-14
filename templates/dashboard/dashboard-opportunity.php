@@ -235,5 +235,8 @@ $currency_terms = get_terms([
         <button type="submit" class="btn btn-primary">Submit</button>
     </div>
 </form>
+</div>
+</div>
+</div>
 
 
