@@ -1,5 +1,4 @@
 jQuery(document).ready(function ($) {
-  console.log("HOLA");
   $("#kamerpower_registration_form").on("submit", function (e) {
     e.preventDefault();
     console.log(e);

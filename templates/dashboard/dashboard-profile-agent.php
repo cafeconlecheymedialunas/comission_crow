@@ -18,7 +18,9 @@ $selling_method_terms = get_terms([
     'hide_empty' => false,
 ]);
 ?>
-
+      <div class="row">
+						                            <div class="col-md-8">
+														<div class="card">
 <form id="agent-profile-form">
     <div class="row">
         <!-- User Fields -->
@@ -117,3 +119,12 @@ foreach ($selling_method_terms as $term) {
     </div>
 </form>
 <div id="profile-update-message"></div>
+</div>
+
+</div>
+<div class="col-md-4">
+   <div class="card">
+       <?php include get_template_directory() . '/templates/dashboard/form-password.php';?>
+   </div>
+</div>
+</div>

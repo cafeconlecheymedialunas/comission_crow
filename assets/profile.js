@@ -102,7 +102,6 @@ jQuery(document).ready(function ($) {
   $("#opportunity-form").submit(function (e) {
     e.preventDefault();
 
-    // Crear un objeto FormData
     var formData = new FormData(this);
     formData.append("action", "create_opportunity");
 
@@ -110,12 +109,22 @@ jQuery(document).ready(function ($) {
       type: "POST",
       url: ajax_object.ajax_url,
       data: formData,
-      processData: false, // Evita que jQuery procese los datos
-      contentType: false, // Evita que jQuery establezca el contentType
+      processData: false,
+      contentType: false,
       success: function (response) {
-        // Manejar la respuesta después de crear la oportunidad
-        alert("Opportunity created successfully!");
-        console.log(response);
+        if (response.success) {
+          Swal.fire({
+            title: "You have successfully registered!",
+            text: "You will be redirected in a few seconds to the login page.",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 2000, // 2 segundos
+          }).then(function () {
+            window.location.href = "/auth/?action=login";
+          });
+        } else {
+          displayFirstError(response.data);
+        }
       },
       error: function (error) {
         console.error("Error creating opportunity:", error);
@@ -123,10 +132,26 @@ jQuery(document).ready(function ($) {
     });
   });
 
+  function displayFirstError(errors) {
+    // Iterar sobre cada campo en el objeto de errores
+    Object.keys(errors).forEach(function (field) {
+      // Obtener el primer mensaje de error para el campo actual
+      var errorMessage = errors[field][0]; // El primer error de cada campo
+
+      console.log(field);
+      // Mostrar el mensaje de error en algún elemento HTML debajo del campo correspondiente
+      // Por ejemplo, supongamos que cada campo tiene un elemento con un ID como 'field-error'
+      var errorElement = document.getElementById(field + "-error");
+      if (errorElement) {
+        errorElement.innerHTML = errorMessage;
+        errorElement.style.display = "block"; // Mostrar el mensaje de error
+      }
+    });
+  }
+
   $(".add-new-url").click(function (e) {
     e.preventDefault();
 
-    // Validate if the last URL field is filled and is a valid URL
     const lastUrlField = $('.url-videos input[name="videos[]"]').last();
     const errorMessage = lastUrlField.next(".error-message");
     const urlPattern = /^(https?:\/\/)?([a-z\d-]+\.)+[a-z]{2,6}(\/[^\s]*)?$/i;

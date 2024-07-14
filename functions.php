@@ -74,7 +74,13 @@ add_action('wp_ajax_nopriv_create_opportunity', 'handle_opportunity_form_submiss
 function handle_opportunity_form_submission()
 {
     // Verifica la seguridad del nonce (si es necesario)
+    $errors = [];
 
+    // Verify nonce security (if necessary)
+    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'create_opportunity_nonce')) {
+        $errors["nonce"][] = "Nonce verification failed.";
+    }
+ 
     // Recibe y sanitiza los datos del formulario
     $post_title = sanitize_text_field($_POST['title']);
     $post_content = sanitize_textarea_field($_POST['content']);
@@ -97,9 +103,52 @@ function handle_opportunity_form_submission()
     $question_4 = sanitize_textarea_field($_POST['question_4']);
     $question_5 = sanitize_textarea_field($_POST['question_5']);
     $question_6 = sanitize_textarea_field($_POST['question_6']);
-    $images = isset($_POST['images']) ?  sanitize_text_field($_POST['images']) : '';
-    $supporting_materials = isset($_POST['supporting_materials']) ?  sanitize_text_field($_POST['supporting_materials']) : '';
-    // Inserta el nuevo post tipo 'opportunity'
+    $images = isset($_POST['images']) ?  explode(',', sanitize_text_field($_POST['images'])) : '';
+    $supporting_materials = isset($_POST['supporting_materials']) ?  explode(',', sanitize_text_field($_POST['supporting_materials'])) : '';
+
+    $videos =  $_POST['videos'];
+    $videos = array_map(function ($video_url) {
+        return ['video' => sanitize_text_field($video_url)];
+    }, $_POST['videos']);
+
+    if (empty($post_title)) {
+        $errors["title"][] = "Title field is required.";
+    }
+
+    if (empty($price)) {
+        $errors["price"][] = "Price field is required.";
+    }
+
+    if (empty($commission)) {
+        $errors["commission"][] = "Commission field is required.";
+    }
+
+    // Numeric and specific range validations
+    if (isset($age) && !empty($age) && !is_numeric($age)) {
+        $errors["age"][] = "Age must be a number.";
+    }
+
+    if (!is_numeric($price)) {
+        $errors["price"][] = "Price must be a number.";
+    }
+
+    if (!is_numeric($commission)) {
+        $errors["commission"][] = "Commission must be a number.";
+    }
+
+    // Specific validation for 'commission' field
+    if ($commission < 1 || $commission > 100) {
+        $errors["commission"][] = "Commission must be between 1 and 100.";
+    }
+
+    // If there are errors, send JSON response with errors array
+    if (!empty($errors)) {
+        wp_send_json_error($errors);
+        wp_die();
+    }
+
+
+
     $post_data = [
         'post_title'    => $post_title,
         'post_content'  => $post_content,
@@ -134,8 +183,11 @@ function handle_opportunity_form_submission()
     carbon_set_post_meta($post_id, 'question_4', $question_4);
     carbon_set_post_meta($post_id, 'question_5', $question_5);
     carbon_set_post_meta($post_id, 'question_6', $question_6);
-    carbon_set_post_meta($post_id, 'images', explode(',', $images));
-    carbon_set_post_meta($post_id, 'supporting_materials', explode(',', $supporting_materials));
+    carbon_set_post_meta($post_id, 'images', $images);
+    carbon_set_post_meta($post_id, 'supporting_materials', $supporting_materials);
+    carbon_set_post_meta($post_id, 'videos', $videos);
+
+    
     // Envía respuesta JSON de éxito
     wp_send_json_success("Opportunity created successfully");
     wp_die();

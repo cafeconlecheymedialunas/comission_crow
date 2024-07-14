@@ -1,5 +1,4 @@
 <?php
-/*
 // Shortcode para mostrar el formulario de registro
 function kamerpower_registration_form()
 {
@@ -205,14 +204,14 @@ function kamerpower_register_user($role = 'agent')
         wp_send_json_error($errors);
     }
 
-    $user_id = wp_insert_user(array(
+    $user_id = wp_insert_user([
         'user_login' => $email,
         'user_email' => $email,
         'user_pass' => $password,
         'first_name' => $first_name,
         'last_name' => $last_name,
         'role' => $role,
-    ));
+    ]);
 
     if (is_wp_error($user_id)) {
         wp_send_json_error($user_id->get_error_messages());
@@ -220,18 +219,18 @@ function kamerpower_register_user($role = 'agent')
 
     $post_type = $role == 'agent' ? 'commercial_agent' : 'company';
 
-    $agent_post_id = wp_insert_post(array(
+    $agent_post_id = wp_insert_post([
         'post_title' => $first_name . ' ' . $last_name,
         'post_type' => $post_type,
         'post_status' => 'publish',
         'post_author' => $user_id,
-    ));
+    ]);
 
     if (is_wp_error($agent_post_id)) {
         wp_send_json_error($agent_post_id->get_error_messages());
     }
 
-    carbon_set_post_meta( $agent_post_id, 'agent', $user_id );
+    carbon_set_post_meta($agent_post_id, 'agent', $user_id);
 
 
 
@@ -252,7 +251,7 @@ function kamerpower_login_user()
     $user_password = sanitize_text_field($_POST['kamerpower_user_pass']);
     $remember = (isset($_POST['remember_me']) && $_POST['remember_me'] == 'true') ? true : false;
 
-    $login_data = array();
+    $login_data = [];
     $login_data['user_login'] = $user_login;
     $login_data['user_password'] = $user_password;
     $login_data['remember'] = $remember;
@@ -260,7 +259,7 @@ function kamerpower_login_user()
     $user = wp_signon($login_data, false);
 
     if (is_wp_error($user)) {
-        wp_send_json_error(array('message' => $user->get_error_message()));
+        wp_send_json_error(['message' => $user->get_error_message()]);
     } else {
         wp_send_json_success(__('Login successful.'));
     }
@@ -345,6 +344,3 @@ function kamerpower_set_new_password()
 }
 
 add_action('wp_ajax_nopriv_kamerpower_set_new_password', 'kamerpower_set_new_password');
-
-
-*/
