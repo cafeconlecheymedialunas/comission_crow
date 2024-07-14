@@ -37,57 +37,7 @@ $admin = new Admin();
 $public = new PublicFront();
 
 
-add_action('wp_ajax_create_opportunity', 'create_opportunity_callback');
-add_action('wp_ajax_nopriv_create_opportunity', 'create_opportunity_callback');
 
-function create_opportunity_callback()
-{
-   
-    $post_title = sanitize_text_field($_POST['title']);
-    $content = sanitize_textarea_field($_POST['content']);
-    $post_data = [
-        'post_title'    => $post_title,
-        'post_status'   => 'publish',
-        'post_type'     => 'opportunity',
-        "post_content" => $content
-    ];
-
-    $post_id = wp_insert_post($post_data);
-
-    if (is_wp_error($post_id)) {
-
-        wp_send_json_error("Opportunity could not be created");
-        // Respuesta de éxito
-
-    }
-    carbon_set_post_meta($post_id, 'target_audience', $_POST['target_audience']);
-    carbon_set_post_meta($post_id, 'languages', $_POST['languages']);
-    carbon_set_post_meta($post_id, 'location', $_POST['location']);
-    carbon_set_post_meta($post_id, 'age', $_POST['age']);
-    carbon_set_post_meta($post_id, 'gender', $_POST['gender']);
-    carbon_set_post_meta($post_id, 'currency', $_POST['currency']);
-
-    carbon_set_post_meta($post_id, 'price', $_POST['price']);
-    carbon_set_post_meta($post_id, 'age', $_POST['age']);
-    carbon_set_post_meta($post_id, 'commission', $_POST['commission']);
-    carbon_set_post_meta($post_id, 'deliver_leads', $_POST['deliver_leads']);
-    carbon_set_post_meta($post_id, 'sales_cycle_estimation', $_POST['sales_cycle_estimation']);
-    carbon_set_post_meta($post_id, 'images', $_POST['images']);
-    carbon_set_post_meta($post_id, 'supporting_materials', $_POST['supporting_materials']);
-    carbon_set_post_meta($post_id, 'videos', $_POST['videos']);
-
-    carbon_set_post_meta($post_id, 'tips', $_POST['tips']);
-    carbon_set_post_meta($post_id, 'question_1', $_POST['question_1']);
-    carbon_set_post_meta($post_id, 'question_2', $_POST['question_2']);
-    carbon_set_post_meta($post_id, 'question_3', $_POST['question_3']);
-    carbon_set_post_meta($post_id, 'question_4', $_POST['question_4']);
-    carbon_set_post_meta($post_id, 'question_5', $_POST['question_5']);
-    carbon_set_post_meta($post_id, 'question_6', $_POST['question_6']);
-    
-
-    wp_send_json_success("Se creo con exito");
-    wp_die();
-}
 
 // En functions.php
 function custom_rewrite_rules()
@@ -114,3 +64,81 @@ function load_custom_template($template)
     return $template;
 }
 add_filter('template_include', 'load_custom_template');
+
+
+
+// Función para manejar el envío del formulario
+add_action('wp_ajax_create_opportunity', 'handle_opportunity_form_submission');
+add_action('wp_ajax_nopriv_create_opportunity', 'handle_opportunity_form_submission');
+
+function handle_opportunity_form_submission()
+{
+    // Verifica la seguridad del nonce (si es necesario)
+
+    // Recibe y sanitiza los datos del formulario
+    $post_title = sanitize_text_field($_POST['title']);
+    $post_content = sanitize_textarea_field($_POST['content']);
+    $sector = sanitize_text_field($_POST['sector']);
+    $target_audience = sanitize_text_field($_POST['target_audience']);
+    $company_type = sanitize_text_field($_POST['company_type']);
+    $languages = $_POST["languages"];
+    $location = sanitize_text_field($_POST['location']);
+    $age = sanitize_text_field($_POST['age']);
+    $gender = sanitize_text_field($_POST['gender']);
+    $currency = sanitize_text_field($_POST['currency']);
+    $price = sanitize_text_field($_POST['price']);
+    $commission = sanitize_text_field($_POST['commission']);
+    $deliver_leads = isset($_POST['deliver_leads']) ? sanitize_text_field($_POST['deliver_leads']) : 'no';
+    $sales_cycle_estimation = sanitize_text_field($_POST['sales_cycle_estimation']);
+    $tips = sanitize_textarea_field($_POST['tips']);
+    $question_1 = sanitize_textarea_field($_POST['question_1']);
+    $question_2 = sanitize_textarea_field($_POST['question_2']);
+    $question_3 = sanitize_textarea_field($_POST['question_3']);
+    $question_4 = sanitize_textarea_field($_POST['question_4']);
+    $question_5 = sanitize_textarea_field($_POST['question_5']);
+    $question_6 = sanitize_textarea_field($_POST['question_6']);
+    $images = isset($_POST['images']) ?  sanitize_text_field($_POST['images']) : '';
+    $supporting_materials = isset($_POST['supporting_materials']) ?  sanitize_text_field($_POST['supporting_materials']) : '';
+    // Inserta el nuevo post tipo 'opportunity'
+    $post_data = [
+        'post_title'    => $post_title,
+        'post_content'  => $post_content,
+        'post_status'   => 'publish',
+        'post_type'     => 'opportunity',
+    ];
+
+    $post_id = wp_insert_post($post_data);
+
+    if (is_wp_error($post_id)) {
+        wp_send_json_error("Error al crear la oportunidad");
+        wp_die();
+    }
+
+    // Guarda los campos personalizados usando Carbon Fields
+    carbon_set_post_meta($post_id, 'sector', $sector);
+    carbon_set_post_meta($post_id, 'target_audience', $target_audience);
+    carbon_set_post_meta($post_id, 'company_type', $company_type);
+    carbon_set_post_meta($post_id, 'languages', $languages);
+    carbon_set_post_meta($post_id, 'location', $location);
+    carbon_set_post_meta($post_id, 'age', $age);
+    carbon_set_post_meta($post_id, 'gender', $gender);
+    carbon_set_post_meta($post_id, 'currency', $currency);
+    carbon_set_post_meta($post_id, 'price', $price);
+    carbon_set_post_meta($post_id, 'commission', $commission);
+    carbon_set_post_meta($post_id, 'deliver_leads', $deliver_leads);
+    carbon_set_post_meta($post_id, 'sales_cycle_estimation', $sales_cycle_estimation);
+    carbon_set_post_meta($post_id, 'tips', $tips);
+    carbon_set_post_meta($post_id, 'question_1', $question_1);
+    carbon_set_post_meta($post_id, 'question_2', $question_2);
+    carbon_set_post_meta($post_id, 'question_3', $question_3);
+    carbon_set_post_meta($post_id, 'question_4', $question_4);
+    carbon_set_post_meta($post_id, 'question_5', $question_5);
+    carbon_set_post_meta($post_id, 'question_6', $question_6);
+    carbon_set_post_meta($post_id, 'images', explode(',', $images));
+    carbon_set_post_meta($post_id, 'supporting_materials', explode(',', $supporting_materials));
+    // Envía respuesta JSON de éxito
+    wp_send_json_success("Opportunity created successfully");
+    wp_die();
+}
+?>
+

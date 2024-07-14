@@ -1,1 +1,1 @@
-jQuery(document).ready((function(e){e(".form-control").select2({placeholder:"Select an option",allowClear:!0})}));
+jQuery(document).ready((function(e){}));

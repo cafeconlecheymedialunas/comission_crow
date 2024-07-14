@@ -1,63 +1,117 @@
 jQuery(document).ready(function ($) {
   $(".custom-select").select2();
-  $("#agent-profile-form").on("submit", function (event) {
-    console.log(event);
-    event.preventDefault(); // Evita el envío normal del formulario
-
-    // Datos del formulario
-    var formData = $(this).serialize();
-    console.log(formData);
-
-    // Mostrar carga o spinner mientras se procesa
-    $("#profile-update-message").html(
-      '<div class="alert alert-info" role="alert">Updating profile...</div>',
-    );
-
-    // Envío AJAX
-    $.ajax({
-      type: "POST",
-      url: ajax_object.ajax_url, // Variable definida por WordPress que apunta a admin-ajax.php
-      data: formData + "&action=update_agent_profile",
-      dataType: "json",
-      success: function (response) {
-        if (response.success) {
-          // Éxito: Mostrar mensaje de éxito y limpiar formulario si necesario
-          $("#profile-update-message").html(
-            '<div class="alert alert-success" role="alert">' +
-              response.data +
-              "</div>",
-          );
-          // Limpiar formulario o realizar otras acciones después de actualizar
-        } else {
-          console.log(response);
-          // Error: Mostrar mensaje de error
-          $("#profile-update-message").html(
-            '<div class="alert alert-danger" role="alert">' +
-              response.data +
-              "</div>",
-          );
-        }
-      },
-      error: function (error) {
-        console.log(error);
-        // Manejo de errores en caso de falla en la solicitud AJAX
-        $("#profile-update-message").html(
-          '<div class="alert alert-danger" role="alert">Error updating profile. Please try again later.</div>',
-        );
-      },
-    });
+  $(".custom-select-multiple").select2({
+    dropdownAutoWidth: true,
+    multiple: true,
+    width: "100%",
+    height: "30px",
+    placeholder: "Select a option",
+    allowClear: true,
   });
+  class CustomMediaUpload {
+    constructor(selector) {
+      this.selector = selector;
+      this.init();
+    }
+
+    init() {
+      $(document).on("click", this.selector, () => {
+        const mediaType = $(this.selector).data("media-type");
+        const isMultiple =
+          $(this.selector).data("multiple") === true ||
+          $(this.selector).data("multiple") === "true";
+        const $mediaIdsField = $(this.selector).siblings(".media-ids");
+        const $previewContainer = $(this.selector).siblings(
+          `.${mediaType}-preview`,
+        );
+
+        const mediaUploader = wp.media({
+          multiple: isMultiple,
+          library: { type: mediaType },
+        });
+
+        mediaUploader.on("select", () => {
+          this.handleMediaSelection(
+            mediaUploader.state().get("selection").toJSON(),
+            $mediaIdsField,
+            $previewContainer,
+            isMultiple,
+          );
+        });
+
+        mediaUploader.open();
+      });
+    }
+
+    handleMediaSelection(
+      attachments,
+      $mediaIdsField,
+      $previewContainer,
+      isMultiple,
+    ) {
+      if (!attachments || attachments.length === 0) {
+        console.error("No files selected.");
+        return;
+      }
+
+      const attachmentIds = attachments
+        .map((attachment) => attachment.id)
+        .join(",");
+
+      if (!isMultiple) {
+        // Si es selección única, tomar solo el primer archivo seleccionado
+        const attachment = attachments[0];
+        this.showPreview(attachment, $mediaIdsField, $previewContainer);
+      } else {
+        // Si es selección múltiple, mostrar previsualizaciones para todos los archivos seleccionados
+        attachments.forEach((attachment) => {
+          this.showPreview(attachment, $mediaIdsField, $previewContainer);
+        });
+      }
+
+      $mediaIdsField.val(attachmentIds);
+    }
+
+    showPreview(attachment, $mediaIdsField, $previewContainer) {
+      const mediaType = attachment.type;
+      const mediaId = attachment.id;
+
+      if (mediaType === "image") {
+        const imageUrl = attachment.url;
+        $previewContainer
+          .find("#image-preview-container")
+          .append(
+            `<img src="${imageUrl}" style="max-width: 100%; height: auto;">`,
+          );
+      } else if (mediaType === "text") {
+        console.log(attachment.title);
+        const textContent = attachment.url; // Modificar según la propiedad que deseas mostrar
+        $previewContainer.find("#text-preview").text(attachment.title);
+      } else {
+        console.error("Unsupported media type.");
+      }
+
+      $previewContainer.show();
+    }
+  }
+
+  // Inicialización de los componentes para cada tipo de archivo
+  const imageUploader = new CustomMediaUpload("#select-image-button");
+  const textUploader = new CustomMediaUpload("#select-text-button");
 
   $("#opportunity-form").submit(function (e) {
     e.preventDefault();
 
-    var formData = $(this).serialize();
-    formData += "&action=create_opportunity";
+    // Crear un objeto FormData
+    var formData = new FormData(this);
+    formData.append("action", "create_opportunity");
 
     $.ajax({
       type: "POST",
       url: ajax_object.ajax_url,
       data: formData,
+      processData: false, // Evita que jQuery procese los datos
+      contentType: false, // Evita que jQuery establezca el contentType
       success: function (response) {
         // Manejar la respuesta después de crear la oportunidad
         alert("Opportunity created successfully!");
@@ -68,49 +122,44 @@ jQuery(document).ready(function ($) {
       },
     });
   });
-  $(document).on("click", ".upload-image-button", function (e) {
+
+  $(".add-new-url").click(function (e) {
     e.preventDefault();
 
-    var field = $(this).closest(".media-gallery-field");
-    var input = field.find('input[name="image_ids"]');
-    var imagePreview = field.find(".image-preview");
-    var button = $(this);
+    // Validate if the last URL field is filled and is a valid URL
+    const lastUrlField = $('.url-videos input[name="videos[]"]').last();
+    const errorMessage = lastUrlField.next(".error-message");
+    const urlPattern = /^(https?:\/\/)?([a-z\d-]+\.)+[a-z]{2,6}(\/[^\s]*)?$/i;
 
-    var media = wp
-      .media({
-        title: "Upload Image",
-        library: { type: "image" }, // Permitir solo imágenes
-        multiple: true, // Permitir múltiples imágenes
-      })
-      .open()
-      .on("select", function () {
-        var selectedImages = media.state().get("selection").toJSON();
-        var imageIds = selectedImages.map(function (image) {
-          return image.id;
-        });
-        input.val(imageIds.join(",")); // Separar IDs por coma para múltiples imágenes
+    if (lastUrlField.val() === "") {
+      errorMessage
+        .text("Please fill out the URL field before adding another.")
+        .show();
+      return;
+    }
 
-        if (selectedImages.length > 0) {
-          imagePreview.attr("src", selectedImages[0].url).show(); // Mostrar solo la primera imagen seleccionada
-          button.text("Change Image");
-          imagePreview.show();
-        } else {
-          imagePreview.hide();
-          button.text("Upload/Add Image");
-        }
-      });
+    if (!urlPattern.test(lastUrlField.val())) {
+      errorMessage.text("Please enter a valid URL.").show();
+      return;
+    }
+
+    errorMessage.hide(); // Hide error message if the field is filled and is a valid URL
+
+    const newUrlRow = `
+        <div class="row mb-3">
+            <div class="col-sm-10 my-auto">
+                <input type="url" name="videos[]" class="form-control" placeholder="Video URL">
+                <small class="text-danger error-message" style="display: none;">Please fill out the URL field before adding another.</small>
+            </div>
+            <div class="col-sm-2">
+                <i class="fas fa-trash remove-url"></i>
+            </div>
+        </div>
+    `;
+    $(".url-videos").append(newUrlRow);
   });
 
-  $("#add-video-url-button").click(function (e) {
-    e.preventDefault();
-    $("#video-urls-container").append(
-      '<div class="video-url-field"><input type="text" name="video_urls[]" class="form-control" placeholder="Enter video URL"><button type="button" class="remove-video-url-button button">Remove</button></div>',
-    );
-  });
-
-  // Manejar el clic en el botón "Remove"
-  $(document).on("click", ".remove-video-url-button", function (e) {
-    e.preventDefault();
-    $(this).closest(".video-url-field").remove();
+  $(document).on("click", ".remove-url", function () {
+    $(this).closest(".row").remove();
   });
 });
