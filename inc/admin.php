@@ -12,7 +12,7 @@ class Admin
         add_action('admin_head', [$this, 'custom_admin_css_for_post_types']);
         $this->create_post_types();
 
-        add_action('init', [$this, 'create_role_business']);
+        add_action('init', [$this, 'create_role_company']);
         add_action('init', [$this, 'create_role_agent']);
 
         add_action('carbon_fields_register_fields', [$this, 'register_opportunity_fields']);
@@ -20,7 +20,7 @@ class Admin
         add_action('carbon_fields_register_fields', [$this, 'register_company_fields']);
         add_action('carbon_fields_register_fields', [$this, 'register_deal_fields']);
         add_action('carbon_fields_register_fields', [$this, 'register_review_fields']);
-
+        add_filter('use_block_editor_for_post_type', [$this,'disable_block_editor_for_post_type'], 10, 2);
         
        
     }
@@ -42,9 +42,11 @@ class Admin
 
         //Taxonomies
         $custom_taxonomy->register('skill', ['commercial_agent'], 'Skill', 'Skills');
-        $custom_taxonomy->register('selling_method', ['commercial_agent'], 'Selling Method', 'Selling Method');
+        $custom_taxonomy->register('selling_method', ['commercial_agent'], 'Selling Method', 'Selling Methods');
         $custom_taxonomy->register('industry', ['commercial_agent'], 'Industry', 'Industries');
-        
+        $custom_taxonomy->register('seller_type', ['commercial_agent'], 'Seller Type', 'Seller Types');
+
+
         $custom_taxonomy->register('sector', ['company',"opportunity"], 'Sector', 'Sectors');
         $custom_taxonomy->register('activity', ['company'], 'Activity', 'Activities');
         $custom_taxonomy->register('company_type', ['company'], 'Company Type', 'Company Types');
@@ -53,7 +55,7 @@ class Admin
         $custom_taxonomy->register('currency', ["opportunity"], 'Currency', 'Currencies');
     }
 
-    public function create_role_business()
+    public function create_role_company()
     {
         // Obtener el objeto de roles de WordPress
         global $wp_roles;
@@ -64,15 +66,14 @@ class Admin
         }
 
         // Comprobar si el rol ya está registrado
-        if (!$wp_roles->get_role('business')) {
+        if (!$wp_roles->get_role('company')) {
             // Obtener las capacidades del rol "Subscriber"
             $subscriber_caps = $wp_roles->get_role('subscriber')->capabilities;
 
             // Registrar el nuevo rol "Business" con las mismas capacidades que "Subscriber"
-            $wp_roles->add_role('business', __('Business'), $subscriber_caps);
-            
+            $wp_roles->add_role('company', __('Company'), $subscriber_caps);
         }
-        $role = get_role('business');
+        $role = get_role('company');
         if ($role) {
             $role->remove_cap('read');
             $role->remove_cap('edit_posts');
@@ -106,6 +107,8 @@ class Admin
 
         Container::make('post_meta', __('Oportunity Info'))
             ->add_tab(__('Info'), [
+                Field::make('select', 'company', __('Company'))
+                ->add_options([$this,'get_companies']),//x
                 Field::make('select', 'sector', __('Sector'))
                 ->set_options([$this,"get_sectors"]),
                 Field::make('radio', 'target_audience', __('Target Audience'))->set_options([
@@ -113,7 +116,7 @@ class Admin
                     'individuals' => "Individuals",
                 ]),
                 Field::make('select', 'company_type', __('Company Type'))
-                ->set_options([$this,"get_company_types"]),
+                ->set_options([$this,"get_company_types"]),//x
                 Field::make('multiselect', 'languages', __('Languages'))
                 ->set_options([$this,"get_languages"]),
                 Field::make('select', 'location', __('Location'))
@@ -143,7 +146,7 @@ class Admin
                 Field::make('text', 'sales_cycle_estimation', __('Sales cycle estimation')),
             ])->add_tab(__('Materials'), [
             Field::make('media_gallery', 'images', __('Images')),//->set_attribute( 'readOnly', true),
-            Field::make('media_gallery', 'supporting_materials', __('Supporting materials')),//->set_attribute( 'readOnly', true),
+            Field::make('media_gallery', 'supporting_materials', __('Supporting materials')),
             Field::make('complex', 'videos', __('Videos urls'))
                 ->add_fields([
                     Field::make('oembed', 'video', __('Url Video')),
@@ -154,10 +157,10 @@ class Admin
 
             Field::make('textarea', 'question_1', __('1) What is your company’s elevator pitch?')),
             Field::make('textarea', 'question_2', __('2) Please complete the below value statement: Example: "We help (XXX) in the (XXX) industry (XXX) WITHOUT (XXX) & WITHOUT (XXX).')),
-            Field::make('textarea', 'question_3', __('3) How do you currently pitch your business to a prospect?')),
+            Field::make('textarea', 'question_3', __('3) How do you currently pitch your company to a prospect?')),
             Field::make('textarea', 'question_4', __('4) What are the most common objections you face within your current sales cycle?')),
             Field::make('textarea', 'question_5', __('5) What strategies do you employ to overcome the objections specified?')),
-            Field::make('textarea', 'question_6', __('6) Please give an overview of what business challenges you help your clients overcome?')),
+            Field::make('textarea', 'question_6', __('6) Please give an overview of what company challenges you help your clients overcome?')),
 
         ])->where('post_type', '=', 'opportunity');
 
@@ -170,21 +173,23 @@ class Admin
 
         Container::make('post_meta', __('Company Info'))
             ->add_fields([
-                Field::make('select', 'agent', __('User'))
-                ->add_options([$this,'get_agent_users']),
-                Field::make('media_gallery', 'company_logo', __('Company Logo'))->set_type('image'),
+                Field::make('select', 'user_id', __('User'))
+                ->add_options([$this,'get_company_users']),
+                //Field::make('media_gallery', 'company_logo', __('Company Logo'))->set_type('image'),
 
                 Field::make('text', 'company_name', __('Company Name')),
-                Field::make('select', 'sector', __('Sector'))
-                ->set_options([$this,"get_sectors"]),
-                Field::make('select', 'activity', __('Activity'))
-                ->add_options([$this,'get_activities']),
-                Field::make('textarea', 'description', __('Description')),
-                Field::make('select', 'location', __('Location'))
-                ->set_options([$this,"get_countries"]),
+                //Field::make('select', 'sector', __('Sector'))->set_options([$this,"get_sectors"]),
+                //Field::make('select', 'activity', __('Activity'))->add_options([$this,'get_activities']),
+                //Field::make('textarea', 'description', __('Description')),
+                //Field::make('select', 'location', __('Location'))->set_options([$this,"get_countries"]),
                 Field::make('text', 'employees_number', __('Number of Employees')),
+                Field::make('text', 'website_url', __('website Profile')),
+                Field::make('text', 'facebook_url', __('Facebook Profile')),
                 Field::make('text', 'instagram_url', __('Instagram Profile')),
-                Field::make('text', 'tiktok_url', __('Tiketok Profile')),
+                Field::make('text', 'twitter_url', __('Twitter Profile')),
+                Field::make('text', 'linkedin_url', __('Linkedin Profile')),
+                Field::make('text', 'tiktok_url', __('TikTok Profile')),
+                Field::make('text', 'youtube_url', __('Youtube Profile')),
 
             ])->where('post_type', '=', 'company');
     }
@@ -195,24 +200,8 @@ class Admin
         Container::make('post_meta', __('Agent Info'))
 
             ->add_fields([
-                Field::make('select', 'commercial_agent', __('User'))
+                Field::make('select', 'user_id', __('User'))
                 ->add_options([$this,'get_agent_users']),
-
-                Field::make('media_gallery', 'avatar', __('Profile Image'))->set_type('image'),
-                Field::make('textarea', 'description', __('Description')),
-                Field::make('multiselect', 'languages', __('Languages'))
-                ->set_options([$this,"get_languages"]),
-                Field::make('select', 'location', __('Location'))
-                ->set_options([$this,"get_countries"]),
-                Field::make('multiselect', 'skills', __('Skills'))
-                ->add_options([$this,'get_skills']),
-                Field::make('select', 'industry', __('Industry'))
-                ->add_options([$this,'get_industries']),
-                Field::make('select', 'seller_type', __('Seller Type'))
-                    ->set_options(["agency" => "Agency", "freelance" => "Freelance"]),
-                
-                Field::make('select', 'selling_methods', __('Selling Method'))
-                    ->add_options([$this,'get_selling_methods']),
                 
                 Field::make('text', 'years_of_experience', __('Years of experience')),
 
@@ -230,20 +219,74 @@ class Admin
                 Field::make('select', 'company', __('Company'))
                 ->add_options([$this,'get_companies']),
 
-                Field::make('select', 'opportunity', __('Company'))
+                Field::make('select', 'opportunity', __('Opportunity'))
                 ->add_options([$this,'get_opportunities']),
 
             
                 Field::make('date_time', 'date', 'Deal Date'),
                 Field::make('text', 'commission', 'Commission'),
 
+                Field::make('select', 'status', __('Status'))
+                ->set_options([$this,"get_statuses"]),
+
             ])->where('post_type', '=', 'deal');
 
           
     }
+
+    public function get_statuses()
+    {
+        return [
+            'requested' => 'Requested',
+            'in_process' => 'In Process',
+            'finished' => 'Finished',
+            'sold' => 'Sold',
+        ];
+    }
+    public function get_target_audiences()
+    {
+        return [
+            'companies' => 'Companies',
+            'individual' => 'Individual',
+        ];
+    }
+    public function get_ages()
+    {
+        return [
+            'over_18' => 'Over 18',
+            'over_30' => 'Over 30',
+            'over_60' => 'Over 60',
+            'any_age' => 'Any Age',
+        ];
+    }
+    public function get_genders()
+    {
+        return [
+            'male' => 'Male',
+            'female' => 'Female',
+            'any_gender' => 'Any Gender',
+        ];
+    }
     public function get_agent_users()
     {
-        $users = get_users(['role' => 'agent']);
+        $users = get_users(['role__in' => ['agent', 'administrator'],]);
+    
+        $options = [""=>"Select an User"];
+    
+        if (!empty($users)) {
+            
+            foreach ($users as $user) {
+                $options[$user->ID] = $user->display_name;
+            }
+        }
+    
+        return $options;
+    }
+
+    
+    public function get_company_users()
+    {
+        $users = get_users(['role__in' => ['company', 'administrator'],]);
     
         $options = [""=>"Select an User"];
     
@@ -504,5 +547,18 @@ class Admin
             ';
         }
     }
+    public function disable_block_editor_for_post_type($use_block_editor, $post_type)
+    {
+        // Define los post types donde quieres deshabilitar el editor de bloques
+        $post_types = ['commercial_agent', 'company',"deal","opportunity","review"]; // Reemplaza con tus post types
+    
+        // Comprueba si el post type actual está en la lista definida
+        if (in_array($post_type, $post_types)) {
+            return false; // Usa el editor clásico (TinyMCE) para estos post types
+        }
+    
+        return $use_block_editor; // Usa el editor de bloques para todos los demás post types
+    }
+    
 
 }

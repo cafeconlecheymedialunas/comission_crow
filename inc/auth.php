@@ -56,7 +56,7 @@ add_shortcode('new_password_form', 'kamerpower_new_password_form');
 // Campos del formulario de registro
 function kamerpower_registration_form_fields($role)
 {
-    $title = $role === 'business' ? __('Register as a Company') : __('Register as a Commercial Agent');
+    $title = $role === 'company' ? __('Register as a Company') : __('Register as a Commercial Agent');
     ob_start(); ?>
     <h1 class="site-title"><?php echo $title; ?></h1>
     <div id="kamerpower_registration_errors"></div>

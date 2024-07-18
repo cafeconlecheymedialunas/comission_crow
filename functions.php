@@ -5,6 +5,8 @@
  *
  * @since v1.0
  */
+
+
 define('THEME_URL', get_template_directory_uri());
 require_once get_template_directory() . '/vendor/autoload.php';
 \Carbon_Fields\Carbon_Fields::boot();
@@ -13,14 +15,18 @@ require_once get_template_directory() . '/vendor/autoload.php';
 $files_to_require = [
     __DIR__ . '/inc/core/Custom_Post_Type.php',
     __DIR__ . '/inc/core/Custom_Taxonomy.php',
+ 
     __DIR__ . '/inc/setup/wp-bootstrap-navwalker.php',
     __DIR__ . '/inc/setup/wp-bootstrap-navwalker-footer.php',
     __DIR__ . '/inc/setup/customizer.php',
     __DIR__ . '/inc/setup/setup-theme.php',
     __DIR__ . '/inc/admin.php',
+    
     __DIR__ . '/inc/public.php',
      __DIR__ . '/inc/auth.php',
-    __DIR__ . '/inc/public.php',
+     __DIR__ . '/inc/core/Company.php',
+     __DIR__ . '/inc/core/CommercialAgent.php',
+  
 ];
 function require_files(array $files)
 {
@@ -39,158 +45,73 @@ $public = new PublicFront();
 
 
 
-// En functions.php
 function custom_rewrite_rules()
 {
-    add_rewrite_rule('^dashboard/([^/]*)/?', 'index.php?pagename=dashboard&subpage=$matches[1]', 'top');
+    add_rewrite_rule('^dashboard/([^/]+)(/.*)?/?$', 'index.php?pagename=dashboard&role=$matches[1]&subpages=$matches[2]', 'top');
 }
 add_action('init', 'custom_rewrite_rules');
 
 function add_query_vars($vars)
 {
-    $vars[] = 'subpage';
+    $vars[] = 'role';
+    $vars[] = 'subpages';
     return $vars;
 }
 add_filter('query_vars', 'add_query_vars');
 
-function load_custom_template($template)
+
+
+
+
+
+
+
+$company = Company::get_instance();
+$commercial_agent = CommercialAgent::get_instance();
+add_action('wp_ajax_create_opportunity', [$company,'save_opportunity']);
+add_action('wp_ajax_nopriv_create_opportunity', [$company,'save_opportunity']);
+add_action('wp_ajax_delete_opportunity', [$company,'delete_opportunity']);
+add_action('wp_ajax_nopriv_delete_opportunity', [$company,'delete_opportunity']); 
+
+add_action('wp_ajax_save_agent_profile', [$commercial_agent,'save_agent_profile']);
+add_action('wp_ajax_nopriv_save_agent_profile',  [$commercial_agent,'save_agent_profile']);
+
+add_action('wp_ajax_save_company_profile', [$company,'save_company_profile']);
+add_action('wp_ajax_nopriv_save_company_profile',  [$company,'save_company_profile']);
+
+
+// Para usuarios no autenticados
+/*add_action('wp_ajax_update_profile_agent', 'update_profile_agent');
+add_action('wp_ajax_nopriv_update_profile_agent', 'update_profile_agent'); // Para usuarios no autenticados
+
+function update_profile_agent()
 {
-    if (get_query_var('pagename') == 'dashboard' && get_query_var('subpage')) {
-        $new_template = locate_template(['template-dashboard.php']);
-        if ('' != $new_template) {
-            return $new_template;
-        }
-    }
-    return $template;
-}
-add_filter('template_include', 'load_custom_template');
+    // Verifica el nonce para la seguridad
+    check_ajax_referer('update-profile-agent-nonce', 'security');
 
-
-
-// Función para manejar el envío del formulario
-add_action('wp_ajax_create_opportunity', 'handle_opportunity_form_submission');
-add_action('wp_ajax_nopriv_create_opportunity', 'handle_opportunity_form_submission');
-
-function handle_opportunity_form_submission()
-{
-    // Verifica la seguridad del nonce (si es necesario)
-    $errors = [];
-
-    // Verify nonce security (if necessary)
-    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'create_opportunity_nonce')) {
-        $errors["nonce"][] = "Nonce verification failed.";
-    }
- 
-    // Recibe y sanitiza los datos del formulario
-    $post_title = sanitize_text_field($_POST['title']);
-    $post_content = sanitize_textarea_field($_POST['content']);
-    $sector = sanitize_text_field($_POST['sector']);
-    $target_audience = sanitize_text_field($_POST['target_audience']);
-    $company_type = sanitize_text_field($_POST['company_type']);
-    $languages = $_POST["languages"];
-    $location = sanitize_text_field($_POST['location']);
-    $age = sanitize_text_field($_POST['age']);
-    $gender = sanitize_text_field($_POST['gender']);
-    $currency = sanitize_text_field($_POST['currency']);
-    $price = sanitize_text_field($_POST['price']);
-    $commission = sanitize_text_field($_POST['commission']);
-    $deliver_leads = isset($_POST['deliver_leads']) ? sanitize_text_field($_POST['deliver_leads']) : 'no';
-    $sales_cycle_estimation = sanitize_text_field($_POST['sales_cycle_estimation']);
-    $tips = sanitize_textarea_field($_POST['tips']);
-    $question_1 = sanitize_textarea_field($_POST['question_1']);
-    $question_2 = sanitize_textarea_field($_POST['question_2']);
-    $question_3 = sanitize_textarea_field($_POST['question_3']);
-    $question_4 = sanitize_textarea_field($_POST['question_4']);
-    $question_5 = sanitize_textarea_field($_POST['question_5']);
-    $question_6 = sanitize_textarea_field($_POST['question_6']);
-    $images = isset($_POST['images']) ?  explode(',', sanitize_text_field($_POST['images'])) : '';
-    $supporting_materials = isset($_POST['supporting_materials']) ?  explode(',', sanitize_text_field($_POST['supporting_materials'])) : '';
-
-    $videos =  $_POST['videos'];
-    $videos = array_map(function ($video_url) {
-        return ['video' => sanitize_text_field($video_url)];
-    }, $_POST['videos']);
-
-    if (empty($post_title)) {
-        $errors["title"][] = "Title field is required.";
+    // Verifica que el usuario está autenticado
+    if (!is_user_logged_in()) {
+        wp_send_json_error(['message' => 'You must be logged in to update your profile.']);
     }
 
-    if (empty($price)) {
-        $errors["price"][] = "Price field is required.";
-    }
+    $current_user = wp_get_current_user();
 
-    if (empty($commission)) {
-        $errors["commission"][] = "Commission field is required.";
-    }
+    parse_str($_POST['form_data'], $form_data);
 
-    // Numeric and specific range validations
-    if (isset($age) && !empty($age) && !is_numeric($age)) {
-        $errors["age"][] = "Age must be a number.";
-    }
+    // Actualiza los campos del usuario utilizando Carbon Fields
+    carbon_set_post_meta($current_user->ID, 'first_name', sanitize_text_field($form_data['first_name']));
+    carbon_set_post_meta($current_user->ID, 'last_name', sanitize_text_field($form_data['last_name']));
+    carbon_set_post_meta($current_user->ID, 'user_email', sanitize_email($form_data['user_email']));
+    carbon_set_post_meta($current_user->ID, 'description', sanitize_textarea_field($form_data['description']));
+    carbon_set_post_meta($current_user->ID, 'language', array_map('sanitize_text_field', $form_data['language']));
+    carbon_set_post_meta($current_user->ID, 'location', sanitize_text_field($form_data['location']));
+    carbon_set_post_meta($current_user->ID, 'skills', array_map('intval', $form_data['skills']));
+    carbon_set_post_meta($current_user->ID, 'industries', array_map('intval', $form_data['industry']));
+    carbon_set_post_meta($current_user->ID, 'seller_type', sanitize_text_field($form_data['seller_type']));
+    carbon_set_post_meta($current_user->ID, 'selling_methods', array_map('intval', $form_data['selling_methods']));
+    carbon_set_post_meta($current_user->ID, 'years_of_experience', sanitize_text_field($form_data['years_of_experience']));
 
-    if (!is_numeric($price)) {
-        $errors["price"][] = "Price must be a number.";
-    }
-
-    if (!is_numeric($commission)) {
-        $errors["commission"][] = "Commission must be a number.";
-    }
-
-    // Specific validation for 'commission' field
-    if ($commission < 1 || $commission > 100) {
-        $errors["commission"][] = "Commission must be between 1 and 100.";
-    }
-
-    // If there are errors, send JSON response with errors array
-    if (!empty($errors)) {
-        wp_send_json_error($errors);
-        wp_die();
-    }
-
-
-
-    $post_data = [
-        'post_title'    => $post_title,
-        'post_content'  => $post_content,
-        'post_status'   => 'publish',
-        'post_type'     => 'opportunity',
-    ];
-
-    $post_id = wp_insert_post($post_data);
-
-    if (is_wp_error($post_id)) {
-        wp_send_json_error("Error al crear la oportunidad");
-        wp_die();
-    }
-
-    // Guarda los campos personalizados usando Carbon Fields
-    carbon_set_post_meta($post_id, 'sector', $sector);
-    carbon_set_post_meta($post_id, 'target_audience', $target_audience);
-    carbon_set_post_meta($post_id, 'company_type', $company_type);
-    carbon_set_post_meta($post_id, 'languages', $languages);
-    carbon_set_post_meta($post_id, 'location', $location);
-    carbon_set_post_meta($post_id, 'age', $age);
-    carbon_set_post_meta($post_id, 'gender', $gender);
-    carbon_set_post_meta($post_id, 'currency', $currency);
-    carbon_set_post_meta($post_id, 'price', $price);
-    carbon_set_post_meta($post_id, 'commission', $commission);
-    carbon_set_post_meta($post_id, 'deliver_leads', $deliver_leads);
-    carbon_set_post_meta($post_id, 'sales_cycle_estimation', $sales_cycle_estimation);
-    carbon_set_post_meta($post_id, 'tips', $tips);
-    carbon_set_post_meta($post_id, 'question_1', $question_1);
-    carbon_set_post_meta($post_id, 'question_2', $question_2);
-    carbon_set_post_meta($post_id, 'question_3', $question_3);
-    carbon_set_post_meta($post_id, 'question_4', $question_4);
-    carbon_set_post_meta($post_id, 'question_5', $question_5);
-    carbon_set_post_meta($post_id, 'question_6', $question_6);
-    carbon_set_post_meta($post_id, 'images', $images);
-    carbon_set_post_meta($post_id, 'supporting_materials', $supporting_materials);
-    carbon_set_post_meta($post_id, 'videos', $videos);
-
-    
-    // Envía respuesta JSON de éxito
-    wp_send_json_success("Opportunity created successfully");
+    wp_send_json_success(['message' => 'Profile updated successfully.']);
     wp_die();
 }
-?>
-
+*/
