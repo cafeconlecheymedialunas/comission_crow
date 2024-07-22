@@ -5,9 +5,15 @@ $company_post = $company->get_company();
 
 $deals = $company->get_deals();
 
+
+
 ?>
 <div class="card mb-4">
-	<h2 class="mb-0"><?php echo __("All Deals"); ?><a href="<?php echo home_url("/dashboard/commercial_agent/deal/create"); ?>">Add new</a></h2>
+   
+	<h2 class="mb-0"><?php echo __("All Deals"); ?></h2>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+        Add new
+    </button>
 </div>
 <div class="row">
     <div class="col-md-12">
@@ -53,20 +59,33 @@ $deals = $company->get_deals();
                                         
                                         <td><?php echo esc_html($date); ?></td>
                                         <td>
-                                        <td>
                                             <ul class="list-inline mb-0">
-                                                <li class="list-inline-item"><a href="<?php echo home_url("/dashboard/commercial_agent/deal/edit"). "?deal_id=". esc_attr($deal->ID); ?>"><i class="fa-regular fa-pen-to-square"></i></a></li>
-                                                <li class="list-inline-item">
-                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#delete<?php echo esc_attr($deal->ID); ?>">
-                                                        <i class="fa-solid fa-trash"></i>
-                                                    </a>     
+                                                <?php if($status === "requested"):?>
+                                                <li class="list-inline-item">     
                                                     <form class="delete-deal-form">
                                                         <input type="hidden" name="security" value="<?php echo wp_create_nonce("delete-deal-nonce"); ?>"/>
                                                         <input type="hidden" name="deal_id" value="<?php echo esc_attr($deal->ID); ?>">
-                                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                                        <button type="submit" class="btn btn-success btn-sm">Accept</button>
                                                     </form>
-   
+    
                                                 </li>
+                                                <li class="list-inline-item">  
+                                                    <form class="delete-deal-form">
+                                                        <input type="hidden" name="security" value="<?php echo wp_create_nonce("delete-deal-nonce"); ?>"/>
+                                                        <input type="hidden" name="deal_id" value="<?php echo esc_attr($deal->ID); ?>">
+                                                        <button type="submit" class="btn btn-danger btn-sm">Refuse</button>
+                                                    </form>
+                                                </li>
+                                                <?php endif;?>
+                                                <?php if($status === "accepted"):?>
+                                                    <li class="list-inline-item"> 
+                                                        <form class="delete-deal-form">
+                                                            <input type="hidden" name="security" value="<?php echo wp_create_nonce("delete-deal-nonce"); ?>"/>
+                                                            <input type="hidden" name="deal_id" value="<?php echo esc_attr($deal->ID); ?>">
+                                                            <button type="submit" class="btn btn-warning btn-sm">Finished</button>
+                                                        </form>
+                                                    </li>
+                                                <?php endif;?>
                                             </ul>
                                         </td>
                                     </tr>
@@ -77,6 +96,29 @@ $deals = $company->get_deals();
             </div>
         </div>
     </div>
+</div>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg"" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add a proposal Deal</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      <?php $template_path = 'templates/dashboard/form-deal.php';
+        if (locate_template($template_path)) {
+            include locate_template($template_path);
+        }
+        ?>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <?php wp_reset_postdata(); ?>

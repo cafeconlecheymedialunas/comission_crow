@@ -89,8 +89,10 @@ $routes = [
             <a href="<?php echo esc_url(home_url($routes["request_commission"])); ?>"><i class="fal fa-fw fa-university"></i>Request a Commission</a>
         </li>
         <?php endif; ?>
+        <?php if ($commercial_agent_post): ?>
         <li>
             <a href="<?php echo esc_url(home_url($routes["reviews_" . $key])); ?>"><i class="fal fa-fw fa-university"></i>Reviews</a>
         </li>
+        <?php endif; ?>
     </ul>
 </div>
