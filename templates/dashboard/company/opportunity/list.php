@@ -3,7 +3,7 @@
 $company = Company::get_instance();
 $company_post = $company->get_company();
 $opportunities = $company->get_opportunities();
-$statuses = $admin->get_statuses();
+
 
 
 
@@ -20,30 +20,32 @@ $statuses = $admin->get_statuses();
                         <tr>
                             <th scope="col">#</th>
                             <th scope="col">Opportunity</th>
-                            <th scope="col">Sector</th>
+                            <th scope="col">Industry</th>
                             <th scope="col">Price</th>
                             <th scope="col">Commission</th>
-                            <th scope="col">Location</th>
+                            <th scope="col">Country</th>
                             <th scope="col"></th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if (!empty($opportunities)) :
                             foreach ($opportunities as $opportunity) :
-                                $sector = carbon_get_post_meta($opportunity->ID, 'sector');
-                                $sector = get_term_by('id', $sector, 'sector');
+                            
                                 $price = carbon_get_post_meta($opportunity->ID, 'price');
                                 $commission = carbon_get_post_meta($opportunity->ID, 'commission');
-                                $location = carbon_get_post_meta($opportunity->ID, 'location');
-                                $location = get_term_by('id', $location, 'country');
+                              
+                                $industry = wp_get_post_terms($opportunity->ID, 'industry', ['fields' => 'names']);
+
+                                $country = wp_get_post_terms($opportunity->ID, 'country', ['fields' => 'names']);
+
                                 ?>
                                     <tr>
-                                        <th scope="row"></th>
+                                        <th scope="row"><?php echo $opportunity->ID; ?></th>
                                         <td><?php echo get_the_title($opportunity->ID); ?></td>
-                                        <td><?php echo esc_html($sector->name); ?></td>
+                                        <td><?php echo esc_html($industry[0]); ?></td>
                                         <td><?php echo esc_html($price); ?></td>
                                         <td><?php echo esc_html($commission); ?></td>
-                                        <td><?php echo esc_html($location->name); ?></td>
+                                        <td><?php echo esc_html($country[0]); ?></td>
                                         <td>
                                         <td>
                                             <ul class="list-inline mb-0">

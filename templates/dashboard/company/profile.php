@@ -3,16 +3,16 @@
 $current_user = wp_get_current_user();
 
 
-$sector_terms = get_terms([
-    "taxonomy" => "sector",
+$industry_terms = get_terms([
+    "taxonomy" => "industry",
     "hide_empty" => false,
 ]);
 $activity_terms = get_terms([
     "taxonomy" => "activity",
     "hide_empty" => false,
 ]);
-$company_type_terms = get_terms([
-    "taxonomy" => "company_type",
+$type_of_company_terms = get_terms([
+    "taxonomy" => "type_of_company",
     "hide_empty" => false,
 ]);
 
@@ -27,10 +27,10 @@ $company_post = $company->get_company();
 
 $profile_image = isset($company_post) ? [get_post_thumbnail_id($company_post->ID)] : '';
 
-$sector = wp_get_post_terms($company_post->ID, 'sector', array('fields' => 'ids')); 
-$activity = wp_get_post_terms($company_post->ID, 'activity', array('fields' => 'ids')); 
-$company_type = wp_get_post_terms($company_post->ID, 'company_type', array('fields' => 'ids')); 
-$country = wp_get_post_terms($company_post->ID, 'country', array('fields' => 'ids')); 
+$industry = wp_get_post_terms($company_post->ID, 'industry', ['fields' => 'ids']);
+$activity = wp_get_post_terms($company_post->ID, 'activity', ['fields' => 'ids']);
+$type_of_company = wp_get_post_terms($company_post->ID, 'type_of_company', ['fields' => 'ids']);
+$country = wp_get_post_terms($company_post->ID, 'country', ['fields' => 'ids']);
 
 $company_name = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'company_name') : '';
 $employees_number = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'employees_number') : '';
@@ -41,11 +41,14 @@ $twitter_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 't
 $linkedin_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'linkedin_url') : '';
 $tiktok_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'tiktok_url') : '';
 $youtube_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'youtube_url') : '';
-var_dump($company_type);
+
+
+
 ?>
 <div class="row">
 	<div class="col-md-8">
 	    <div class="card">
+                <h2>Company</h2>
             <form id="company-profile-form">
                 <div class="row">
                     <!-- User Fields -->
@@ -75,41 +78,24 @@ var_dump($company_type);
                                     endif;
                                 endforeach;
                             endif;
-                            ?>
+?>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <label for="first_name" class="form-label">First Name:</label>
-                        <input type="text" name="first_name" class="form-control" value="<?php echo esc_attr(
-                            $current_user->first_name
-                        ); ?>" placeholder="First Name">
-                    </div>
-                    <div class="col-md-6">
-                        <label for="last_name" class="form-label">Last Name:</label>
-                        <input type="text" name="last_name" class="form-control" value="<?php echo esc_attr(
-                            $current_user->last_name
-                        ); ?>" placeholder="Last Name">
-                    </div>
-                    <div class="col-md-6">
-                        <label for="user_email" class="form-label">Email:</label>
-                        <input type="user_email" name="user_email" class="form-control" value="<?php echo esc_attr(
-                            $current_user->user_email
-                        ); ?>" placeholder="User Email">
-                    </div>
+                 
                     <div class="col-md-12">
                         <label for="description" class="form-label">Description</label>
                         <div class="editor-container" data-target="description"></div>
                         <input type="hidden" id="description" name="description" value="<?php echo isset($company_post) ? $company_post->post_content : ""; ?>">
                     </div>
                     
-                    <?php if($sector_terms):?>
+                    <?php if($industry_terms):?>
                     <div class="col-md-6">
-                        <label for="sector" class="form-label">Sector:</label>
-                        <select name="sector[]" class="custom-select">
-                            <?php foreach ($sector_terms as $term): ?>
+                        <label for="industry" class="form-label">Industry:</label>
+                        <select name="industry[]" class="custom-select">
+                            <?php foreach ($industry_terms as $term): ?>
                                 <option 
                                     value="<?php echo esc_attr($term->term_id); ?>" 
-                                    <?php echo in_array($term->term_id, $sector) ? 'selected' : ''; ?>
+                                    <?php echo in_array($term->term_id, $industry) ? 'selected' : ''; ?>
                                     >
                                     <?php echo esc_html($term->name); ?>
                                 </option>
@@ -119,7 +105,7 @@ var_dump($company_type);
                     <?php endif;?>
                     <?php if($country_terms):?>
                         <div class="col-md-6">
-                            <label for="country" class="form-label">Location:</label>
+                            <label for="country" class="form-label">Country:</label>
                             <select name="country[]" class="custom-select">
                                 <option value="">Select an option</option>
                                 <?php foreach ($country_terms as $term): ?>
@@ -147,15 +133,15 @@ var_dump($company_type);
                     </div>
                     <?php endif;?>
                   
-                    <?php if($company_type_terms):?>
+                    <?php if($type_of_company_terms):?>
                         <div class="col-md-6">
-                            <label for="company_type" class="form-label">Company Type:</label>
-                            <select name="company_type[]" class="custom-select">
+                            <label for="type_of_company" class="form-label">Company Type:</label>
+                            <select name="type_of_company[]" class="custom-select">
                                 <option value="">Select an option</option>
-                                <?php foreach ($company_type_terms as $term): ?>
+                                <?php foreach ($type_of_company_terms as $term): ?>
                                     <option 
                                         value="<?php echo esc_attr($term->term_id); ?>" 
-                                        <?php selected($company_type[0], $term->term_id); ?>>
+                                        <?php selected($type_of_company[0], $term->term_id); ?>>
                                         <?php echo esc_html($term->name); ?>
                                     </option>
                                 <?php endforeach;?>

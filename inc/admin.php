@@ -20,6 +20,8 @@ class Admin
         add_action('carbon_fields_register_fields', [$this, 'register_company_fields']);
         add_action('carbon_fields_register_fields', [$this, 'register_deal_fields']);
         add_action('carbon_fields_register_fields', [$this, 'register_review_fields']);
+        add_action('carbon_fields_register_fields', [$this, 'register_payments_fields']);
+        add_action('carbon_fields_register_fields', [$this, 'register_dispute_fields']);
         add_filter('use_block_editor_for_post_type', [$this,'disable_block_editor_for_post_type'], 10, 2);
         
        
@@ -38,18 +40,16 @@ class Admin
         $custom_post_types->register('commercial_agent', 'Commercial Agent', 'Comercial Agents', ['menu_icon' => 'dashicons-businessperson']);
         $custom_post_types->register('deal', 'Deal', 'Deals', ['menu_icon' => 'dashicons-heart']);
         $custom_post_types->register('payment', 'Payment', 'Payments', ['menu_icon' => 'dashicons-yes-alt']);
-
+        $custom_post_types->register('dispute', 'Dispute', 'Disputes', ['menu_icon' => 'dashicons-yes-alt']);
 
         //Taxonomies
         $custom_taxonomy->register('skill', ['commercial_agent'], 'Skill', 'Skills');
         $custom_taxonomy->register('selling_method', ['commercial_agent'], 'Selling Method', 'Selling Methods');
-        $custom_taxonomy->register('industry', ['commercial_agent'], 'Industry', 'Industries');
+        $custom_taxonomy->register('industry', ['commercial_agent','company',"opportunity"], 'Industry', 'Industries');
         $custom_taxonomy->register('seller_type', ['commercial_agent'], 'Seller Type', 'Seller Types');
 
-
-        $custom_taxonomy->register('sector', ['company',"opportunity"], 'Sector', 'Sectors');
         $custom_taxonomy->register('activity', ['company'], 'Activity', 'Activities');
-        $custom_taxonomy->register('company_type', ['company'], 'Company Type', 'Company Types');
+        $custom_taxonomy->register('type_of_company', ["opportunity"], 'Company Type', 'Company Types');
         $custom_taxonomy->register('country', ['company',"commercial_agent","opportunity"], 'Country', 'Countries');
         $custom_taxonomy->register('language', ["commercial_agent","opportunity"], 'Language', 'Languages');
         $custom_taxonomy->register('currency', ["opportunity"], 'Currency', 'Currencies');
@@ -108,19 +108,14 @@ class Admin
         Container::make('post_meta', __('Oportunity Info'))
             ->add_tab(__('Info'), [
                 Field::make('select', 'company', __('Company'))
-                ->add_options([$this,'get_companies']),//x
-                Field::make('select', 'sector', __('Sector'))
-                ->set_options([$this,"get_sectors"]),
+                ->add_options([$this,'get_companies']),
+                
                 Field::make('radio', 'target_audience', __('Target Audience'))->set_options([
                     'companies' => "Companies",
                     'individuals' => "Individuals",
                 ]),
-                Field::make('select', 'company_type', __('Company Type'))
-                ->set_options([$this,"get_company_types"]),//x
-                Field::make('multiselect', 'languages', __('Languages'))
-                ->set_options([$this,"get_languages"]),
-                Field::make('select', 'location', __('Location'))
-                ->set_options([$this,"get_countries"]),
+               
+        
                 Field::make('select', 'age', __('Age'))
                 ->set_options([
                     'over_18' => 'Over 18',
@@ -134,8 +129,6 @@ class Admin
                     'female' => 'Female',
                     'any_gender' => 'Any gender',
                 ]),
-                Field::make('select', 'currency', __('Currency'))
-                ->set_options([$this,"get_currencies"])
 
             ])
             ->add_tab(__('Pricing'), [
@@ -175,13 +168,9 @@ class Admin
             ->add_fields([
                 Field::make('select', 'user_id', __('User'))
                 ->add_options([$this,'get_company_users']),
-                //Field::make('media_gallery', 'company_logo', __('Company Logo'))->set_type('image'),
 
                 Field::make('text', 'company_name', __('Company Name')),
-                //Field::make('select', 'sector', __('Sector'))->set_options([$this,"get_sectors"]),
-                //Field::make('select', 'activity', __('Activity'))->add_options([$this,'get_activities']),
-                //Field::make('textarea', 'description', __('Description')),
-                //Field::make('select', 'location', __('Location'))->set_options([$this,"get_countries"]),
+          
                 Field::make('text', 'employees_number', __('Number of Employees')),
                 Field::make('text', 'website_url', __('website Profile')),
                 Field::make('text', 'facebook_url', __('Facebook Profile')),
@@ -190,6 +179,8 @@ class Admin
                 Field::make('text', 'linkedin_url', __('Linkedin Profile')),
                 Field::make('text', 'tiktok_url', __('TikTok Profile')),
                 Field::make('text', 'youtube_url', __('Youtube Profile')),
+                Field::make('text', 'bank_name', __('Bank Name')),
+               
 
             ])->where('post_type', '=', 'company');
     }
@@ -204,6 +195,10 @@ class Admin
                 ->add_options([$this,'get_agent_users']),
                 
                 Field::make('text', 'years_of_experience', __('Years of experience')),
+                Field::make('text', 'bank_account_name_holder', __('Name of account holder')),
+                Field::make('text', 'bank_account_id_holder', __('Number of ID of account holder')),
+                Field::make('text', 'bank_account_number', __('Bank Account Number')),
+                Field::make('text', 'bak_account_cvu_alias', __('CVU or Alias')),
 
             ])->where('post_type', '=', 'commercial_agent');
     }
@@ -219,28 +214,130 @@ class Admin
                 Field::make('select', 'company', __('Company'))
                 ->add_options([$this,'get_companies']),
 
+
                 Field::make('select', 'opportunity', __('Opportunity'))
                 ->add_options([$this,'get_opportunities']),
 
+               
             
                 Field::make('date_time', 'date', 'Deal Date'),
+
                 Field::make('text', 'commission', 'Commission'),
 
+                Field::make('text', 'minimal_price', 'Minimal Price'),
+
                 Field::make('select', 'status', __('Status'))
-                ->set_options([$this,"get_statuses"]),
+                ->set_options([$this,"get_deal_status"]),
 
             ])->where('post_type', '=', 'deal');
 
           
     }
 
-    public function get_statuses()
+    public function register_payments_fields()
+    {
+        Container::make('post_meta', __('Payment Conditions'))
+
+            ->add_fields([
+
+                Field::make('select', 'deal_id', __('Deal'))
+                ->add_options([$this,'get_deals']),
+
+                Field::make('complex', 'items', __('Cart Items'))
+                ->add_fields([
+             
+                    Field::make('text', 'price_paid', 'Price paid'),
+                    Field::make('text', 'quantity', 'Quantity'),
+                    Field::make('text', 'subtotal', 'Subtotal'),
+                ]),
+
+                Field::make('text', 'total', 'Total'),
+            
+                Field::make('date_time', 'date', 'Payment Date'),
+                Field::make('text', 'commission', 'Commission'),
+
+                Field::make('complex', 'invoices', __('Invoices'))
+                ->add_fields([
+                    Field::make('text', 'title', 'Title'),
+                    Field::make('media_gallery', 'invoice', 'Invoice'),
+                    Field::make('text', 'description', 'Description'),
+                ]),
+
+                Field::make('select', 'status', __('Status'))
+                ->set_options([$this,"get_statuses_payments"]),
+
+            ])->where('post_type', '=', 'payment');
+
+          
+    }
+
+    public function register_dispute_fields()
+    {
+        Container::make('post_meta', __('Dispute Conditions'))
+
+            ->add_fields([
+         
+
+                Field::make('select', 'payment_id', __('Payment'))
+                ->add_options([$this,'get_payments']),
+
+
+
+                Field::make('complex', 'messages', __('Messages'))
+                ->add_fields([
+                    Field::make('select', 'from', __('From:'))
+                    ->add_options([$this,'get_users']),
+    
+                    Field::make('select', 'to', __('To:'))
+                    ->add_options([$this,'get_users']),
+                
+                    Field::make('text', 'title', 'title'),
+                    Field::make('text', 'message', 'rich_text'),
+                ]),
+
+              
+
+                Field::make('select', 'user_winnerr_dispute', __('Wiiner Dispute:'))
+                    ->add_options([$this,'get_users']),
+            
+                
+                Field::make('rich_text', 'admin_decission_comments', __('Admin Comments:')),
+                
+
+                Field::make('select', 'status', __('Status'))
+                ->set_options([$this,"get_statuses_dispute"]),
+
+            ])->where('post_type', '=', 'dispute');
+
+          
+    }
+
+    public function get_deal_status()
     {
         return [
             'requested' => 'Requested',
-            'in_process' => 'In Process',
+            "accepted" => "Accepted",
+            "refused" => "Refused",
             'finished' => 'Finished',
-            'sold' => 'Sold',
+        ];
+    }
+
+    public function get_statuses_payments()
+    {
+        return [
+            'request' => 'Request',
+            "refused" => "Refused",
+            "accepted" => "Accepted",
+            "pending_payment" => "Pending",
+            "payed" => "Payed"
+        ];
+    }
+
+    public function get_statuses_dispute()
+    {
+        return [
+            'pending' => 'Pending',
+            "resolve" => "Resolve"
         ];
     }
     public function get_target_audiences()
@@ -283,6 +380,23 @@ class Admin
         return $options;
     }
 
+
+    public function get_users()
+    {
+        $users = get_users(['role__in' => ['agent', 'company',"administrator"],]);
+    
+        $options = [""=>"Select an User"];
+    
+        if (!empty($users)) {
+            
+            foreach ($users as $user) {
+                $options[$user->ID] = $user->display_name;
+            }
+        }
+    
+        return $options;
+    }
+
     
     public function get_company_users()
     {
@@ -300,153 +414,15 @@ class Admin
         return $options;
     }
 
-    public function get_countries()
-    {
-        $countries = get_terms([
-            'taxonomy' => 'country',
-            'hide_empty' => false,
-        ]);
-        $options = [];
-        if (!empty($countries)) {
-            $options[""]="Select a choice";
-            foreach ($countries as $country) {
-                $options[$country->term_id] = $country->name;
-            }
-        }
-    
-        return $options;
-    }
+  
+   
 
-    public function get_currencies()
-    {
-        $currencies = get_terms([
-            'taxonomy' => 'currency',
-            'hide_empty' => false,
-        ]);
-        $options = [];
-        if (!empty($currencies)) {
-            $options[""]="Select a choice";
-            foreach ($currencies as $currency) {
-                $options[$currency->term_id] = $currency->name;
-            }
-        }
     
-        return $options;
-    }
+  
+ 
+   
 
-    public function get_company_types()
-    {
-        $company_types = get_terms([
-            'taxonomy' => 'company_type',
-            'hide_empty' => false,
-        ]);
-        $options = [];
-        if (!empty($company_types)) {
-            $options[""]="Select a choice";
-            foreach ($company_types as $type) {
-                $options[$type->term_id] = $type->name;
-            }
-        }
-    
-        return $options;
-    }
-    public function get_sectors()
-    {
-        $sectors = get_terms([
-            'taxonomy' => 'sector',
-            'hide_empty' => false,
-        ]);
-        $options = [];
-        if (!empty($sectors)) {
-            $options[""]="Select a choice";
-            foreach ($sectors as $sector) {
-                $options[$sector->term_id] = $sector->name;
-            }
-        }
-    
-        return $options;
-    }
-    public function get_activities()
-    {
-        $activities = get_terms([
-            'taxonomy' => 'activity',
-            'hide_empty' => false,
-        ]);
-        $options = [];
-        if (!empty($activities)) {
-            $options[""]="Select a choice";
-            foreach ($activities as $activity) {
-                $options[$activity->term_id] = $activity->name;
-            }
-        }
-    
-        return $options;
-    }
-    public function get_languages()
-    {
-        $languages = get_terms([
-            'taxonomy' => 'language',
-            'hide_empty' => false,
-        ]);
-        $options = [];
-        if (!empty($languages)) {
-            $options[""]="Select a choice";
-            foreach ($languages as $language) {
-                $options[$language->term_id] = $language->name;
-            }
-        }
-    
-        return $options;
-    }
-
-    public function get_industries()
-    {
-        $industries = get_terms([
-            'taxonomy' => 'industry',
-            'hide_empty' => false,
-        ]);
-        $options = [];
-        if (!empty($industries)) {
-            $options[""]="Select a choice";
-            foreach ($industries as $industry) {
-                $options[$industry->term_id] = $industry->name;
-            }
-        }
-    
-        return $options;
-    }
-    public function get_selling_methods()
-    {
-        $selling_methods = get_terms([
-            'taxonomy' => 'selling_method',
-            'hide_empty' => false,
-        ]);
-        $options = [];
-        if (!empty($selling_methods)) {
-            $options[""]="Select a choice";
-            foreach ($selling_methods as $method) {
-                $options[$method->term_id] = $method->name;
-            }
-        }
-    
-        return $options;
-    }
-    public function get_skills()
-    {
-        $skills = get_terms([
-            'taxonomy' => 'skill',
-            'hide_empty' => false,
-        ]);
-        $options = [];
-        if (!empty($skills)) {
-            $options[""]="Select a choice";
-            foreach ($skills as $skill) {
-                $options[$skill->term_id] = $skill->name;
-            }
-        }
-    
-        return $options;
-    }
+  
     public function get_opportunities()
     {
         $opportunities = get_posts([
@@ -480,6 +456,44 @@ class Admin
             $options[""]="Select a Company";
             foreach ($companies as $company) {
                 $options[$company->ID] = $company->post_title;
+            }
+        }
+    
+        return $options;
+    }
+
+    public function get_payments()
+    {
+        $payments = get_posts([
+            'post_type' => 'payment',
+            'posts_per_page' => -1,
+            'post_status' => 'publish'
+        ]);
+    
+        $options = [];
+        if (!empty($payments)) {
+            $options[""]="Select a Payment";
+            foreach ($payments as $payment) {
+                $options[$payment->ID] = $payment->post_title;
+            }
+        }
+    
+        return $options;
+    }
+
+    public function get_deals()
+    {
+        $deals = get_posts([
+            'post_type' => 'deal',
+            'posts_per_page' => -1,
+            'post_status' => 'publish'
+        ]);
+    
+        $options = [];
+        if (!empty($deals)) {
+            $options[""]="Select a deal";
+            foreach ($deals as $deal) {
+                $options[$deal->ID] = $deal->post_title;
             }
         }
     
@@ -528,7 +542,7 @@ class Admin
         global $typenow;
 
         // Lista de tipos de publicaciones personalizadas
-        $custom_post_types = ['opportunity', 'review', 'deal', "company", "commercial_agent", "payment"];
+        $custom_post_types = ['opportunity', 'review', 'deal', "company", "commercial_agent", "payment","dispute"];
 
         // Verificar si el tipo de publicación actual está en la lista
         if (in_array($typenow, $custom_post_types)) {
@@ -550,7 +564,7 @@ class Admin
     public function disable_block_editor_for_post_type($use_block_editor, $post_type)
     {
         // Define los post types donde quieres deshabilitar el editor de bloques
-        $post_types = ['commercial_agent', 'company',"deal","opportunity","review"]; // Reemplaza con tus post types
+        $post_types = ['commercial_agent', 'company',"deal","opportunity","review","dispute","payment"]; // Reemplaza con tus post types
     
         // Comprueba si el post type actual está en la lista definida
         if (in_array($post_type, $post_types)) {

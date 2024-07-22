@@ -50,14 +50,13 @@ class Company
     
         $post_title = sanitize_text_field($_POST['title']);
         $post_content =  wp_kses_post($_POST['content']);
-        $sector = sanitize_text_field($_POST['sector']);
+        
         $target_audience = sanitize_text_field($_POST['target_audience']);
-        $company_type = sanitize_text_field($_POST['company_type']);
-        $languages = $_POST["languages"];
-        $location = sanitize_text_field($_POST['location']);
+      
+
         $age = sanitize_text_field($_POST['age']);
         $gender = sanitize_text_field($_POST['gender']);
-        $currency = sanitize_text_field($_POST['currency']);
+      
         $price = sanitize_text_field($_POST['price']);
         $commission = sanitize_text_field($_POST['commission']);
         $deliver_leads = isset($_POST['deliver_leads']) ? sanitize_text_field($_POST['deliver_leads']) : 'no';
@@ -73,6 +72,13 @@ class Company
         $supporting_materials = isset($_POST['supporting_materials']) ?  explode(',', sanitize_text_field($_POST['supporting_materials'])) : '';
         $company = $_POST["company_id"];
         $videos =  $_POST['videos'];
+
+        $language = isset($_POST["language"]) ? array_map('sanitize_text_field', $_POST["language"]) : [];
+        $country = isset($_POST["country"]) ? array_map('sanitize_text_field', $_POST["country"]) : [];
+        $currency = isset($_POST["currency"]) ? array_map('sanitize_text_field', $_POST["currency"]) : [];
+        $industry = isset($_POST["industry"]) ? array_map('sanitize_text_field', $_POST["industry"]) : [];
+        $type_of_company = isset($_POST["type_of_company"]) ? array_map('sanitize_text_field', $_POST["type_of_company"]) : [];
+
         
         $videos = array_map(function ($video_url) {
             return ['video' => sanitize_text_field($video_url)];
@@ -119,42 +125,66 @@ class Company
         if(isset($_POST["opportunity_id"]) && !empty($_POST["opportunity_id"])) {
 
             $post_data["ID"] = $_POST["opportunity_id"];
-            $post_id =  wp_update_post($post_data);
+            $opportunity_id =  wp_update_post($post_data);
         } else {
-            $post_id = wp_insert_post($post_data);
+            $opportunity_id = wp_insert_post($post_data);
         }
         
 
-        if (is_wp_error($post_id)) {
+        if (is_wp_error($opportunity_id)) {
             $operation = isset($_POST["opportunity_id"]) && !empty($_POST["opportunity_id"])?"updating":"creating";
             wp_send_json_error("Error when $operation the opportunity");
             wp_die();
         }
 
-        // Guarda los campos personalizados usando Carbon Fields
-        carbon_set_post_meta($post_id, 'sector', $sector);
-        carbon_set_post_meta($post_id, 'target_audience', $target_audience);
-        carbon_set_post_meta($post_id, 'company_type', $company_type);
-        carbon_set_post_meta($post_id, 'languages', $languages);
-        carbon_set_post_meta($post_id, 'location', $location);
-        carbon_set_post_meta($post_id, 'age', $age);
-        carbon_set_post_meta($post_id, 'gender', $gender);
-        carbon_set_post_meta($post_id, 'currency', $currency);
-        carbon_set_post_meta($post_id, 'price', $price);
-        carbon_set_post_meta($post_id, 'commission', $commission);
-        carbon_set_post_meta($post_id, 'deliver_leads', $deliver_leads);
-        carbon_set_post_meta($post_id, 'sales_cycle_estimation', $sales_cycle_estimation);
-        carbon_set_post_meta($post_id, 'tips', $tips);
-        carbon_set_post_meta($post_id, 'question_1', $question_1);
-        carbon_set_post_meta($post_id, 'question_2', $question_2);
-        carbon_set_post_meta($post_id, 'question_3', $question_3);
-        carbon_set_post_meta($post_id, 'question_4', $question_4);
-        carbon_set_post_meta($post_id, 'question_5', $question_5);
-        carbon_set_post_meta($post_id, 'question_6', $question_6);
-        carbon_set_post_meta($post_id, 'images', $images);
-        carbon_set_post_meta($post_id, 'supporting_materials', $supporting_materials);
-        carbon_set_post_meta($post_id, 'videos', $videos);
-        carbon_set_post_meta($post_id, 'company', $company);
+      
+
+
+    
+        
+        if (!empty($language)) {
+            wp_set_post_terms($opportunity_id, $language, 'language', false);
+        }
+    
+        if (!empty($country)) {
+            wp_set_post_terms($opportunity_id, $country, 'country', false);
+        }
+    
+        if (!empty($currency)) {
+            wp_set_post_terms($opportunity_id, $currency, 'currency', false);
+        }
+    
+        if (!empty($industry)) {
+            wp_set_post_terms($opportunity_id, $industry, 'industry', false);
+        }
+    
+        if (!empty($type_of_company)) {
+            wp_set_post_terms($opportunity_id, $type_of_company, 'type_of_company', false);
+        }
+
+    
+        if (!empty($profile_image)) {
+            set_post_thumbnail($opportunity_id, $profile_image);
+        }
+      
+        carbon_set_post_meta($opportunity_id, 'target_audience', $target_audience);
+        carbon_set_post_meta($opportunity_id, 'age', $age);
+        carbon_set_post_meta($opportunity_id, 'gender', $gender);
+        carbon_set_post_meta($opportunity_id, 'price', $price);
+        carbon_set_post_meta($opportunity_id, 'commission', $commission);
+        carbon_set_post_meta($opportunity_id, 'deliver_leads', $deliver_leads);
+        carbon_set_post_meta($opportunity_id, 'sales_cycle_estimation', $sales_cycle_estimation);
+        carbon_set_post_meta($opportunity_id, 'tips', $tips);
+        carbon_set_post_meta($opportunity_id, 'question_1', $question_1);
+        carbon_set_post_meta($opportunity_id, 'question_2', $question_2);
+        carbon_set_post_meta($opportunity_id, 'question_3', $question_3);
+        carbon_set_post_meta($opportunity_id, 'question_4', $question_4);
+        carbon_set_post_meta($opportunity_id, 'question_5', $question_5);
+        carbon_set_post_meta($opportunity_id, 'question_6', $question_6);
+        carbon_set_post_meta($opportunity_id, 'images', $images);
+        carbon_set_post_meta($opportunity_id, 'supporting_materials', $supporting_materials);
+        carbon_set_post_meta($opportunity_id, 'videos', $videos);
+        carbon_set_post_meta($opportunity_id, 'company', $company);
         
         // Envía respuesta JSON de éxito
         wp_send_json_success("Opportunity created successfully");
@@ -162,9 +192,9 @@ class Company
 
     }
    
-    public function get_deals()
+    public function get_deals($status = "")
     {
-    
+
         $args = [
             'post_type' => 'deal',
             'meta_query' => [
@@ -176,21 +206,28 @@ class Company
             ],
             'posts_per_page' => -1,
         ];
+
+        if ($status != "") {
+            $args['meta_query'][] = [
+                'key' => 'status',
+                'value' => $status,
+                'compare' => '='
+            ];
+        }
+       
         $query = new WP_Query($args);
         return $query->posts; // Devolver los posts
     }
 
 
-    public function save_company_profile() {
+    public function save_company_profile()
+    {
         $errors = [];
         $current_user = wp_get_current_user();
     
         check_ajax_referer('update-profile-nonce', 'security');
         $company_id = sanitize_text_field($_POST["company_id"]);
-    
-        $first_name = sanitize_text_field($_POST['first_name']);
-        $last_name = sanitize_text_field($_POST['last_name']);
-        $user_email = sanitize_text_field($_POST['user_email']);
+
         $company_logo = sanitize_text_field($_POST["company_logo"]);
         $company_name = sanitize_text_field($_POST["company_name"]);
         $description = wp_kses_post($_POST['description']);
@@ -201,9 +238,9 @@ class Company
         $linkedin_url = sanitize_text_field($_POST["linkedin_url"]);
         $tiktok_url = sanitize_text_field($_POST["tiktok_url"]);
         $youtube_url = sanitize_text_field($_POST["youtube_url"]);
-        $sector = isset($_POST["sector"]) ? array_map('sanitize_text_field', $_POST["sector"]) : [];
+        $industry = isset($_POST["industry"]) ? array_map('sanitize_text_field', $_POST["industry"]) : [];
         $country = isset($_POST["country"]) ? array_map('sanitize_text_field', $_POST["country"]) : [];
-        $company_type = isset($_POST["company_type"]) ? array_map('sanitize_text_field', $_POST["company_type"]) : [];
+        $type_of_company = isset($_POST["type_of_company"]) ? array_map('sanitize_text_field', $_POST["type_of_company"]) : [];
         $activity = isset($_POST["activity"]) ? array_map('sanitize_text_field', $_POST["activity"]) : [];
        
 
@@ -213,35 +250,19 @@ class Company
             wp_send_json_error("Error when updating the profile");
         }
     
-        if (empty($first_name)) {
-            $errors["first_name"][] = "First name field is required.";
-        }
-    
-        if (empty($last_name)) {
-            $errors["last_name"][] = "Last name field is required.";
-        }
-    
-        if (empty($user_email)) {
-            $errors["user_email"][] = "Email field is required.";
-        }
     
         if (!empty($errors)) {
             wp_send_json_error($errors);
             wp_die();
         }
     
-        $updated_user = wp_update_user([
-            "ID" => $current_user->ID,
-            'user_email' => $user_email,
-            'first_name' => $first_name,
-            'last_name' => $last_name,
-        ]);
+        
     
-        if (is_wp_error($updated_user)) {
-            wp_send_json_error($updated_user->get_error_messages());
+        if ($current_user) {
+            wp_send_json_error("No se pudo recuperar el usuario");
         }
     
-        $agent_post_id = wp_update_post([
+        $company_post_id = wp_update_post([
             "ID" => $company_id,
             'post_title' => $company_name,
             'post_status' => 'publish',
@@ -249,42 +270,42 @@ class Company
             "post_content" => $description
         ]);
     
-        if (is_wp_error($agent_post_id)) {
+        if (is_wp_error($company_post_id)) {
             wp_send_json_error("Error when updating the profile");
             wp_die();
         }
     
       
     
-        if (!empty($sector)) {
-            wp_set_post_terms($company_id, $sector, 'sector', false);
+        if (!empty($industry)) {
+            wp_set_post_terms($company_post_id, $industry, 'industry', false);
         }
     
         if (!empty($activity)) {
-            wp_set_post_terms($company_id, $activity, 'activity', false);
+            wp_set_post_terms($company_post_id, $activity, 'activity', false);
         }
     
         if (!empty($country)) {
-            wp_set_post_terms($company_id, $country, 'country', false);
+            wp_set_post_terms($company_post_id, $country, 'country', false);
         }
     
-        if (!empty($company_type)) {
-            wp_set_post_terms($company_id, $company_type, 'company_type', false);
+        if (!empty($type_of_company)) {
+            wp_set_post_terms($company_post_id, $type_of_company, 'type_of_company', false);
         }
 
         if (!empty($company_logo)) {
-            set_post_thumbnail($company_id, $company_logo);
+            set_post_thumbnail($company_post_id, $company_logo);
         }
 
-        carbon_set_post_meta($company_id, 'company_name', $company_name);
-        carbon_set_post_meta($company_id, 'employees_number', $employees_number);
-        carbon_set_post_meta($company_id, 'website_url', $website_url);
-        carbon_set_post_meta($company_id, 'facebook_url', $facebook_url);
-        carbon_set_post_meta($company_id, 'instagram_url', $instagram_url);
-        carbon_set_post_meta($company_id, 'twitter_url', $twitter_url);
-        carbon_set_post_meta($company_id, 'linkedin_url', $linkedin_url);
-        carbon_set_post_meta($company_id, 'tiktok_url', $tiktok_url);
-        carbon_set_post_meta($company_id, 'youtube_url', $youtube_url);
+        carbon_set_post_meta($company_post_id, 'company_name', $company_name);
+        carbon_set_post_meta($company_post_id, 'employees_number', $employees_number);
+        carbon_set_post_meta($company_post_id, 'website_url', $website_url);
+        carbon_set_post_meta($company_post_id, 'facebook_url', $facebook_url);
+        carbon_set_post_meta($company_post_id, 'instagram_url', $instagram_url);
+        carbon_set_post_meta($company_post_id, 'twitter_url', $twitter_url);
+        carbon_set_post_meta($company_post_id, 'linkedin_url', $linkedin_url);
+        carbon_set_post_meta($company_post_id, 'tiktok_url', $tiktok_url);
+        carbon_set_post_meta($company_post_id, 'youtube_url', $youtube_url);
         wp_send_json_success("Profile updated successfully");
         wp_die();
     }

@@ -1,6 +1,6 @@
 <?php
 class CommercialAgent
-{ 
+{
     private $user_id;
     private $commercial_agent;
     private function __construct()
@@ -41,16 +41,14 @@ class CommercialAgent
     }
    
     
-    public function save_agent_profile() {
+    public function save_agent_profile()
+    {
         $errors = [];
         $current_user = wp_get_current_user();
     
         check_ajax_referer('update-profile-nonce', 'security');
         $commercial_agent_id = sanitize_text_field($_POST["commercial_agent_id"]);
-    
-        $first_name = sanitize_text_field($_POST['first_name']);
-        $last_name = sanitize_text_field($_POST['last_name']);
-        $user_email = sanitize_text_field($_POST['user_email']);
+
         $profile_image = sanitize_text_field($_POST["profile_image"]);
         $description = wp_kses_post($_POST['description']);
         $languages = isset($_POST["language"]) ? array_map('sanitize_text_field', $_POST["language"]) : [];
@@ -65,37 +63,14 @@ class CommercialAgent
             wp_send_json_error("Error when updating the profile");
         }
     
-        if (empty($first_name)) {
-            $errors["first_name"][] = "First name field is required.";
-        }
-    
-        if (empty($last_name)) {
-            $errors["last_name"][] = "Last name field is required.";
-        }
-    
-        if (empty($user_email)) {
-            $errors["user_email"][] = "Email field is required.";
-        }
-    
         if (!empty($errors)) {
             wp_send_json_error($errors);
             wp_die();
         }
     
-        $updated_user = wp_update_user([
-            "ID" => $current_user->ID,
-            'user_email' => $user_email,
-            'first_name' => $first_name,
-            'last_name' => $last_name,
-        ]);
-    
-        if (is_wp_error($updated_user)) {
-            wp_send_json_error($updated_user->get_error_messages());
-        }
-    
         $agent_post_id = wp_update_post([
             "ID" => $commercial_agent_id,
-            'post_title' => $first_name . ' ' . $last_name,
+            'post_title' => "$current_user->first_name $current_user->last_name",
             'post_status' => 'publish',
             'post_author' => $current_user->ID,
             "post_content" => $description
@@ -140,7 +115,7 @@ class CommercialAgent
         wp_die();
     }
     
-    public function get_deals()
+    public function get_deals($status = "")
     {
     
         $args = [
@@ -154,6 +129,14 @@ class CommercialAgent
             ],
             'posts_per_page' => -1,
         ];
+
+        if ($status != "") {
+            $args['meta_query'][] = [
+                'key' => 'status',
+                'value' => $status,
+                'compare' => '='
+            ];
+        }
         $query = new WP_Query($args);
         return $query->posts; // Devolver los posts
     }

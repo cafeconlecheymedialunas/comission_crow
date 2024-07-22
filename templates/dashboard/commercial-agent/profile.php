@@ -37,12 +37,12 @@ $commercial_agent_post = $commercial_agent->get_commercial_agent();
 $profile_image = isset($commercial_agent_post) ? [get_post_thumbnail_id($commercial_agent_post->ID)] : '';
 $selected_years_of_experience = isset($commercial_agent_post) ? carbon_get_post_meta($commercial_agent_post->ID, 'years_of_experience') : '';
 
-$selected_languages = wp_get_post_terms($commercial_agent_post->ID, 'language', array('fields' => 'ids')); 
-$selected_country = wp_get_post_terms($commercial_agent_post->ID, 'country', array('fields' => 'ids')); 
-$selected_skills = wp_get_post_terms($commercial_agent_post->ID, 'skill', array('fields' => 'ids')); 
-$selected_industry = wp_get_post_terms($commercial_agent_post->ID, 'industry', array('fields' => 'ids')); 
-$selected_selling_method = wp_get_post_terms($commercial_agent_post->ID, 'selling_method', array('fields' => 'ids')); 
-$selected_seller_type = wp_get_post_terms($commercial_agent_post->ID, 'seller_type', array('fields' => 'ids'));
+$selected_languages = wp_get_post_terms($commercial_agent_post->ID, 'language', ['fields' => 'ids']);
+$selected_country = wp_get_post_terms($commercial_agent_post->ID, 'country', ['fields' => 'ids']);
+$selected_skills = wp_get_post_terms($commercial_agent_post->ID, 'skill', ['fields' => 'ids']);
+$selected_industry = wp_get_post_terms($commercial_agent_post->ID, 'industry', ['fields' => 'ids']);
+$selected_selling_method = wp_get_post_terms($commercial_agent_post->ID, 'selling_method', ['fields' => 'ids']);
+$selected_seller_type = wp_get_post_terms($commercial_agent_post->ID, 'seller_type', ['fields' => 'ids']);
 
 
 
@@ -50,6 +50,7 @@ $selected_seller_type = wp_get_post_terms($commercial_agent_post->ID, 'seller_ty
 <div class="row">
 	<div class="col-md-8">
 	    <div class="card">
+            <h2>Commercial Agent</h2>
             <form id="agent-profile-form">
                 <div class="row">
                     <!-- User Fields -->
@@ -75,26 +76,8 @@ $selected_seller_type = wp_get_post_terms($commercial_agent_post->ID, 'seller_ty
                                     endif;
                                 endforeach;
                             endif;
-                            ?>
+?>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="first_name" class="form-label">First Name:</label>
-                        <input type="text" name="first_name" class="form-control" value="<?php echo esc_attr(
-                            $current_user->first_name
-                        ); ?>" placeholder="First Name">
-                    </div>
-                    <div class="col-md-6">
-                        <label for="last_name" class="form-label">Last Name:</label>
-                        <input type="text" name="last_name" class="form-control" value="<?php echo esc_attr(
-                            $current_user->last_name
-                        ); ?>" placeholder="Last Name">
-                    </div>
-                    <div class="col-md-6">
-                        <label for="user_email" class="form-label">Email:</label>
-                        <input type="user_email" name="user_email" class="form-control" value="<?php echo esc_attr(
-                            $current_user->user_email
-                        ); ?>" placeholder="User Email">
                     </div>
                     <div class="col-md-12">
                         <label for="description" class="form-label">Description</label>
@@ -119,7 +102,7 @@ $selected_seller_type = wp_get_post_terms($commercial_agent_post->ID, 'seller_ty
                     <?php endif;?>
                     <?php if($country_terms):?>
                         <div class="col-md-6">
-                            <label for="country" class="form-label">Location:</label>
+                            <label for="country" class="form-label">Country:</label>
                             <select name="country[]" class="custom-select">
                                 <option value="">Select an option</option>
                                 <?php foreach ($country_terms as $term): ?>

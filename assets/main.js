@@ -1,132 +1,134 @@
 class CustomMediaUpload {
-    constructor(selector) {
-      this.selector = selector;
-      this.init();
-    }
-  
-    init() {
-      jQuery(document).on("click", this.selector, () => {
-        const mediaType = jQuery(this.selector).data("media-type");
-        const isMultiple =
-          jQuery(this.selector).data("multiple") === true ||
-          jQuery(this.selector).data("multiple") === "true";
-        const $mediaIdsField = jQuery(this.selector).siblings(".media-ids");
-        const $previewContainer = jQuery(this.selector).siblings(
-          `.${mediaType}-preview`,
+  constructor(selector) {
+    this.selector = selector;
+    this.init();
+  }
+
+  init() {
+    jQuery(document).on("click", this.selector, () => {
+      const mediaType = jQuery(this.selector).data("media-type");
+      const isMultiple =
+        jQuery(this.selector).data("multiple") === true ||
+        jQuery(this.selector).data("multiple") === "true";
+      const $mediaIdsField = jQuery(this.selector).siblings(".media-ids");
+      const $previewContainer = jQuery(this.selector).siblings(
+        `.${mediaType}-preview`,
+      );
+      const type =
+        mediaType === "text"
+          ? [
+              "application/pdf",
+              "application/msword",
+              "text/plain",
+              "text/html",
+              "text/csv",
+              "text/xml",
+            ]
+          : ["image"];
+      const mediaUploader = wp.media({
+        multiple: isMultiple,
+        library: {
+          type: type,
+        },
+      });
+
+      mediaUploader.on("select", () => {
+        this.handleMediaSelection(
+          mediaUploader.state().get("selection").toJSON(),
+          $mediaIdsField,
+          $previewContainer,
+          isMultiple,
         );
-        const type = mediaType === "text" ? ['application/pdf', 'application/msword', 'text/plain', 'text/html', 'text/csv', 'text/xml'] : ["image"];
-        const mediaUploader = wp.media({
-          multiple: isMultiple,
-          library: {
-            type: type
-          },
-        });
-  
-        mediaUploader.on("select", () => {
-          this.handleMediaSelection(
-            mediaUploader.state().get("selection").toJSON(),
-            $mediaIdsField,
-            $previewContainer,
-            isMultiple,
-          );
-        });
-  
-        mediaUploader.open();
+      });
+
+      mediaUploader.open();
+    });
+  }
+
+  handleMediaSelection(
+    attachments,
+    $mediaIdsField,
+    $previewContainer,
+    isMultiple,
+  ) {
+    if (!attachments || attachments.length === 0) {
+      console.error("No files selected.");
+      return;
+    }
+
+    const attachmentIds = attachments
+      .map((attachment) => attachment.id)
+      .join(",");
+
+    if (!isMultiple) {
+      // If single selection, take only the first selected file
+      const attachment = attachments[0];
+      this.showPreview(attachment, $mediaIdsField, $previewContainer);
+    } else {
+      $previewContainer.html("");
+      attachments.forEach((attachment) => {
+        this.showPreview(attachment, $mediaIdsField, $previewContainer);
       });
     }
-  
-    handleMediaSelection(
-      attachments,
-      $mediaIdsField,
-      $previewContainer,
-      isMultiple,
-    ) {
-      if (!attachments || attachments.length === 0) {
-        console.error("No files selected.");
-        return;
-      }
-  
-      const attachmentIds = attachments
-        .map((attachment) => attachment.id)
-        .join(",");
-  
-      if (!isMultiple) {
-        // If single selection, take only the first selected file
-        const attachment = attachments[0];
-        this.showPreview(attachment, $mediaIdsField, $previewContainer);
-      } else {
-        $previewContainer.html("");
-        attachments.forEach((attachment) => {
-          this.showPreview(attachment, $mediaIdsField, $previewContainer);
-        });
-      }
-  
-      $mediaIdsField.val(attachmentIds);
-    }
-  
-    showPreview(attachment, $mediaIdsField, $previewContainer) {
-      const mediaType = attachment.type;
-      const mediaId = attachment.id;
-  
-      if (mediaType === "image") {
-        const imageUrl = attachment.url;
-        $previewContainer.append(
-          `<div class="col-2 col-sm-3 col-md-4 preview-item d-flex flex-column justify-content-center align-items-center">
+
+    $mediaIdsField.val(attachmentIds);
+  }
+
+  showPreview(attachment, $mediaIdsField, $previewContainer) {
+    const mediaType = attachment.type;
+    const mediaId = attachment.id;
+
+    if (mediaType === "image") {
+      const imageUrl = attachment.url;
+      $previewContainer.html(
+        `<div class="col-2 col-sm-3 col-md-4 preview-item d-flex flex-column justify-content-center align-items-center">
               <img width="100" src="${imageUrl}" style="max-width: 100%; height: auto;">
             </div>`,
-        );
-      } else if (mediaType === "text") {
-  
-        const content = `<div class="col-2 col-sm-3 col-md-4 preview-item d-flex flex-column justify-content-center align-items-center">
+      );
+    } else if (mediaType === "text") {
+      const content = `<div class="col-2 col-sm-3 col-md-4 preview-item d-flex flex-column justify-content-center align-items-center">
                             <img width="50" src="${attachment.icon}" style="max-width: 100%; height: auto;">
                             <span>${attachment.title}</span>
                           </div>`;
-        $previewContainer.append(content);
-      } else {
-        console.error("Unsupported media type.");
-      }
-  
-      $previewContainer.addClass("d-flex");
+      $previewContainer.append(content);
+    } else {
+      console.error("Unsupported media type.");
     }
+
+    $previewContainer.addClass("d-flex");
   }
+}
 jQuery(document).ready(function ($) {
+  $(".custom-select").select2();
+  $(".custom-select-multiple").select2({
+    dropdownAutoWidth: true,
+    multiple: true,
+    width: "100%",
+    height: "30px",
+    placeholder: "Select an option",
+    allowClear: true,
+  });
 
+  $(".editor-container").each(function () {
+    // Get the related hidden field ID from the data-target attribute
+    var targetId = $(this).data("target");
+    var $inputHidden = $("#" + targetId);
 
-
-    $(".custom-select").select2();
-    $(".custom-select-multiple").select2({
-      dropdownAutoWidth: true,
-      multiple: true,
-      width: "100%",
-      height: "30px",
-      placeholder: "Select an option",
-      allowClear: true,
+    // Initialize Quill
+    var quill = new Quill(this, {
+      theme: "snow",
     });
 
-    $(".editor-container").each(function () {
-        // Get the related hidden field ID from the data-target attribute
-        var targetId = $(this).data("target");
-        var $inputHidden = $("#" + targetId);
-    
-    
-        // Initialize Quill
-        var quill = new Quill(this, {
-          theme: "snow",
-        });
-    
-        // Get initial content from hidden input and paste into Quill
-        var content = $inputHidden.val();
-        quill.clipboard.dangerouslyPasteHTML(content);
-    
-        // Handle changes in Quill and update hidden input
-        quill.on("text-change", function () {
-          var html = quill.root.innerHTML;
-          $inputHidden.val(html);
-        });
-      });
+    // Get initial content from hidden input and paste into Quill
+    var content = $inputHidden.val();
+    quill.clipboard.dangerouslyPasteHTML(content);
 
-
-      
+    // Handle changes in Quill and update hidden input
+    quill.on("text-change", function () {
+      var html = quill.root.innerHTML;
+      $inputHidden.val(html);
+    });
+  });
 
   $(".add-new-url").click(function (e) {
     e.preventDefault();

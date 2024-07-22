@@ -54,7 +54,7 @@ function update_agent_profile() {
         // Actualizar los campos de Carbon Fields
         carbon_set_post_meta($agent_id, 'description', sanitize_textarea_field($_POST['description']));
         carbon_set_post_meta($agent_id, 'languages', $_POST['language']);
-        carbon_set_post_meta($agent_id, 'location', sanitize_text_field($_POST['location']));
+        carbon_set_post_meta($agent_id, 'country', sanitize_text_field($_POST['country']));
         carbon_set_post_meta($agent_id, 'seller_type', sanitize_text_field($_POST['seller_type']));
         carbon_set_post_meta($agent_id, 'years_of_experience', sanitize_text_field($_POST['years_of_experience']));
 

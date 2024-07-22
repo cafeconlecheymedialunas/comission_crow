@@ -97,13 +97,12 @@ select {
   transition: 0.3s linear;
   background-color: white !important;
   color: black !important;
-  
 }
 .form-field:active,
 .form-control:active,
 .form-control:focus {
   outline: none !important;
-  border-color: #dee2e6!important;
+  border-color: #dee2e6 !important;
 }
 .form-select {
   margin-bottom: 20px;
@@ -158,19 +157,20 @@ select {
   padding: 30px;
 }
 .editor-container {
-  height: 120px!important; /* Establecer una altura fija para el contenedor del editor */
+  height: 120px !important; /* Establecer una altura fija para el contenedor del editor */
   border: 1px solid #ccc;
   padding: 10px;
   overflow-y: auto; /* Añadir scroll si el contenido sobrepasa el contenedor */
 }
-.form-control.error,.form-control:focus .error{
-    border-color: #dc3545!important;
-    outline:transparent!important;
-    box-shadow: none!important;
+.form-control.error,
+.form-control:focus .error {
+  border-color: #dc3545 !important;
+  outline: transparent !important;
+  box-shadow: none !important;
 }
-.form-control:focus{
-  box-shadow: none!important;
+.form-control:focus {
+  box-shadow: none !important;
 }
-label.error{
-  color: #dc3545!important;
+label.error {
+  color: #dc3545 !important;
 }

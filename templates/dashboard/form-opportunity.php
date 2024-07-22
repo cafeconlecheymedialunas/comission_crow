@@ -3,8 +3,8 @@ $language_terms = get_terms([
     "taxonomy" => "language",
     "hide_empty" => false,
 ]);
-$sector_terms = get_terms([
-    "taxonomy" => "sector",
+$industry_terms = get_terms([
+    "taxonomy" => "industry",
     "hide_empty" => false,
 ]);
 ;
@@ -17,8 +17,8 @@ $currency_terms = get_terms([
     "hide_empty" => false,
 ]);
 
-$company_type_terms = get_terms([
-    "taxonomy" => "company_type",
+$type_of_company_terms = get_terms([
+    "taxonomy" => "type_of_company",
     "hide_empty" => false,
 ]);
 
@@ -31,19 +31,23 @@ $company_post = $company->get_company();
 
 
 
-// Obtener los valores seleccionados almacenados o recibidos (ejemplo de variables)
-$selected_sector = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'sector') : '';
-$selected_languages = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'languages') : [];
-$selected_location = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'location') : '';
-$selected_company_type = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'company_type') : '';
-$selected_currency = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'currency') : '';
-$selected_target_audience = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'target_audience') : '';
-$selected_age = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'age') : '';
-$selected_gender = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'gender') : '';
-$selected_images = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'images') : '';
-$selected_supporting_materials = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'supporting_materials') : '';
-$selected_videos = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'videos') : '';
-$selected_tips = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'tips') : '';
+
+
+
+$target_audience = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'target_audience') : '';
+$age = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'age') : '';
+$gender = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'gender') : '';
+$images = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'images') : [];
+$supporting_materials = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'supporting_materials') : [];
+$videos = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'videos') : '';
+$tips = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'tips') : '';
+
+$industry = isset($opportunity_post) ?  wp_get_post_terms($opportunity_post->ID, 'industry', ['fields' => 'ids']): [];
+$language = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 'language', ['fields' => 'ids']):[];
+$country =isset($opportunity_post) ?  wp_get_post_terms($opportunity_post->ID, 'country', ['fields' => 'ids']):[];
+$type_of_company = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 'type_of_company', ['fields' => 'ids']):[];
+$currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 'currency', ['fields' => 'ids']):[];
+
 ?>
 <form id="opportunity-form" class="row g-3">
     <div class="col-md-6">
@@ -53,15 +57,15 @@ $selected_tips = isset($opportunity_post) ? carbon_get_post_meta($opportunity_po
     </div>
 
 
-    <?php if($sector_terms):?>
+    <?php if($industry_terms):?>
     <div class="col-md-6">
-        <label for="sector" class="form-label">Sector:</label>
-        <select name="sector" class="form-select custom-select">
+        <label for="industry" class="form-label">Industry:</label>
+        <select name="industry[]" class="form-select custom-select">
             <option value="">Select an option</option>
-            <?php foreach ($sector_terms as $term): ?>
+            <?php foreach ($industry_terms as $term): ?>
                 <option 
                 value="<?php echo esc_attr($term->term_id); ?>" 
-                <?php selected($selected_sector, $term->term_id); ?>
+                <?php echo in_array($term->term_id, $industry) ? 'selected' : ''; ?>
                 >
                     <?php echo esc_html($term->name); ?>
                 </option>
@@ -71,13 +75,13 @@ $selected_tips = isset($opportunity_post) ? carbon_get_post_meta($opportunity_po
     <?php endif;?>
     <?php if($language_terms):?>
     <div class="col-md-6">
-        <label for="languages" class="form-label">Languages:</label>
-        <select name="languages[]" multiple class="form-select custom-select-multiple">
+        <label for="language" class="form-label">Languages:</label>
+        <select name="language[]" multiple class="form-select custom-select-multiple">
             <?php foreach ($language_terms as $term): ?>
                 <option 
                     value="<?php echo esc_attr($term->term_id); ?>" 
-                    <?php echo in_array($term->term_id, $selected_languages) ? 'selected' : ''; ?>
-                    >
+                    <?php echo in_array($term->term_id, $language) ? 'selected' : ''; ?>
+                >
                     <?php echo esc_html($term->name); ?>
                 </option>
             <?php endforeach;?>
@@ -86,13 +90,30 @@ $selected_tips = isset($opportunity_post) ? carbon_get_post_meta($opportunity_po
     <?php endif;?>
     <?php if($country_terms):?>
     <div class="col-md-6">
-        <label for="location" class="form-label">Location:</label>
-        <select name="location" class="form-select custom-select">
+        <label for="country" class="form-label">Country:</label>
+        <select name="country[]" class="form-select custom-select">
             <option value="">Select an option</option>
             <?php foreach ($country_terms as $term): ?>
                 <option 
                     value="<?php echo esc_attr($term->term_id); ?>" 
-                    <?php selected($selected_location, $term->term_id); ?>>
+                    <?php echo in_array($term->term_id, $country) ? 'selected' : ''; ?>
+                >
+                    <?php echo esc_html($term->name); ?>
+                </option>
+            <?php endforeach;?>
+        </select>
+    </div>
+    <?php endif;?>
+    <?php if($currency_terms):?>
+    <div class="col-md-6">
+        <label for="currency" class="form-label">Currency:</label>
+        <select name="currency[]" class="form-select custom-select">
+            <option value="">Select an option</option>
+            <?php foreach ($currency_terms as $term): ?>
+                <option 
+                    value="<?php echo esc_attr($term->term_id); ?>" 
+                    <?php echo in_array($term->term_id, $currency) ? 'selected' : ''; ?>
+                >
                     <?php echo esc_html($term->name); ?>
                 </option>
             <?php endforeach;?>
@@ -106,21 +127,24 @@ $selected_tips = isset($opportunity_post) ? carbon_get_post_meta($opportunity_po
             <?php foreach ($target_audience_options as $key => $value): ?>
                 <option 
                     value="<?php echo esc_attr($key); ?>" 
-                    <?php selected($selected_target_audience, $key); ?>>
+                    <?php echo selected($target_audience, $key); ?>
+                >
+                
                     <?php echo esc_html($value); ?>
                 </option>
             <?php endforeach;?>
         </select>
     </div>
-    <?php if($company_type_terms):?>
+    <?php if($type_of_company_terms):?>
     <div class="col-md-6">
-        <label for="company_type" class="form-label">Company Type:</label>
-        <select name="company_type" class="form-select custom-select">
+        <label for="type_of_company" class="form-label">Company Type:</label>
+        <select name="type_of_company[]" class="form-select custom-select">
             <option value="">Select an option</option>
-            <?php foreach ($company_type_terms as $term): ?>
+            <?php foreach ($type_of_company_terms as $term): ?>
                 <option value="<?php echo esc_attr($term->term_id); ?>" 
-                    <?php selected($selected_company_type, $term->term_id); ?>>
-                    <?php echo esc_html($term->name); ?>
+                <?php echo in_array($term->term_id, $type_of_company) ? 'selected' : ''; ?>
+            >
+            <?php echo esc_html($term->name); ?>
                 </option>
             <?php endforeach;?>
         </select>
@@ -141,7 +165,7 @@ $selected_tips = isset($opportunity_post) ? carbon_get_post_meta($opportunity_po
         <select name="age" class="form-select">
             <option value="">Select an option</option>
             <?php foreach ($age_options as $key => $value): ?>
-                <option value="<?php echo esc_attr($key); ?>" <?php selected($selected_age, $key); ?>><?php echo esc_html($value); ?></option>
+                <option value="<?php echo esc_attr($key); ?>" <?php selected($age, $key); ?>><?php echo esc_html($value); ?></option>
             <?php endforeach;?>
         </select>
     </div>
@@ -151,21 +175,11 @@ $selected_tips = isset($opportunity_post) ? carbon_get_post_meta($opportunity_po
         <select name="gender" class="form-select">
             <option value="">Select an option</option>
             <?php foreach ($gender_options as $key => $value): ?>
-                <option value="<?php echo esc_attr($key); ?>" <?php selected($selected_gender, $key); ?>><?php echo esc_html($value); ?></option>
+                <option value="<?php echo esc_attr($key); ?>" <?php selected($gender, $key); ?>><?php echo esc_html($value); ?></option>
             <?php endforeach;?>
         </select>
     </div>
-    <?php if($currency_terms):?>
-    <div class="col-md-6">
-        <label for="currency" class="form-label">Currency:</label>
-        <select name="currency" class="form-select custom-select">
-            <option value="">Select an option</option>
-            <?php foreach ($currency_terms as $term): ?>
-                <option value="<?php echo esc_attr($term->term_id); ?>" <?php selected($selected_currency, $term->term_id); ?>><?php echo esc_html($term->name); ?></option>
-            <?php endforeach;?>
-        </select>
-    </div>
-    <?php endif;?>
+
 
     <div class="col-md-6">
         <label for="price" class="form-label">Price:</label>
@@ -189,14 +203,15 @@ $selected_tips = isset($opportunity_post) ? carbon_get_post_meta($opportunity_po
         <label for="sales_cycle_estimation" class="form-label">Sales Cycle Estimation:</label>
         <input type="text" id="sales_cycle_estimation" name="sales_cycle_estimation" class="form-control" value="<?php echo isset($opportunity_post) ? esc_attr(carbon_get_post_meta($opportunity_post->ID, "sales_cycle_estimation")):"";?>">
     </div>
+
     <div class="col-md-6">
         <label for="image-ids" class="form-label">Images:</label>
-        <input type="hidden" id="image-ids" value="<?php echo $selected_images;?>" name="images" class="regular-text media-ids">
+        <input type="hidden" id="image-ids" value="<?php echo implode(",", $images);?>" name="images" class="regular-text media-ids">
         <button type="button" id="select-image-button" class="button select-media-button btn btn-secondary" data-media-type="image" data-multiple="true">Select Images</button>
-        <div class="image-preview row" style="<?php echo (empty($selected_images))?'display:none;':'';?>">
+        <div class="image-preview row" style="<?php echo (empty($images))?'display:none;':'';?>">
             <?php
-            if($selected_images):
-                foreach($selected_images as $image):
+            if($images):
+                foreach($images as $image):
                     // Obtener metadatos de la imagen
                     $attachment_metadata = wp_get_attachment_metadata($image);
                     // Obtener la URL de la imagen
@@ -211,19 +226,19 @@ $selected_tips = isset($opportunity_post) ? carbon_get_post_meta($opportunity_po
                     endif;
                 endforeach;
             endif;
-            ?>
+?>
         </div>
     </div>
 
 
 <div class="col-md-6">
     <label for="text-ids" class="form-label">Supporting Materials:</label>
-    <input type="hidden" id="text-ids" value="<?php echo $selected_supporting_materials;?>" name="supporting_materials" class="regular-text media-ids">
+    <input type="hidden" id="text-ids" value="<?php echo implode(",", $supporting_materials);?>" name="supporting_materials" class="regular-text media-ids">
     <button type="button" id="select-text-button" class="button select-media-button btn btn-secondary" data-media-type="text" data-multiple="true">Select Text File</button>
-    <div class="text-preview row" style="<?php echo (empty($selected_supporting_materials)) ? 'display:none;' : ''; ?>">
+    <div class="text-preview row" style="<?php echo (empty($supporting_materials)) ? 'display:none;' : ''; ?>">
         <?php
-        if ($selected_supporting_materials):
-            foreach ($selected_supporting_materials as $supporting_material):
+        if ($supporting_materials):
+            foreach ($supporting_materials as $supporting_material):
                 // Obtener la URL y metadatos del archivo adjunto
                 
                 $attachment = get_post($supporting_material);
@@ -237,7 +252,7 @@ $selected_tips = isset($opportunity_post) ? carbon_get_post_meta($opportunity_po
                 endif;
             endforeach;
         endif;
-        ?>
+?>
     </div>
 </div>
 
@@ -248,8 +263,8 @@ $selected_tips = isset($opportunity_post) ? carbon_get_post_meta($opportunity_po
                     <a href="#" class="add-new-url prolancer-btn" data-nonce="6ef301fdf4"><i class="fal fa-plus"></i> Add New URL</a>
                 </div>
                 <div class="url-videos">
-                    <?php if($selected_videos):?>
-                    <?php foreach($selected_videos as $video):?>
+                    <?php if($videos):?>
+                    <?php foreach($videos as $video):?>
                     <div class="row mb-3">
                         <div class="col-sm-8 my-auto">
                             <input type="url" name="videos[]" value="<?php echo $video["video"];?>" class="form-control" placeholder="Video URL">
@@ -274,11 +289,11 @@ $selected_tips = isset($opportunity_post) ? carbon_get_post_meta($opportunity_po
                 </div>
             </div>
     
-    <div class="col-md-12">
-            <label for="tip" class="form-label">Tips:</label>
-            <div id="editor-container"></div>
-            <input type="hidden" id="tip" name="tip" value="<?php echo isset($opportunity_post) ? esc_attr(carbon_get_post_meta($opportunity_post->ID, "tips")):"";?>">
-    </div>
+            <div class="col-md-12">
+                <label for="tips" class="form-label">Tips</label>
+                <div class="editor-container" data-target="tips"></div>
+                <input type="hidden" id="tips" name="tips" value="<?php echo isset($opportunity_post) ? esc_attr(carbon_get_post_meta($opportunity_post->ID, "tips")) : ""; ?>">
+            </div>
 
 <div class="col-md-12">
     <label for="question_1" class="form-label">What is your company’s elevator pitch?</label>

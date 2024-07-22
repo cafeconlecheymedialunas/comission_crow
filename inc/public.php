@@ -47,8 +47,8 @@ class PublicFront
             'ajax_url' => admin_url('admin-ajax.php'),
         ];
         // Localizar el script con la URL de AJAX
-        wp_localize_script('opportunity', 'ajax_object',$ajax_data );
-        wp_localize_script('profile', 'ajax_object',$ajax_data );
+        wp_localize_script('opportunity', 'ajax_object', $ajax_data);
+        wp_localize_script('profile', 'ajax_object', $ajax_data);
 
        
     }
