@@ -133,21 +133,10 @@
                                                         <li class="list-inline-item">
                                                             <button class="btn btn-secondary commission-request-button btn-sm" data-bs-toggle="modal" data-bs-target="#modal-commission" data-agreement-id="<?php echo esc_attr($agreement->ID); ?>"><i class="fas fa-percentage"></i></button>
                                                         </li>
-                                                        <?php else:?>
-                                                        <li class="list-inline-item">
-                                                            <a class="btn btn-secondary btn-sm"  href="<?php echo home_url("".$agreement->ID); ?>"><i class="fas fa-percentage"></i></a>
-                                                        </li>
                                                         <?php endif;?>
                                                     <?php endif;?>
                                                 <?php endif;?>
-                                                <?php if(in_array("company",$current_user->roles)):?>
-                                                 
-                                                        <?php if($commission_requests):?>
-                                                            <li class="list-inline-item">
-                                                            <a class="btn btn-secondary btn-sm"  href="<?php echo home_url("".$agreement->ID); ?>"><i class="fas fa-percentage"></i></a>
-                                                        </li>
-                                                        <?php endif;?>
-                                                <?php endif;?>
+                                                
                                                 <div class="modal fade" id="chat-modal-<?php echo $user_counterparty_id;?>" tabindex="-1" aria-labelledby="chatModalLabel" aria-hidden="true">
                                                     <div class="modal-dialog">
                                                         <div class="modal-content">
