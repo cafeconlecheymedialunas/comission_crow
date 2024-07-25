@@ -34,7 +34,7 @@ function update_agent_profile() {
         'post_type'   => 'commercial_agent',
         'meta_query'  => array(
             array(
-                'key'     => 'agent',
+                'key'     => 'commercial_agent',
                 'value'   => $user_id,
                 'compare' => '=',
             ),

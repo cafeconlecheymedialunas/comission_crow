@@ -7,7 +7,7 @@ function kamerpower_registration_form()
 
         $registration_enabled = get_option('users_can_register');
         if ($registration_enabled) {
-            $role = isset($_GET['role']) ? sanitize_text_field($_GET['role']) : 'agent';
+            $role = isset($_GET['role']) ? sanitize_text_field($_GET['role']) : 'commercial_agent';
             $output = kamerpower_registration_form_fields($role);
         } else {
             $output = __('User registration is not enabled');
@@ -163,7 +163,7 @@ function kamerpower_new_password_form_fields()
 }
 
 // Manejo de registro por AJAX
-function kamerpower_register_user($role = 'agent')
+function kamerpower_register_user($role = 'commercial_agent')
 {
     check_ajax_referer('kamerpower-register-nonce', 'security');
 
@@ -172,7 +172,7 @@ function kamerpower_register_user($role = 'agent')
     $email = sanitize_email($_POST['kamerpower_user_email']);
     $password = sanitize_text_field($_POST['kamerpower_user_pass']);
     $password_confirm = sanitize_text_field($_POST['kamerpower_user_pass_confirm']);
-    $role = isset($_POST['role']) ? sanitize_text_field($_POST['role']) : 'agent';
+    $role = isset($_POST['role']) ? sanitize_text_field($_POST['role']) : 'commercial_agent';
 
     $errors = new WP_Error();
 
@@ -217,7 +217,7 @@ function kamerpower_register_user($role = 'agent')
         wp_send_json_error($user_id->get_error_messages());
     }
 
-    $post_type = $role == 'agent' ? 'commercial_agent' : 'company';
+    $post_type = $role == 'commercial_agent' ? 'commercial_agent' : 'company';
 
     $agent_post_id = wp_insert_post([
         'post_title' => $first_name . ' ' . $last_name,
@@ -230,7 +230,7 @@ function kamerpower_register_user($role = 'agent')
         wp_send_json_error($agent_post_id->get_error_messages());
     }
 
-    carbon_set_post_meta($agent_post_id, 'agent', $user_id);
+    carbon_set_post_meta($agent_post_id, 'commercial_agent', $user_id);
 
 
 

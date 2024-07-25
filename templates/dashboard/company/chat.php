@@ -1,1 +1,3 @@
-<h1>Chat</h1>
+<div class="card">
+    <?php echo do_shortcode('[better_messages]'); ?>
+</div>

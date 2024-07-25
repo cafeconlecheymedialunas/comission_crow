@@ -13,18 +13,18 @@ class Admin
         $this->create_post_types();
 
         add_action('init', [$this, 'create_role_company']);
-        add_action('init', [$this, 'create_role_agent']);
+        add_action('init', [$this, 'create_role_commercial_agent']);
 
         add_action('carbon_fields_register_fields', [$this, 'register_opportunity_fields']);
         add_action('carbon_fields_register_fields', [$this, 'register_commercial_agent_fields']);
         add_action('carbon_fields_register_fields', [$this, 'register_company_fields']);
-        add_action('carbon_fields_register_fields', [$this, 'register_deal_fields']);
+        add_action('carbon_fields_register_fields', [$this, 'register_agreement_fields']);
         add_action('carbon_fields_register_fields', [$this, 'register_review_fields']);
-        add_action('carbon_fields_register_fields', [$this, 'register_payments_fields']);
+        add_action('carbon_fields_register_fields', [$this, 'register_transaction_fields']);
         add_action('carbon_fields_register_fields', [$this, 'register_dispute_fields']);
+        add_action('carbon_fields_register_fields', [$this, 'register_commission_request_fields']);
         add_filter('use_block_editor_for_post_type', [$this,'disable_block_editor_for_post_type'], 10, 2);
-        
-       
+    
     }
 
    
@@ -38,9 +38,10 @@ class Admin
         $custom_post_types->register('review', 'Review', 'Reviews', ['menu_icon' => 'dashicons-star-empty']);
         $custom_post_types->register('company', 'Company', 'Companies', ['menu_icon' => 'dashicons-store']);
         $custom_post_types->register('commercial_agent', 'Commercial Agent', 'Comercial Agents', ['menu_icon' => 'dashicons-businessperson']);
-        $custom_post_types->register('deal', 'Deal', 'Deals', ['menu_icon' => 'dashicons-heart']);
-        $custom_post_types->register('payment', 'Payment', 'Payments', ['menu_icon' => 'dashicons-yes-alt']);
-        $custom_post_types->register('dispute', 'Dispute', 'Disputes', ['menu_icon' => 'dashicons-yes-alt']);
+        $custom_post_types->register('agreement', 'Agreement', 'Agreements', ['menu_icon' => 'dashicons-heart']);
+        $custom_post_types->register('transaction', 'Transaction', 'Transactions', ['menu_icon' => 'dashicons-bank']);
+        $custom_post_types->register('commission_request', 'Commission Request', 'Commission Requests', ['menu_icon' => 'dashicons-bank']);
+        $custom_post_types->register('dispute', 'Dispute', 'Disputes', ['menu_icon' => 'dashicons-warning']);
 
         //Taxonomies
         $custom_taxonomy->register('skill', ['commercial_agent'], 'Skill', 'Skills');
@@ -57,20 +58,17 @@ class Admin
 
     public function create_role_company()
     {
-        // Obtener el objeto de roles de WordPress
         global $wp_roles;
 
-        // Si el objeto de roles no está disponible, intentar cargarlo
         if (!isset($wp_roles)) {
             $wp_roles = new WP_Roles();
         }
 
         // Comprobar si el rol ya está registrado
         if (!$wp_roles->get_role('company')) {
-            // Obtener las capacidades del rol "Subscriber"
+           
             $subscriber_caps = $wp_roles->get_role('subscriber')->capabilities;
 
-            // Registrar el nuevo rol "Business" con las mismas capacidades que "Subscriber"
             $wp_roles->add_role('company', __('Company'), $subscriber_caps);
         }
         $role = get_role('company');
@@ -78,27 +76,22 @@ class Admin
             $role->remove_cap('read');
             $role->remove_cap('edit_posts');
             $role->remove_cap('delete_posts');
-            // Puedes retirar más capacidades según tus necesidades
         }
     }
 
-    public function create_role_agent()
+    public function create_role_commercial_agent()
     {
-        // Obtener el objeto de roles de WordPress
         global $wp_roles;
 
-        // Si el objeto de roles no está disponible, intentar cargarlo
         if (!isset($wp_roles)) {
             $wp_roles = new WP_Roles();
         }
-
-        // Comprobar si el rol ya está registrado
-        if (!$wp_roles->get_role('agent')) {
-            // Obtener las capacidades del rol "Subscriber"
+       
+        if (!$wp_roles->get_role('commercial_agent')) {
+            
             $subscriber_caps = $wp_roles->get_role('subscriber')->capabilities;
 
-            // Registrar el nuevo rol "Business" con las mismas capacidades que "Subscriber"
-            $wp_roles->add_role('agent', __('Agent'), $subscriber_caps);
+            $wp_roles->add_role('commercial_agent', __('Commercial Agent'), $subscriber_caps);
         }
     }
 
@@ -203,9 +196,9 @@ class Admin
             ])->where('post_type', '=', 'commercial_agent');
     }
 
-    public function register_deal_fields()
+    public function register_agreement_fields()
     {
-        Container::make('post_meta', __('Deal Conditions'))
+        Container::make('post_meta', __('Agreement Conditions'))
 
             ->add_fields([
                 Field::make('select', 'commercial_agent', __('Comercial Agent'))
@@ -220,28 +213,45 @@ class Admin
 
                
             
-                Field::make('date_time', 'date', 'Deal Date'),
+                Field::make('date_time', 'date', 'Agreement Date'),
 
                 Field::make('text', 'commission', 'Commission'),
 
                 Field::make('text', 'minimal_price', 'Minimal Price'),
 
                 Field::make('select', 'status', __('Status'))
-                ->set_options([$this,"get_deal_status"]),
+                ->set_options([$this,"get_agreement_status"]),
+                
+                Field::make('date_time', 'finalization_date', __('Finalization')),
 
-            ])->where('post_type', '=', 'deal');
+
+                Field::make('complex', 'status_history', 'Agreement Status History')
+                ->add_fields([
+                    Field::make('select', 'history_status', __('Status'))
+                    ->set_options([$this,"get_agreement_status"]),
+                    Field::make('text', 'date_status', 'Date'),
+                    Field::make('select', 'changed_by', __('Changed by:'))->add_options([$this,'get_users']),
+
+                   
+                ])
+                ->set_layout('tabbed-horizontal')
+
+            ])->where('post_type', '=', 'agreement');
 
           
     }
 
-    public function register_payments_fields()
+  
+
+    
+    public function register_commission_request_fields()
     {
-        Container::make('post_meta', __('Payment Conditions'))
+        Container::make('post_meta', __('Commission Request Conditions'))
 
             ->add_fields([
 
-                Field::make('select', 'deal_id', __('Deal'))
-                ->add_options([$this,'get_deals']),
+                Field::make('select', 'agreement_id', __('Agreement'))
+                ->add_options([$this,'get_agreements']),
 
                 Field::make('complex', 'items', __('Cart Items'))
                 ->add_fields([
@@ -253,20 +263,55 @@ class Admin
 
                 Field::make('text', 'total', 'Total'),
             
-                Field::make('date_time', 'date', 'Payment Date'),
-                Field::make('text', 'commission', 'Commission'),
+                Field::make('date_time', 'date', 'Transaction Date'),
+        
 
-                Field::make('complex', 'invoices', __('Invoices'))
-                ->add_fields([
-                    Field::make('text', 'title', 'Title'),
-                    Field::make('media_gallery', 'invoice', 'Invoice'),
-                    Field::make('text', 'description', 'Description'),
+            ])->where('post_type', '=', 'commission_request');
+
+          
+    }
+
+    public function register_transaction_fields()
+    {
+        Container::make('post_meta', __('Transaction Conditions'))
+
+            ->add_fields([
+
+                Field::make('select', 'commission_request_id', __('Agreement'))
+                ->add_options([$this,'get_commission_requests']),
+
+    
+                Field::make('select', 'source', 'Source')->add_options([
+                    "deposit" => "Deposit",
+                    "stripe" => "Stripe"
                 ]),
 
-                Field::make('select', 'status', __('Status'))
-                ->set_options([$this,"get_statuses_payments"]),
+                Field::make('complex', 'deposits', __('Invoices'))
+                ->add_fields([
+                    Field::make('text', 'title', 'Title'),
+                    Field::make('file', 'invoice', 'Invoice'),
+                    Field::make('text', 'description', 'Description'),
+                    Field::make('text', 'bank_account_name_holder', __('Name of account holder')),
+                    Field::make('text', 'bank_account_id_holder', __('Number of ID of account holder')),
+                    Field::make('text', 'bank_account_number', __('Bank Account Number')),
+                    Field::make('text', 'bak_account_cvu_alias', __('CVU or Alias')),
 
-            ])->where('post_type', '=', 'payment');
+                ])->set_layout("tabbed-horizontal"),
+
+
+                Field::make('text', 'payment_stripe_id', 'Stripe Payment Id'),
+                
+
+            
+                Field::make('date_time', 'date', 'Transaction Date'),
+    
+
+                Field::make('select', 'status', __('Status'))
+                ->set_options([$this,"get_statuses_transactions"]),
+
+
+
+            ])->where('post_type', '=', 'deposit');
 
           
     }
@@ -278,8 +323,8 @@ class Admin
             ->add_fields([
          
 
-                Field::make('select', 'payment_id', __('Payment'))
-                ->add_options([$this,'get_payments']),
+                Field::make('select', 'transaction_id', __('Transaction'))
+                ->add_options([$this,'get_transactions']),
 
 
 
@@ -312,24 +357,24 @@ class Admin
           
     }
 
-    public function get_deal_status()
+    public function get_agreement_status()
     {
         return [
             'requested' => 'Requested',
             "accepted" => "Accepted",
             "refused" => "Refused",
+            "finishing" => "Finishing",
             'finished' => 'Finished',
         ];
     }
 
-    public function get_statuses_payments()
+    public function get_statuses_transactions()
     {
         return [
             'request' => 'Request',
-            "refused" => "Refused",
+            "dispute" => "In Dispute",
             "accepted" => "Accepted",
-            "pending_payment" => "Pending",
-            "payed" => "Payed"
+            "completed" => "Completed"
         ];
     }
 
@@ -366,7 +411,7 @@ class Admin
     }
     public function get_agent_users()
     {
-        $users = get_users(['role__in' => ['agent', 'administrator'],]);
+        $users = get_users(['role__in' => ['commercial_agent'],]);
     
         $options = [""=>"Select an User"];
     
@@ -383,7 +428,7 @@ class Admin
 
     public function get_users()
     {
-        $users = get_users(['role__in' => ['agent', 'company',"administrator"],]);
+        $users = get_users(['role__in' => ['commercial_agent', 'company',"administrator"],]);
     
         $options = [""=>"Select an User"];
     
@@ -400,7 +445,7 @@ class Admin
     
     public function get_company_users()
     {
-        $users = get_users(['role__in' => ['company', 'administrator'],]);
+        $users = get_users(['role__in' => ['company'],]);
     
         $options = [""=>"Select an User"];
     
@@ -462,38 +507,57 @@ class Admin
         return $options;
     }
 
-    public function get_payments()
+    public function get_transactions()
     {
-        $payments = get_posts([
-            'post_type' => 'payment',
+        $transactions = get_posts([
+            'post_type' => 'transaction',
             'posts_per_page' => -1,
             'post_status' => 'publish'
         ]);
     
         $options = [];
-        if (!empty($payments)) {
-            $options[""]="Select a Payment";
-            foreach ($payments as $payment) {
-                $options[$payment->ID] = $payment->post_title;
+        if (!empty($transactions)) {
+            $options[""]="Select a Transaction";
+            foreach ($transactions as $transaction) {
+                $options[$transaction->ID] = $transaction->post_title;
             }
         }
     
         return $options;
     }
 
-    public function get_deals()
+    public function get_deposits()
     {
-        $deals = get_posts([
-            'post_type' => 'deal',
+        $deposits = get_posts([
+            'post_type' => 'deposit',
             'posts_per_page' => -1,
             'post_status' => 'publish'
         ]);
     
         $options = [];
-        if (!empty($deals)) {
-            $options[""]="Select a deal";
-            foreach ($deals as $deal) {
-                $options[$deal->ID] = $deal->post_title;
+        if (!empty($deposits)) {
+            $options[""]="Select a Deposit";
+            foreach ($deposits as $deposit) {
+                $options[$deposit->ID] = $deposit->post_title;
+            }
+        }
+    
+        return $options;
+    }
+
+    public function get_agreements()
+    {
+        $agreements = get_posts([
+            'post_type' => 'agreement',
+            'posts_per_page' => -1,
+            'post_status' => 'publish'
+        ]);
+    
+        $options = [];
+        if (!empty($agreements)) {
+            $options[""]="Select a agreement";
+            foreach ($agreements as $agreement) {
+                $options[$agreement->ID] = $agreement->post_title;
             }
         }
     
@@ -542,7 +606,7 @@ class Admin
         global $typenow;
 
         // Lista de tipos de publicaciones personalizadas
-        $custom_post_types = ['opportunity', 'review', 'deal', "company", "commercial_agent", "payment","dispute"];
+        $custom_post_types = ['opportunity', 'review', 'agreement', "company", "commercial_agent", "transaction","dispute","commission_request"];
 
         // Verificar si el tipo de publicación actual está en la lista
         if (in_array($typenow, $custom_post_types)) {
@@ -564,7 +628,7 @@ class Admin
     public function disable_block_editor_for_post_type($use_block_editor, $post_type)
     {
         // Define los post types donde quieres deshabilitar el editor de bloques
-        $post_types = ['commercial_agent', 'company',"deal","opportunity","review","dispute","payment"]; // Reemplaza con tus post types
+        $post_types = ['commercial_agent', 'company',"agreement","opportunity","review","dispute","transaction","deposit"]; // Reemplaza con tus post types
     
         // Comprueba si el post type actual está en la lista definida
         if (in_array($post_type, $post_types)) {

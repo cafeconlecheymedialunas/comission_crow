@@ -42,6 +42,7 @@ $linkedin_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, '
 $tiktok_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'tiktok_url') : '';
 $youtube_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'youtube_url') : '';
 
+echo do_shortcode('[fullstripe_form name="Prueba" type="inline_save_card"]');
 
 
 ?>
@@ -148,21 +149,7 @@ $youtube_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'y
                             </select>
                         </div>
                     <?php endif;?>
-                    <?php if($selling_method_terms):?>
-                        <div class="col-md-6">
-                            <label for="selling_method[]" class="form-label">Selling Methods:</label>
-                            <select name="selling_method[]" class="custom-select">
-                                <option value="">Select an option</option>
-                                <?php foreach ($selling_method_terms as $term): ?>
-                                    <option 
-                                        value="<?php echo esc_attr($term->term_id); ?>" 
-                                        <?php selected($selling_method[0], $term->term_id); ?>>
-                                        <?php echo esc_html($term->name); ?>
-                                    </option>
-                                <?php endforeach;?>
-                            </select>
-                        </div>
-                    <?php endif;?>
+                 
                     <div class="col-md-6">
                         <label for="employees_number">Number of employees</label>
                         <input type="text" name="employees_number" class="form-control" value="<?php echo esc_attr($employees_number); ?>" placeholder="employees_number">
@@ -212,4 +199,5 @@ $youtube_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'y
                 "/templates/dashboard/form-password.php"; ?>
         </div>
     </div>
+    <?php comments_template( '', true ); ?>
 </div>

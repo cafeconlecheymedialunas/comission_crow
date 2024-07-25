@@ -16,6 +16,13 @@ get_header("dashboard");
 
 $current_user = wp_get_current_user();
 $role = get_query_var('role');
+
+if ($role === "commercial-agent") {
+    $key_role = "commercial_agent";
+} else {
+    $key_role = $role;
+}
+
 $subpages = get_query_var('subpages');
 
 // Function to check user roles
@@ -24,6 +31,10 @@ function user_has_role($roles)
     $user = wp_get_current_user();
     if (empty($user->roles)) {
         return false;
+    }
+    // Check if user is an administrator
+    if (in_array('administrator', $user->roles)) {
+        return true;
     }
     foreach ($roles as $role) {
         if (in_array($role, $user->roles)) {
@@ -60,9 +71,14 @@ function get_template_for_role($role, $subpages)
             <div class="col-md-9 position-relative">
                 <?php
                 // Check if the user has the appropriate role and if the URL role matches the user's role
-                if (user_has_role([$role, 'administrator']) && (in_array($role, $current_user->roles) || in_array('administrator', $current_user->roles))) {
-                    // Get the appropriate template for the role and subpages
-                    $template_path = get_template_for_role($role, $subpages);
+                if (user_has_role([$key_role])) {
+                    // If user is an administrator, allow access to all templates
+                    if (in_array('administrator', $current_user->roles)) {
+                        $template_path = get_template_for_role($key_role, $subpages);
+                    } else {
+                        // Get the appropriate template for the role and subpages
+                        $template_path = get_template_for_role($role, $subpages);
+                    }
 
                     if ($template_path) {
                         include $template_path;
@@ -73,13 +89,11 @@ function get_template_for_role($role, $subpages)
                     // Show access denied message
                     echo '<div class="alert alert-danger">Access denied. You do not have permission to access this page.</div>';
                 }
-
-// Include a spinner (optional)
-$spinner_template = 'templates/spinner.php';
-if (locate_template($spinner_template)) {
-    include locate_template($spinner_template);
-}
-?>
+                $spinner_template = 'templates/spinner.php';
+                if (locate_template($spinner_template)) {
+                    include locate_template($spinner_template);
+                }
+                ?>
             </div>
         </div>
     </div>

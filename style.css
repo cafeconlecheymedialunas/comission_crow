@@ -174,3 +174,11 @@ select {
 label.error {
   color: #dc3545 !important;
 }
+
+.error-message {
+  display: none;
+  color: red;
+}
+.subtotal, .total {
+  font-weight: bold;
+}

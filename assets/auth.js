@@ -21,7 +21,7 @@ jQuery(document).ready(function ($) {
             window.location.href = "/auth/?action=login";
           });
         } else {
-          $("#kamerpower_registration_errors").html(data.message);
+          $("#kamerpower_registration_errors").html(response.data);
         }
       },
     });
@@ -49,7 +49,7 @@ jQuery(document).ready(function ($) {
             window.location.href = "/dashboard";
           });
         } else {
-          $("#kamerpower_login_errors").html(data.message);
+          $("#kamerpower_login_errors").html(response.data);
         }
       },
     });
@@ -72,7 +72,7 @@ jQuery(document).ready(function ($) {
             showConfirmButton: true,
           });
         } else {
-          $("#kamerpower_reset_errors").html(data.message);
+          $("#kamerpower_reset_errors").html(response.data);
         }
       },
     });

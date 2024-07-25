@@ -79,6 +79,7 @@ $selected_seller_type = wp_get_post_terms($commercial_agent_post->ID, 'seller_ty
 ?>
                         </div>
                     </div>
+
                     <div class="col-md-12">
                         <label for="description" class="form-label">Description</label>
                         <div class="editor-container" data-target="description"></div>
@@ -189,6 +190,7 @@ $selected_seller_type = wp_get_post_terms($commercial_agent_post->ID, 'seller_ty
             <div id="profile-update-message"></div>
             </div>
     </div>
+    
     <div class="col-md-4">
         <div class="card">
             <?php include get_template_directory() .

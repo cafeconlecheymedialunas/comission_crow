@@ -246,7 +246,7 @@ jQuery(document).ready(function ($) {
                   window.location.href = "/dashboard/company/profile";
                 });
               } else {
-                console.log(response)
+                console.log(response);
                 $("#update-user-data").validate().showErrors();
               }
             },

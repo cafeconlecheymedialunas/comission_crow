@@ -39,6 +39,7 @@ class CommercialAgent
         $this->set_current_agent();
         return $this->commercial_agent;
     }
+
    
     
     public function save_agent_profile()
@@ -115,11 +116,11 @@ class CommercialAgent
         wp_die();
     }
     
-    public function get_deals($status = "")
-    {
     
+    public function get_agreements($statuses = [], $type = "")
+    {
         $args = [
-            'post_type' => 'deal',
+            'post_type' => 'agreement',
             'meta_query' => [
                 [
                     'key' => 'commercial_agent',
@@ -130,14 +131,42 @@ class CommercialAgent
             'posts_per_page' => -1,
         ];
 
-        if ($status != "") {
+        // Verificar si $statuses es un array y no está vacío
+        if (is_array($statuses) && !empty($statuses)) {
             $args['meta_query'][] = [
                 'key' => 'status',
-                'value' => $status,
-                'compare' => '='
+                'value' => $statuses,
+                'compare' => 'IN' // Esto funcionará como un OR en meta_query
             ];
         }
+
         $query = new WP_Query($args);
-        return $query->posts; // Devolver los posts
+
+        // Si no se especifica el tipo, devolver todos los posts encontrados
+        if (!$type) {
+            return $query->posts;
+        }
+
+        $agreements = [];
+        $current_user = wp_get_current_user();
+
+        foreach ($query->posts as $agreement) {
+            $history_status = carbon_get_post_meta($agreement->ID, 'status_history');
+
+            if (empty($history_status)) {
+                continue;
+            }
+
+            $history_status_start = $history_status[0];
+            $sender = isset($history_status_start["changed_by"]) ? $history_status_start["changed_by"] : null;
+
+            if ($type == "requested" && $current_user->ID === $sender) {
+                $agreements[] = $agreement;
+            } elseif ($type == "received" && $current_user->ID !== $sender) {
+                $agreements[] = $agreement;
+            }
+        }
+
+        return $agreements;
     }
 }
