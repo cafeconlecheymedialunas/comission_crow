@@ -3,7 +3,12 @@
 <head>
 	<meta charset="<?php bloginfo('charset'); ?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
 	<?php wp_head(); ?>
 </head>
 
@@ -58,13 +63,14 @@ endif;
         ]
     );
 
-                        
+
 ?>
 							 
 								<ul class="navbar-nav">
 									<?php if (!is_user_logged_in()): ?>
-										<a class="btn btn-primary" href="<?php echo esc_url(home_url("/auth?action=login")); ?>">Login</a>
-										<a class="btn btn-secondary" href="<?php echo esc_url(home_url("/auth?action=register")); ?>">Register</a>
+										<a class="nav-link" href="<?php echo esc_url(home_url("/auth?action=login")); ?>">Login</a>
+										<a class="nav-link" href="<?php echo esc_url(home_url("/auth?action=register&role=commercial_agent")); ?>">Register as a Agent</a>
+										<a class="nav-link" href="<?php echo esc_url(home_url("/auth?action=register&role=company")); ?>">Register as a Company</a>
 									<?php else: ?>
 										<li class="nav-item"><a class="nav-link" href="<?php echo site_url('/dashboard'); ?>">Dashboard</a></li>
 										<li><a href="<?php echo site_url('/dashboard/overview'); ?>">Overview</a></li>
@@ -75,7 +81,7 @@ endif;
 								</ul>
 							
 					<?php
-                        
+
 ?>
 				</div><!-- /.navbar-collapse -->
 			</div><!-- /.container -->
@@ -85,11 +91,11 @@ endif;
 	<main id="main" class="container"<?php if (isset($navbar_position) && 'fixed_top' === $navbar_position) : echo ' style="padding-top: 100px;"';
 	elseif (isset($navbar_position) && 'fixed_bottom' === $navbar_position) : echo ' style="padding-bottom: 100px;"'; endif; ?>>
 		<?php
-            // If Single or Archive (Category, Tag, Author or a Date based page).
-            if (is_single() || is_archive()) :
-                ?>
+	        // If Single or Archive (Category, Tag, Author or a Date based page).
+	        if (is_single() || is_archive()) :
+	            ?>
 			<div class="row">
 				<div class="col-md-8 col-sm-12">
 		<?php
-            endif;
+	        endif;
 ?>

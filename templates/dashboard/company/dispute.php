@@ -9,13 +9,16 @@ $current_user = wp_get_current_user();
 
 ?>
 <div class="card mb-4">
-    <h2 class="mb-0"><?php echo __("Received commission requests"); ?></h2>
+    <h2 class="mb-0"><?php echo __("Disputes"); ?></h2>
+    <?php if(in_array("commercial_agent", $current_user->roles)):?>
+        <button class="btn btn-secondary commission-request-button btn-sm" data-bs-toggle="modal" data-bs-target="#modal-commission">Add new</button>
+    <?php endif;?>
 </div>
 <div class="row">
     <div class="col-md-12">
         <div class="card">
             <div class="table-responsive">
-            <?php $template_path = 'templates/dashboard/table-commission.php';
+            <?php $template_path = 'templates/dashboard/table-dispute.php';
 if (locate_template($template_path)) {
     include locate_template($template_path);
 }
@@ -28,15 +31,7 @@ if (locate_template($template_path)) {
 
 
 
-
-<?php $template_path = 'templates/dashboard/form-contract.php';
-if (locate_template($template_path)) {
-    include locate_template($template_path);
-}
-
-
-?>
-<?php $template_path = 'templates/dashboard/form-request-commission.php';
+<?php $template_path = 'templates/dashboard/form-dispute.php';
 if (locate_template($template_path)) {
     include locate_template($template_path);
 }

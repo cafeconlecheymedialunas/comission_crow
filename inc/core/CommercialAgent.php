@@ -76,9 +76,11 @@ class CommercialAgent
             'post_author' => $current_user->ID,
             "post_content" => $description
         ]);
+
+
     
         if (is_wp_error($agent_post_id)) {
-            wp_send_json_error("Error when updating the profile");
+            wp_send_json_error($agent_post_id);
             wp_die();
         }
     
@@ -117,10 +119,10 @@ class CommercialAgent
     }
     
     
-    public function get_agreements($statuses = [], $type = "")
+    public function get_contracts($statuses = [], $type = "")
     {
         $args = [
-            'post_type' => 'agreement',
+            'post_type' => 'contract',
             'meta_query' => [
                 [
                     'key' => 'commercial_agent',
@@ -147,11 +149,11 @@ class CommercialAgent
             return $query->posts;
         }
 
-        $agreements = [];
+        $contracts = [];
         $current_user = wp_get_current_user();
 
-        foreach ($query->posts as $agreement) {
-            $history_status = carbon_get_post_meta($agreement->ID, 'status_history');
+        foreach ($query->posts as $contract) {
+            $history_status = carbon_get_post_meta($contract->ID, 'status_history');
 
             if (empty($history_status)) {
                 continue;
@@ -160,13 +162,13 @@ class CommercialAgent
             $history_status_start = $history_status[0];
             $sender = isset($history_status_start["changed_by"]) ? $history_status_start["changed_by"] : null;
 
-            if ($type == "requested" && $current_user->ID === $sender) {
-                $agreements[] = $agreement;
+            if ($type == "pending" && $current_user->ID === $sender) {
+                $contracts[] = $contract;
             } elseif ($type == "received" && $current_user->ID !== $sender) {
-                $agreements[] = $agreement;
+                $contracts[] = $contract;
             }
         }
 
-        return $agreements;
+        return $contracts;
     }
 }

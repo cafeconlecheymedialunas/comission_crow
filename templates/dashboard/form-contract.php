@@ -39,8 +39,8 @@ $opportunities = $opportunities_query->posts;
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-       <form id="save-agreement" enctype="multipart/form-data">
-       <h2>Add Agreement</h2>
+       <form id="save-contract" enctype="multipart/form-data">
+       <h2>Add Contract</h2>
        <div class="row">
            <?php if(!$company_post &&  $companies): ?>
                <div class="col-md-6">
@@ -99,7 +99,7 @@ $opportunities = $opportunities_query->posts;
            </div>
        </div>
    
-       <input type="hidden" name="security" value="<?php echo wp_create_nonce('create_agreement_nonce'); ?>">
+       <input type="hidden" name="security" value="<?php echo wp_create_nonce('create_contract_nonce'); ?>">
        <?php if($company_post):?>
        <input type="hidden" name="company_id" value="<?php echo $company_post->ID;?>">
        <input type="hidden" name="entity_type" value="<?php echo "company";?>">
@@ -113,7 +113,7 @@ $opportunities = $opportunities_query->posts;
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="submit" form="save-agreement" class="btn btn-primary">Save changes</button>
+        <button type="submit" form="save-contract" class="btn btn-primary">Save changes</button>
       </div>
     </div>
   </div>

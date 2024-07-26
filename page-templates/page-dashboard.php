@@ -54,21 +54,23 @@ function get_template_for_role($role, $subpages)
     }
     return false;
 }
-
+$associated_post = get_user_associated_post_type();
 ?>
 
-<div class="dashboard">
+
+<div class="dashboard pt-30">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-3">
-                <div class="user-profile card mb-4">
-                    <img src="" alt="">
-                    <h2><?php echo esc_html($current_user->display_name); ?></h2>
-                    <h3><?php echo esc_html($current_user->user_email); ?></h3>
+            <div class="col-xl-3 col-lg-4">
+                <div class="user-profile card mb-4 d-flex justify-content-center align-items-center">
+                    <?php echo get_the_post_thumbnail($associated_post->ID, "full", [ 'class' => 'img-fluid' ]);?>
+                    <h5><?php echo esc_html($current_user->display_name); ?></h5>
+                    <p><?php echo esc_html($current_user->user_email); ?></p>
+                    <a class="view-profile">View Profile</a>
                 </div>
                 <?php include get_template_directory() . '/templates/dashboard/menu.php'; ?>
             </div>
-            <div class="col-md-9 position-relative">
+            <div class="col-xl-9 col-lg-8 position-relative">
                 <?php
                 // Check if the user has the appropriate role and if the URL role matches the user's role
                 if (user_has_role([$key_role])) {
@@ -89,11 +91,7 @@ function get_template_for_role($role, $subpages)
                     // Show access denied message
                     echo '<div class="alert alert-danger">Access denied. You do not have permission to access this page.</div>';
                 }
-                $spinner_template = 'templates/spinner.php';
-                if (locate_template($spinner_template)) {
-                    include locate_template($spinner_template);
-                }
-                ?>
+?>
             </div>
         </div>
     </div>

@@ -1,5 +1,6 @@
 <?php
-class Agreement{
+class Contract
+{
 
     private function __construct()
     {
@@ -13,9 +14,9 @@ class Agreement{
         return self::$instance;
     }
 
-    public function create_agreement()
+    public function create_contract()
     {
-        check_ajax_referer('create_agreement_nonce', 'security');
+        check_ajax_referer('create_contract_nonce', 'security');
     
         $entity_type = $_POST["entity_type"];
     
@@ -49,7 +50,7 @@ class Agreement{
         }
         
         $args = [
-            'post_type'   => 'agreement',
+            'post_type'   => 'contract',
             'meta_query'  => [
                 'relation' => 'AND',
                 [
@@ -73,7 +74,11 @@ class Agreement{
         $query = new WP_Query($args);
     
         if (is_wp_error($query)) {
-            wp_send_json_error('Failed to retrieve agreements.');
+            wp_send_json_error('Failed to retrieve contracts.');
+        }
+
+        if (!empty($query->posts)) {
+            wp_send_json_error('Already exist a vigent contract.');
         }
        
      
@@ -81,12 +86,12 @@ class Agreement{
         foreach($query->posts as $item) {
             $status = carbon_get_post_meta($item->ID, 'status');
     
-            if($status == "requested") {
-                wp_send_json_error("There is already an requested agreement proposal. Accept or rejet that proposal before starting another one.");
+            if($status == "pending") {
+                wp_send_json_error("There is already an requested contract proposal. Accept or rejet that proposal before starting another one.");
             }
     
             if($status == "accepted") {
-                wp_send_json_error("There is already an accepted agreement proposal. Finish that proposal before starting another one.");
+                wp_send_json_error("There is already an accepted contract proposal. Finish that proposal before starting another one.");
             }
     
         }
@@ -96,47 +101,48 @@ class Agreement{
         $company_title = get_the_title($company);
         $commercial_agent_title = get_the_title($commercial_agent);
     
-        $agreement_data = [
+        $contract_data = [
             'post_title' => "Opportunity: $opportunity_title, Company: $company_title, Commercial Agent: $commercial_agent_title",
             "post_content" => $content,
-            'post_type' => 'agreement',
+            'post_type' => 'contract',
             'post_status' => 'publish'
         ];
     
-        $agreement_id = wp_insert_post($agreement_data);
+        $contract_id = wp_insert_post($contract_data);
     
-        if (is_wp_error($agreement_id)) {
-            wp_send_json_error('Failed to save agreement.');
+        if (is_wp_error($contract_id)) {
+            wp_send_json_error('Failed to save contract.');
         }
         
-        $status_history = $this->add_item_to_status_history($agreement_id);
+        $status_history = $this->add_item_to_status_history($contract_id);
     
         
      
     
-        carbon_set_post_meta($agreement_id, 'company', $company);
-        carbon_set_post_meta($agreement_id, 'commercial_agent', $commercial_agent);
-        carbon_set_post_meta($agreement_id, 'opportunity', $opportunity);
-        carbon_set_post_meta($agreement_id, 'minimal_price', $minimal_price);
-        carbon_set_post_meta($agreement_id, 'commission', $commission);
-        carbon_set_post_meta($agreement_id, 'date', current_time("mysql"));
-        carbon_set_post_meta($agreement_id, "status_history", $status_history);
+        carbon_set_post_meta($contract_id, 'company', $company);
+        carbon_set_post_meta($contract_id, 'commercial_agent', $commercial_agent);
+        carbon_set_post_meta($contract_id, 'opportunity', $opportunity);
+        carbon_set_post_meta($contract_id, 'minimal_price', $minimal_price);
+        carbon_set_post_meta($contract_id, 'commission', $commission);
+        carbon_set_post_meta($contract_id, 'date', current_time("mysql"));
+        carbon_set_post_meta($contract_id, "status_history", $status_history);
     
     
     
-        wp_send_json_success('agreement saved successfully!');
+        wp_send_json_success(wp_get_current_user());
     }
 
 
-    public function update_agreement_status()
+    public function update_contract_status()
     {
-        check_ajax_referer('update-status-agreement-nonce', 'security');
+        check_ajax_referer('update-status-contract-nonce', 'security');
 
-        $agreement_id = intval($_POST['agreement_id']);
+        $contract_id = intval($_POST['contract_id']);
         $new_status = sanitize_text_field($_POST['status']);
+
         $current_user = wp_get_current_user();
 
-        if (!$agreement_id || !$new_status) {
+        if (!$contract_id || !$new_status) {
             wp_send_json_error('Invalid request.');
         }
 
@@ -147,19 +153,20 @@ class Agreement{
             
                 $finalization_date = date('Y-m-d H:i:s', strtotime('+30 days'));
                 $new_status = "finishing";
-                carbon_set_post_meta($agreement_id, 'finalization_date', $finalization_date);
+                carbon_set_post_meta($contract_id, 'finalization_date', $finalization_date);
             
             }
         }
-        $status_history = $this->add_item_to_status_history($agreement_id, $new_status);
-        carbon_set_post_meta($agreement_id, 'status', $new_status);
-        carbon_set_post_meta($agreement_id, 'status_history', $status_history);
+        $status_history = $this->add_item_to_status_history($contract_id, $new_status);
+        carbon_set_post_meta($contract_id, 'status', $new_status);
+        carbon_set_post_meta($contract_id, 'status_history', $status_history);
 
-        wp_send_json_success('Agreement status updated successfully.');
+        wp_send_json_success('Contract status updated successfully.');
     }
 
-    private function add_item_to_status_history($agreement_id, $status = "requested"){
-        $status_history = get_post_meta($agreement_id, 'status_history', true);
+    private function add_item_to_status_history($contract_id, $status = "pending")
+    {
+        $status_history = get_post_meta($contract_id, 'status_history', true);
         
         if (!is_array($status_history)) {
             $status_history = [];

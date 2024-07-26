@@ -42,8 +42,7 @@ $linkedin_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, '
 $tiktok_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'tiktok_url') : '';
 $youtube_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'youtube_url') : '';
 
-echo do_shortcode('[fullstripe_form name="Prueba" type="inline_save_card"]');
-
+//echo do_shortcode('[fullstripe_form name="Prueba" type="inline_save_card"]');
 
 ?>
 <div class="row">
@@ -199,5 +198,5 @@ echo do_shortcode('[fullstripe_form name="Prueba" type="inline_save_card"]');
                 "/templates/dashboard/form-password.php"; ?>
         </div>
     </div>
-    <?php comments_template( '', true ); ?>
+    <?php comments_template('', true); ?>
 </div>

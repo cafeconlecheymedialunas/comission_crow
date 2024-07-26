@@ -8,14 +8,15 @@ $opportunities = $company->get_opportunities();
 
 
 ?>
-<div class="card mb-4">
-	<h2 class="mb-0"><?php echo __("Opportunities"); ?><a href="<?php echo home_url("/dashboard/company/opportunity/create"); ?>">Add new</a></h2>
+<div class="card mb-4 flex-row d-flex justify-content-between align-items-center">
+	<h2 class="mb-0 d-inline"><?php echo __("Opportunities"); ?></h2>
+    <a class="btn btn-primary" href="<?php echo home_url("/dashboard/company/opportunity/create"); ?>">Add new</a>
 </div>
 <div class="row">
     <div class="col-md-12">
         <div class="card">
             <div class="table-responsive">
-                <table class="table">
+                <table class="table custom-table">
                     <thead>
                         <tr>
                             <th scope="col">#</th>
@@ -46,22 +47,24 @@ $opportunities = $company->get_opportunities();
                                         <td><?php echo esc_html($price); ?></td>
                                         <td><?php echo esc_html($commission); ?></td>
                                         <td><?php echo esc_html($country[0]); ?></td>
+                                        
                                         <td>
-                                        <td>
-                                            <ul class="list-inline mb-0">
-                                                <li class="list-inline-item"><a href="<?php echo home_url("/dashboard/company/opportunity/edit"). "?opportunity_id=". esc_attr($opportunity->ID); ?>"><i class="fa-regular fa-pen-to-square"></i></a></li>
-                                                <li class="list-inline-item">
-                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#delete<?php echo esc_attr($opportunity->ID); ?>">
-                                                        <i class="fa-solid fa-trash"></i>
-                                                    </a>     
-                                                    <form class="delete-opportunity-form">
+                                            <div class="mb-0">
+                                                    <a class="btn btn-link btn-success" href="<?php echo home_url("/dashboard/company/opportunity/edit"). "?opportunity_id=". esc_attr($opportunity->ID); ?>"><i class="fa-regular fa-pen-to-square"></i></a>
+                                             
+                                                    <a class="btn btn-link btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#delete<?php echo esc_attr($opportunity->ID); ?>">
+                                                        <i class="fa-solid text-danger fa-trash"></i>
+                                                    </a>
+                                                
+                                                 
+                                                    <form class="delete-opportunity-form d-inline">
                                                         <input type="hidden" name="security" value="<?php echo wp_create_nonce("delete-opportunity-nonce"); ?>"/>
                                                         <input type="hidden" name="opportunity_id" value="<?php echo esc_attr($opportunity->ID); ?>">
-                                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                                        <button type="submit" class="btn btn-link btn-danger"><i class="fa-solid text-danger fa-trash"></i></button>
                                                     </form>
    
-                                                </li>
-                                            </ul>
+                                                
+                                            </div>
                                         </td>
                                     </tr>
                             <?php endforeach; ?>

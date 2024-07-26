@@ -18,75 +18,50 @@ Text Domain: comission_crow
 
 /* From http://codex.wordpress.org/CSS */
 
-.auth-page {
-  background-color: transparent;
-  background-image: linear-gradient(180deg, #6787fe 0%, #0f1b63 100%);
-  min-height: 100vh;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+/* General Styles */
+
+html {
+  line-height: 1.15;
+  /* 1 */
+  -webkit-text-size-adjust: 100%;
+  /* 2 */
 }
-.auth-page .form-wrap {
+
+body {
+  font-family: Rubik;
+  margin: 0;
+  color: #4a6375;
+  line-height: 28px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: Poppins;
+  font-weight: bold;
+  color: #333;
+  -ms-word-wrap: break-word;
+  word-wrap: break-word;
+  margin-bottom: 1rem;
+}
+
+pre {
+  background: #fafafa;
   padding: 20px;
-  background: #fff;
-  z-index: 100;
-  position: relative;
-}
-.auth-page svg {
-  transform: rotate(180deg);
-  position: absolute;
-  bottom: 0;
-  fill: white;
-  max-width: 100%;
-  width: calc(160% + 1.3px);
-  height: 269px;
 }
 
-.auth-page .form-control {
-  border-radius: 50px;
-}
-.auth-page .auth-title {
-  color: #ffffff;
-  font-family: "Poppins", Sans-serif;
-  font-size: 56px;
-  font-weight: 700;
-  line-height: 63px;
-  margin-bottom: 20px;
-}
-
-.auth-page .auth-description {
-  color: #ffffff;
-  font-family: "Poppins", Sans-serif;
-  font-size: 22px;
-  font-weight: 300;
-  line-height: 33px;
-  max-width: 80%;
-}
-
-.auth-page .custom-logo-link {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.auth-page .custom-logo {
-  max-width: 100px;
-  height: auto;
-  margin: 0 auto;
-}
-
-.auth-page .site-title {
-  color: rgb(74, 99, 117);
-  text-align: center;
-  font-size: 22px;
-  font-weight: 500;
-  margin-bottom: 30px;
-  margin-top: 20px;
-}
-.form-field,
-.form-control,
-select {
+.input-text,
+select,
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="text"],
+input[type="url"],
+input[type="number"],
+textarea {
   width: 100%;
   border: 1px solid #dfdfdf;
   height: 60px;
@@ -95,40 +70,177 @@ select {
   -webkit-transition: 0.3s linear;
   -o-transition: 0.3s linear;
   transition: 0.3s linear;
-  background-color: white !important;
-  color: black !important;
 }
-.form-field:active,
-.form-control:active,
-.form-control:focus {
-  outline: none !important;
-  border-color: #dee2e6 !important;
+
+input[type="file"] {
+  width: 100%;
+  border: 1px solid #dfdfdf;
+  border-radius: 50px;
+  -webkit-transition: 0.3s linear;
+  -o-transition: 0.3s linear;
+  transition: 0.3s linear;
 }
-.form-select {
-  margin-bottom: 20px;
+
+textarea {
+  padding: 20px !important;
+  height: 160px;
+  border-radius: 20px !important;
 }
-.auth-page button {
-  background: #6787fe;
-  display: inline-block;
-  padding: 18px 50px;
+
+button,
+input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+  cursor: pointer;
   color: #fff;
-  font-size: 1rem;
+  font-size: 16px;
+  border-radius: 50px;
+  height: 60px;
+  padding: 0 50px;
   border: none;
 }
 
-.auth-page button {
-  border-radius: 50px;
+label.inline,
+input[type="checkbox"] + label {
+  display: inline;
+  font-weight: 400;
+  margin-left: 0.5rem;
 }
 
-.auth-page .another-pages {
-  margin-top: 0.8rem;
-  padding-top: 0.5rem;
-  border-top: 1px solid #f1f1f1;
-  color: rgb(74, 99, 117);
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -o-appearance: none;
+  /* no standardized syntax available, no ie-friendly solution available */
+  background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+  background-repeat: no-repeat;
+  background-position-x: 98%;
+  background-position-y: 50%;
+  border-radius: 50px !important;
 }
-.auth-page .another-pages a {
-  color: rgb(74, 99, 117);
-  font-size: 16px;
+
+/*For IE*/
+select::-ms-expand {
+  display: none;
+}
+
+table {
+  width: 100%;
+}
+
+table th {
+  font-weight: 500;
+}
+
+th,
+td {
+  border: 0.1rem solid #ddd;
+  line-height: 26px;
+  margin: 0;
+  overflow: visible;
+  padding: 0.5em;
+}
+
+label {
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+a {
+  background-color: transparent;
+}
+
+a,
+a:hover {
+  text-decoration: none;
+}
+
+button:focus,
+a:focus {
+  outline: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+dl,
+ol,
+ul {
+  padding-left: 18px;
+}
+
+dd {
+  margin: 0 1rem 1rem;
+}
+
+li > ul,
+li > ol {
+  margin-bottom: 0;
+  margin-left: 1.5em;
+}
+
+b,
+strong {
+  color: #4a6375;
+}
+
+blockquote:not(:last-child) {
+  margin-bottom: 20px;
+}
+
+blockquote {
+  background: #f8fafb;
+  padding-left: 60px;
+  position: relative;
+  padding: 20px 30px;
+  border-radius: 15px;
+}
+
+blockquote:before {
+  position: absolute;
+  content: "\f10e";
+  font-family: "Font Awesome 5 Pro";
+  font-weight: 500;
+  font-size: 42px;
+  bottom: 20px;
+  right: 26px;
+  opacity: 0.1;
+}
+
+blockquote > * {
+  z-index: 1;
+  position: relative;
+  margin-bottom: 0;
+}
+
+blockquote p {
+  font-size: 24px;
+  color: #4a6375;
+  font-weight: 500;
+  line-height: 35px;
+}
+
+blockquote cite {
+  position: relative;
+  display: inline-block;
+  font-style: inherit;
+  padding-top: 10px;
+  margin-left: 15px;
+}
+
+blockquote cite:before {
+  position: absolute;
+  content: "/";
+  bottom: 0;
+  left: -15px;
+}
+
+*:before,
+*:after {
+  -webkit-box-sizing: inherit;
+  box-sizing: inherit;
 }
 
 .dashboard-header .custom-logo {
@@ -171,14 +283,15 @@ select {
 .form-control:focus {
   box-shadow: none !important;
 }
-label.error {
-  color: #dc3545 !important;
-}
 
-.error-message {
-  display: none;
-  color: red;
-}
-.subtotal, .total {
+
+
+.subtotal,
+.total {
   font-weight: bold;
 }
+
+.custom-spinner {
+  z-index: 10000;
+}
+

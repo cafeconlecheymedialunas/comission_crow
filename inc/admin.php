@@ -18,7 +18,7 @@ class Admin
         add_action('carbon_fields_register_fields', [$this, 'register_opportunity_fields']);
         add_action('carbon_fields_register_fields', [$this, 'register_commercial_agent_fields']);
         add_action('carbon_fields_register_fields', [$this, 'register_company_fields']);
-        add_action('carbon_fields_register_fields', [$this, 'register_agreement_fields']);
+        add_action('carbon_fields_register_fields', [$this, 'register_contract_fields']);
         add_action('carbon_fields_register_fields', [$this, 'register_review_fields']);
         add_action('carbon_fields_register_fields', [$this, 'register_transaction_fields']);
         add_action('carbon_fields_register_fields', [$this, 'register_dispute_fields']);
@@ -37,8 +37,8 @@ class Admin
         $custom_post_types->register('opportunity', 'Opportunity', 'Opportunities', ['menu_icon' => 'dashicons-search']);
         $custom_post_types->register('review', 'Review', 'Reviews', ['menu_icon' => 'dashicons-star-empty']);
         $custom_post_types->register('company', 'Company', 'Companies', ['menu_icon' => 'dashicons-store']);
-        $custom_post_types->register('commercial_agent', 'Commercial Agent', 'Comercial Agents', ['menu_icon' => 'dashicons-businessperson']);
-        $custom_post_types->register('agreement', 'Agreement', 'Agreements', ['menu_icon' => 'dashicons-heart']);
+        $custom_post_types->register('commercial_agent', 'Commercial Agent', 'Commercial Agents', ['menu_icon' => 'dashicons-businessperson']);
+        $custom_post_types->register('contract', 'Contract', 'Contracts', ['menu_icon' => 'dashicons-heart']);
         $custom_post_types->register('transaction', 'Transaction', 'Transactions', ['menu_icon' => 'dashicons-bank']);
         $custom_post_types->register('commission_request', 'Commission Request', 'Commission Requests', ['menu_icon' => 'dashicons-bank']);
         $custom_post_types->register('dispute', 'Dispute', 'Disputes', ['menu_icon' => 'dashicons-warning']);
@@ -181,7 +181,7 @@ class Admin
     public function register_commercial_agent_fields()
     {
 
-        Container::make('post_meta', __('Agent Info'))
+        Container::make('post_meta', __('Commercial Agent Info'))
 
             ->add_fields([
                 Field::make('select', 'user_id', __('User'))
@@ -196,12 +196,12 @@ class Admin
             ])->where('post_type', '=', 'commercial_agent');
     }
 
-    public function register_agreement_fields()
+    public function register_contract_fields()
     {
-        Container::make('post_meta', __('Agreement Conditions'))
+        Container::make('post_meta', __('Contract Conditions'))
 
             ->add_fields([
-                Field::make('select', 'commercial_agent', __('Comercial Agent'))
+                Field::make('select', 'commercial_agent', __('Commercial Agent'))
                 ->add_options([$this,'get_commercial_agents']),
 
                 Field::make('select', 'company', __('Company'))
@@ -213,22 +213,22 @@ class Admin
 
                
             
-                Field::make('date_time', 'date', 'Agreement Date'),
+                Field::make('date_time', 'date', 'Contract Date'),
 
                 Field::make('text', 'commission', 'Commission'),
 
                 Field::make('text', 'minimal_price', 'Minimal Price'),
 
                 Field::make('select', 'status', __('Status'))
-                ->set_options([$this,"get_agreement_status"]),
+                ->set_options([$this,"get_contract_status"]),
                 
                 Field::make('date_time', 'finalization_date', __('Finalization')),
 
 
-                Field::make('complex', 'status_history', 'Agreement Status History')
+                Field::make('complex', 'status_history', 'Contract Status History')
                 ->add_fields([
                     Field::make('select', 'history_status', __('Status'))
-                    ->set_options([$this,"get_agreement_status"]),
+                    ->set_options([$this,"get_contract_status"]),
                     Field::make('text', 'date_status', 'Date'),
                     Field::make('select', 'changed_by', __('Changed by:'))->add_options([$this,'get_users']),
 
@@ -236,7 +236,7 @@ class Admin
                 ])
                 ->set_layout('tabbed-horizontal')
 
-            ])->where('post_type', '=', 'agreement');
+            ])->where('post_type', '=', 'contract');
 
           
     }
@@ -250,8 +250,8 @@ class Admin
 
             ->add_fields([
 
-                Field::make('select', 'agreement_id', __('Agreement'))
-                ->add_options([$this,'get_agreements']),
+                Field::make('select', 'contract_id', __('Contract'))
+                ->add_options([$this,'get_contracts']),
 
                 Field::make('complex', 'items', __('Cart Items'))
                 ->add_fields([
@@ -259,13 +259,31 @@ class Admin
                     Field::make('text', 'price_paid', 'Price paid'),
                     Field::make('text', 'quantity', 'Quantity'),
                     Field::make('text', 'subtotal', 'Subtotal'),
+                    Field::make('media_gallery', 'invoice', 'Invoice'),
+                    Field::make('text', 'detail', 'Detail'),
                 ]),
 
-                Field::make('text', 'total', 'Total'),
-            
-                Field::make('date_time', 'date', 'Transaction Date'),
-        
+                Field::make('text', 'total_cart', 'Total'),
 
+                Field::make('text', 'total_agent', 'Total Agent'),
+            
+                Field::make('date_time', 'date', 'Commission Request Date'),
+        
+                Field::make('rich_text', 'comments', 'Comments'),
+                Field::make('select', 'status', __('Status'))
+                ->set_options([$this,"get_status_commission_request"]),
+                
+                Field::make('complex', 'status_history', 'Contract Status History')
+                ->add_fields([
+                    Field::make('select', 'history_status', __('Status'))
+                    ->set_options([$this,"get_status_commission_request"]),
+                    Field::make('text', 'date_status', 'Date'),
+                    Field::make('select', 'changed_by', __('Changed by:'))->add_options([$this,'get_users']),
+
+                   
+                ])
+                ->set_layout('tabbed-horizontal')
+                
             ])->where('post_type', '=', 'commission_request');
 
           
@@ -277,7 +295,7 @@ class Admin
 
             ->add_fields([
 
-                Field::make('select', 'commission_request_id', __('Agreement'))
+                Field::make('select', 'commission_request_id', __('Contract'))
                 ->add_options([$this,'get_commission_requests']),
 
     
@@ -304,10 +322,25 @@ class Admin
 
             
                 Field::make('date_time', 'date', 'Transaction Date'),
-    
 
                 Field::make('select', 'status', __('Status'))
-                ->set_options([$this,"get_statuses_transactions"]),
+                ->set_options([$this,"get_status_commission_request"]),
+                
+                Field::make('complex', 'status_history', 'Contract Status History')
+                ->add_fields([
+                    Field::make('select', 'history_status', __('Status'))
+                    ->set_options([$this,"get_status_commission_request"]),
+                    Field::make('text', 'date_status', 'Date'),
+                    Field::make('select', 'changed_by', __('Changed by:'))->add_options([$this,'get_users']),
+
+                   
+                ])
+                ->set_layout('tabbed-horizontal')
+
+                
+    
+
+            
 
 
 
@@ -335,9 +368,8 @@ class Admin
     
                     Field::make('select', 'to', __('To:'))
                     ->add_options([$this,'get_users']),
-                
-                    Field::make('text', 'title', 'title'),
-                    Field::make('text', 'message', 'rich_text'),
+            
+                    Field::make('rich_text', 'message', 'Mesage'),
                 ]),
 
               
@@ -357,10 +389,10 @@ class Admin
           
     }
 
-    public function get_agreement_status()
+    public function get_contract_status()
     {
         return [
-            'requested' => 'Requested',
+            'pending' => 'Pending',
             "accepted" => "Accepted",
             "refused" => "Refused",
             "finishing" => "Finishing",
@@ -368,13 +400,12 @@ class Admin
         ];
     }
 
-    public function get_statuses_transactions()
+    public function get_status_commission_request()
     {
         return [
-            'request' => 'Request',
+            'pending' => 'Pending',
             "dispute" => "In Dispute",
-            "accepted" => "Accepted",
-            "completed" => "Completed"
+            "accepted" => "Accepted"
         ];
     }
 
@@ -545,19 +576,19 @@ class Admin
         return $options;
     }
 
-    public function get_agreements()
+    public function get_contracts()
     {
-        $agreements = get_posts([
-            'post_type' => 'agreement',
+        $contracts = get_posts([
+            'post_type' => 'contract',
             'posts_per_page' => -1,
             'post_status' => 'publish'
         ]);
     
         $options = [];
-        if (!empty($agreements)) {
-            $options[""]="Select a agreement";
-            foreach ($agreements as $agreement) {
-                $options[$agreement->ID] = $agreement->post_title;
+        if (!empty($contracts)) {
+            $options[""]="Select a contract";
+            foreach ($contracts as $contract) {
+                $options[$contract->ID] = $contract->post_title;
             }
         }
     
@@ -588,7 +619,7 @@ class Admin
         Container::make('post_meta', __('Review'))
 
             ->add_fields([
-                Field::make('select', 'commercial_agent', __('Comercial Agent'))
+                Field::make('select', 'commercial_agent', __('Commercial Agent'))
                 ->add_options([$this,'get_commercial_agents']),
                 Field::make('select', 'score', __('Score'))
                     ->set_options([
@@ -606,7 +637,7 @@ class Admin
         global $typenow;
 
         // Lista de tipos de publicaciones personalizadas
-        $custom_post_types = ['opportunity', 'review', 'agreement', "company", "commercial_agent", "transaction","dispute","commission_request"];
+        $custom_post_types = ['opportunity', 'review', 'contract', "company", "commercial_agent", "transaction","dispute","commission_request"];
 
         // Verificar si el tipo de publicación actual está en la lista
         if (in_array($typenow, $custom_post_types)) {
@@ -628,7 +659,7 @@ class Admin
     public function disable_block_editor_for_post_type($use_block_editor, $post_type)
     {
         // Define los post types donde quieres deshabilitar el editor de bloques
-        $post_types = ['commercial_agent', 'company',"agreement","opportunity","review","dispute","transaction","deposit"]; // Reemplaza con tus post types
+        $post_types = ['commercial_agent', 'company',"contract","opportunity","review","dispute","transaction","deposit"]; // Reemplaza con tus post types
     
         // Comprueba si el post type actual está en la lista definida
         if (in_array($post_type, $post_types)) {

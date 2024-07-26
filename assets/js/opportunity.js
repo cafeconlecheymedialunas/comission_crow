@@ -45,7 +45,7 @@ jQuery(document).ready(function ($) {
     submitHandler: function (form) {
       var formData = new FormData(form);
       formData.append("action", "create_opportunity");
-
+      $customSpinner.addClass("d-flex");
       $.ajax({
         type: "POST",
         url: ajax_object.ajax_url,
@@ -54,8 +54,8 @@ jQuery(document).ready(function ($) {
         contentType: false,
         success: function (response) {
           console.log(response);
+          $customSpinner.removeClass("d-flex").hide();
           if (response.success) {
-            // Show success message and redirect
             Swal.fire({
               title: "You have successfully created an opportunity!",
               text: "You will be redirected in two seconds to the opportunities.",
@@ -63,7 +63,7 @@ jQuery(document).ready(function ($) {
               showConfirmButton: false,
               timer: 2000,
             }).then(function () {
-              //window.location.href = "/dashboard/company/opportunity/list";
+              window.location.href = "/dashboard/company/opportunity/all";
             });
           } else {
             // Show server errors if any
@@ -76,9 +76,6 @@ jQuery(document).ready(function ($) {
         },
         error: function (error) {
           console.error("Error creating opportunity:", error);
-        },
-        complete: function () {
-          $customSpinner.removeClass("d-flex");
         },
       });
     },
@@ -102,6 +99,7 @@ jQuery(document).ready(function ($) {
       cancelButtonText: "Cancel",
     }).then((result) => {
       if (result.isConfirmed) {
+        $customSpinner.removeClass("d-flex").hide();
         $.ajax({
           type: "POST",
           url: ajax_object.ajax_url,

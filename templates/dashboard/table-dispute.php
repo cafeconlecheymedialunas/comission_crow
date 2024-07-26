@@ -16,20 +16,7 @@
                         <?php if (!empty($contracts)) :
                             foreach ($contracts as $contract) :
                             
-                                $commercial_agent = carbon_get_post_meta($contract->ID, 'commercial_agent');
                                 
-
-                                $counterparter_key = in_array("company", $current_user->roles)?"commercial_agent":"company";
-                                
-                                $counterparty = carbon_get_post_meta($contract->ID, $counterparter_key);
-
-                                $counterparty = get_post($counterparty);
-
-                                $user_counterparty_id = carbon_get_post_meta($counterparty->ID, 'user_id');
-
-                                
-                                
-                                $opportunity = carbon_get_post_meta($contract->ID, 'opportunity');
                                
                             
                               
@@ -47,22 +34,31 @@
 
                                 $commission_request =  $query->posts[0];
 
-                                $status_commission_request = carbon_get_post_meta($commission_request->ID, 'status');
-                                
-                                $history_status_commission_request = carbon_get_post_meta($commission_request->ID, 'status_history');
+                               
 
-                                if($history_status_commission_request) {
-                                    $history_status_end = end($history_status_commission_request);
-                                    $sender_commission_request = $history_status_end["changed_by"];
+                                $dispute_query = new WP_Query([
+                                    'post_type'  => 'dispute',
+                                    'meta_query' => [
+                                        [
+                                            'key'   => 'commission_id',
+                                            'value' => $commission_request->ID,
+                                            'compare' => '=', // Comparar el valor exacto
+                                        ]
+                                    ]
+                                ]);
+
+                                $dispute =  $dispute_auery->posts[0];
+
+                                if(is_wp_error($dispute)) {
+                                    var_dump($dispute_query);
                                 }
-                                
-                                
 
-                                $total_cart_commission_request = carbon_get_post_meta($commission_request->ID, 'total_cart');
-                                $total_agent_commission_request = carbon_get_post_meta($commission_request->ID, 'total_agent');
-                                
-                                $date_commission_request = carbon_get_post_meta($commission_request->ID, 'date');
-                                
+
+
+                               
+
+                              
+                             
                                 
 
                                 $status_class = '';
@@ -84,7 +80,7 @@
 
                                 }
                                
-                                if($commission_request):
+                                if($dispute):
                                     ?>
                                 
                                     <tr>
@@ -143,3 +139,30 @@
                         <?php endif; ?>
                     </tbody>
                 </table>
+<?php
+                $user_from_id = get_current_user_id(); // ID del usuario que envía el mensaje
+                        $user_to_id = 48; // ID del usuario que recibe el mensaje, cámbialo según sea necesario
+
+                        ?>
+<form id="message-form">
+    <?php wp_nonce_field('save_message_nonce', 'message_nonce'); ?>
+    <input type="hidden" id="post_id" value="<?php echo get_the_ID(); ?>">
+    <input type="hidden" id="from" name="from" value="<?php echo $user_from_id; ?>">
+    <input type="hidden" id="to" name="to" value="<?php echo $user_to_id; ?>">
+    <textarea id="message" name="message"></textarea>
+    <button type="submit">Send Message</button>
+</form>
+<div id="chat-box">
+    <?php
+                            $messages = carbon_get_post_meta(get_the_ID(), 'messages');
+                        if (!empty($messages)) {
+                            foreach ($messages as $message) {
+                                $from_user = get_user_by('id', $message['from']);
+                                $from = ($from_user->ID === $user_from_id) ? 'You' : 'Other User';
+                                echo '<div class="message">';
+                                echo '<strong>' . esc_html($from) . ':</strong><p>' . wpautop(esc_html($message['message'])) . '</p>';
+                                echo '</div>';
+                            }
+                        }
+                        ?>
+</div>

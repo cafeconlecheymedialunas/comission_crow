@@ -17,13 +17,13 @@ class Company
 
     private function set_current_company()
     {
-        $this->user_id = get_current_user_id();
+        $this->user_id = wp_get_current_user();
         $args = [
             'post_type' => 'company',
             'meta_query' => [
                 [
                     'key' => 'user_id',
-                    'value' => $this->user_id,
+                    'value' => $this->user_id->ID,
                     'compare' => '=',
                 ],
             ],
@@ -192,10 +192,10 @@ class Company
 
     }
    
-    public function get_agreements($statuses = [], $type = "")
+    public function get_contracts($statuses = [], $type = "")
     {
         $args = [
-            'post_type' => 'agreement',
+            'post_type' => 'contract',
             'meta_query' => [
                 [
                     'key' => 'company',
@@ -222,11 +222,11 @@ class Company
             return $query->posts;
         }
 
-        $agreements = [];
+        $contracts = [];
         $current_user = wp_get_current_user();
 
-        foreach ($query->posts as $agreement) {
-            $history_status = carbon_get_post_meta($agreement->ID, 'status_history');
+        foreach ($query->posts as $contract) {
+            $history_status = carbon_get_post_meta($contract->ID, 'status_history');
 
             if (empty($history_status)) {
                 continue;
@@ -235,14 +235,14 @@ class Company
             $history_status_start = $history_status[0];
             $sender = isset($history_status_start["changed_by"]) ? $history_status_start["changed_by"] : null;
 
-            if ($type == "requested" && $current_user->ID === $sender) {
-                $agreements[] = $agreement;
+            if ($type == "pending" && $current_user->ID === $sender) {
+                $contracts[] = $contract;
             } elseif ($type == "received" && $current_user->ID !== $sender) {
-                $agreements[] = $agreement;
+                $contracts[] = $contract;
             }
         }
 
-        return $agreements;
+        return $contracts;
     }
 
     

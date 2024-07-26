@@ -1,11 +1,9 @@
 <?php
 $current_user = wp_get_current_user();
-$user_info = get_userdata($current_user->ID);
-
 ?>
 
 <form id="update-user-data" enctype="multipart/form-data">
-	<h2>User</h2>
+    <h2>User</h2>
     <div class="col-md-12">
         <label for="first_name" class="form-label">First Name:</label>
         <input 
@@ -13,7 +11,7 @@ $user_info = get_userdata($current_user->ID);
             name="first_name" 
             class="form-control" 
             value="<?php echo esc_attr($current_user->first_name); ?>" 
-            placeholder="Fih Name"
+            placeholder="First Name"
         >
     </div>
     <div class="col-md-12">
@@ -29,15 +27,14 @@ $user_info = get_userdata($current_user->ID);
     <div class="col-md-12">
         <label for="user_email" class="form-label">Email:</label>
         <input 
-            type="user_email" 
+            type="email" 
             name="user_email" 
             class="form-control" 
             value="<?php echo esc_attr($current_user->data->user_email); ?>" 
             placeholder="User Email"
         >
-     </div>
-
-	<div class="col-md-12">
+    </div>
+    <div class="col-md-12">
         <label for="password" class="form-label">Password:</label>
         <input 
             type="password" 
@@ -45,14 +42,12 @@ $user_info = get_userdata($current_user->ID);
             class="form-control" 
             placeholder="Password"
         >
-			<span class="description">Leave blank if you do not want to change the password.<span/>
+        <span class="description">Leave blank if you do not want to change the password.<span/>
     </div>
-
-	<input type="hidden" name="security" value="<?php echo wp_create_nonce("update-userdata"); ?>"/>
+    <input type="hidden" name="security" value="<?php echo wp_create_nonce('update-userdata'); ?>"/>
     <input type="hidden" name="user_id" value="<?php echo $current_user->ID; ?>">
-	<div class="errors"></div>
+    <div class="errors"></div>
     <div class="col-12">
         <button type="submit" class="btn btn-primary">Submit</button>
     </div>
-
 </form>
