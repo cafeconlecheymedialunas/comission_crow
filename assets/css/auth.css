@@ -66,10 +66,24 @@
 }
 .auth-page .form-field,
 .auth-page .form-control,
-select {
+select:not([multiple]) {
   width: 100%;
   border: 1px solid #dfdfdf;
   height: 60px;
+  border-radius: 50px;
+  padding: 0 15px;
+  -webkit-transition: 0.3s linear;
+  -o-transition: 0.3s linear;
+  transition: 0.3s linear;
+  background-color: white !important;
+  color: black !important;
+}
+.auth-page .form-field,
+.auth-page .form-control,
+select {
+  width: 100%;
+  border: 1px solid #dfdfdf;
+
   border-radius: 50px;
   padding: 0 15px;
   -webkit-transition: 0.3s linear;

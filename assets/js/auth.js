@@ -1,16 +1,57 @@
 jQuery(document).ready(function ($) {
   var $customSpinner = $(".custom-spinner");
 
-  $("#kamerpower_registration_form").on("submit", function (e) {
+  function displayFormErrors(form, data) {
+    // Clear previous error messages
+    $(form).find(".error-message").remove();
+
+    // Iterate over the errors and display them next to the respective fields
+    $.each(data.fields, function (fieldName, errorMessages) {
+      var field = $(form).find('[name="' + fieldName + '"]');
+      if (field.length) {
+        // Remove existing error messages for the field
+        field.next(".error-message").remove();
+
+        // Create and append error messages
+        $.each(errorMessages, function (index, message) {
+          var errorElement = $(
+            '<div class="error-message text-sm text-danger"></div>',
+          ).text(message);
+          field.after(errorElement);
+        });
+      }
+    });
+
+    if (data.general && data.general.length > 0) {
+      var generalErrorsElement = $(".general-errors");
+      if (generalErrorsElement.length) {
+        // Clear previous general errors
+        generalErrorsElement.empty();
+
+        // Append all general error messages
+        const errors = [];
+        $.each(data.general, function (index, message) {
+          var errorElement = $(
+            '<div class="error-message text-sm text-danger"></div>',
+          ).text(message);
+          errors.push(errorElement);
+        });
+        generalErrorsElement.html(errors);
+      }
+    }
+  }
+
+  $("#registration_form").on("submit", function (e) {
     e.preventDefault();
     var form = $(this);
     $customSpinner.addClass("d-flex");
     $.ajax({
       type: "POST",
       url: ajax_object.ajax_url,
-      data: form.serialize() + "&action=kamerpower_register_user",
+      data: form.serialize() + "&action=register_user",
       success: function (response) {
         $customSpinner.removeClass("d-flex").hide();
+
         if (response.success) {
           Swal.fire({
             title: "You have successfully registered!",
@@ -22,20 +63,20 @@ jQuery(document).ready(function ($) {
             window.location.href = "/auth/?action=login";
           });
         } else {
-          $("#kamerpower_registration_errors").html(response.data);
+          displayFormErrors(form, response.data);
         }
       },
     });
   });
 
-  $("#kamerpower_login_form").on("submit", function (e) {
+  $("#login_form").on("submit", function (e) {
     e.preventDefault();
     var form = $(this);
     $customSpinner.addClass("d-flex");
     $.ajax({
       type: "POST",
       url: ajax_object.ajax_url,
-      data: form.serialize() + "&action=kamerpower_login_user",
+      data: form.serialize() + "&action=login_user",
       success: function (response) {
         $customSpinner.removeClass("d-flex").hide();
         if (response.success) {
@@ -46,27 +87,29 @@ jQuery(document).ready(function ($) {
             showConfirmButton: false,
             timer: 2000, // 2 segundos
           }).then(function () {
-            let key =
-              response.data.roles[0] === "commercial_agent"
-                ? "commercial-agent"
-                : "company";
-            window.location.href = `/dashboard/${key}/profile`;
+            if (response.data.roles[0]) {
+              let key =
+                response.data.roles[0] === "commercial_agent"
+                  ? "commercial-agent"
+                  : "company";
+              window.location.href = `/dashboard/${key}/profile`;
+            }
           });
         } else {
-          $("#kamerpower_login_errors").html(response.data);
+          displayFormErrors(form, response.data);
         }
       },
     });
   });
 
-  $("#kamerpower_reset_form").on("submit", function (e) {
+  $("#reset_form").on("submit", function (e) {
     e.preventDefault();
     var form = $(this);
     $customSpinner.addClass("d-flex");
     $.ajax({
       type: "POST",
       url: ajax_object.ajax_url,
-      data: form.serialize() + "&action=kamerpower_reset_password",
+      data: form.serialize() + "&action=reset_password",
       success: function (response) {
         $customSpinner.removeClass("d-flex").hide();
         if (response.success) {
@@ -77,20 +120,20 @@ jQuery(document).ready(function ($) {
             showConfirmButton: true,
           });
         } else {
-          $("#kamerpower_reset_errors").html(response.data);
+          displayFormErrors(form, response.data);
         }
       },
     });
   });
 
-  $("#kamerpower_new_password_form").on("submit", function (e) {
+  $("#new_password_form").on("submit", function (e) {
     e.preventDefault();
     var form = $(this);
     $customSpinner.addClass("d-flex");
     $.ajax({
       type: "POST",
       url: ajax_object.ajax_url,
-      data: form.serialize() + "&action=kamerpower_set_new_password",
+      data: form.serialize() + "&action=set_new_password",
       success: function (response) {
         $customSpinner.removeClass("d-flex").hide();
         if (response.success) {
@@ -104,7 +147,7 @@ jQuery(document).ready(function ($) {
             window.location.href = "/auth/?action=login";
           });
         } else {
-          $("#kamerpower_new_password_errors").html(response.data);
+          displayFormErrors(form, response.data);
         }
       },
     });

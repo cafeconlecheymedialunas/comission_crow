@@ -54,7 +54,6 @@ pre {
 }
 
 .input-text,
-select,
 input[type="email"],
 input[type="password"],
 input[type="search"],
@@ -106,7 +105,16 @@ input[type="checkbox"] + label {
   font-weight: 400;
   margin-left: 0.5rem;
 }
-
+select:not([multiple]) {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -o-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+  background-repeat: no-repeat;
+  background-position-x: 98%;
+  background-position-y: 50%;
+  border-radius: 50px !important;
+}
 select {
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -116,7 +124,6 @@ select {
   background-repeat: no-repeat;
   background-position-x: 98%;
   background-position-y: 50%;
-  border-radius: 50px !important;
 }
 
 /*For IE*/

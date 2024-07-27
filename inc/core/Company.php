@@ -41,22 +41,16 @@ class Company
 
     public function save_opportunity()
     {
-      
-
-        
-        $errors = [];
-
         check_ajax_referer('create-opportunity-nonce', 'security');
-    
-        $post_title = sanitize_text_field($_POST['title']);
-        $post_content =  wp_kses_post($_POST['content']);
         
-        $target_audience = sanitize_text_field($_POST['target_audience']);
       
-
+        
+        // Sanitización de datos
+        $post_title = sanitize_text_field($_POST['title']);
+        $post_content = wp_kses_post($_POST['content']);
+        $target_audience = sanitize_text_field($_POST['target_audience']);
         $age = sanitize_text_field($_POST['age']);
         $gender = sanitize_text_field($_POST['gender']);
-      
         $price = sanitize_text_field($_POST['price']);
         $commission = sanitize_text_field($_POST['commission']);
         $deliver_leads = isset($_POST['deliver_leads']) ? sanitize_text_field($_POST['deliver_leads']) : 'no';
@@ -68,80 +62,107 @@ class Company
         $question_4 = sanitize_textarea_field($_POST['question_4']);
         $question_5 = sanitize_textarea_field($_POST['question_5']);
         $question_6 = sanitize_textarea_field($_POST['question_6']);
-        $images = isset($_POST['images']) ?  explode(',', sanitize_text_field($_POST['images'])) : '';
-        $supporting_materials = isset($_POST['supporting_materials']) ?  explode(',', sanitize_text_field($_POST['supporting_materials'])) : '';
-        $company = $_POST["company_id"];
-        $videos =  $_POST['videos'];
-
+        $company = isset($_POST["company_id"]) ? sanitize_text_field($_POST["company_id"]) : '';
+        $videos = isset($_POST['videos']) ? array_map('sanitize_text_field', $_POST['videos']) : [];
         $language = isset($_POST["language"]) ? array_map('sanitize_text_field', $_POST["language"]) : [];
         $country = isset($_POST["country"]) ? array_map('sanitize_text_field', $_POST["country"]) : [];
         $currency = isset($_POST["currency"]) ? array_map('sanitize_text_field', $_POST["currency"]) : [];
         $industry = isset($_POST["industry"]) ? array_map('sanitize_text_field', $_POST["industry"]) : [];
         $type_of_company = isset($_POST["type_of_company"]) ? array_map('sanitize_text_field', $_POST["type_of_company"]) : [];
-
         
-        $videos = array_map(function ($video_url) {
-            return ['video' => sanitize_text_field($video_url)];
-        }, $_POST['videos']);
-
+        $errors = [];
+        
+        // Validación
         if (empty($post_title)) {
-            $errors["title"][] = "Title field is required.";
+            $errors["title"][] = __("Title field is required.");
         }
-
+        
         if (empty($price)) {
-            $errors["price"][] = "Price field is required.";
+            $errors["price"][] = __("Price field is required.");
+        } elseif (!is_numeric($price)) {
+            $errors["price"][] = __("Price must be a number.");
         }
-
+        
         if (empty($commission)) {
-            $errors["commission"][] = "Commission field is required.";
+            $errors["commission"][] = __("Commission field is required.");
+        } elseif (!is_numeric($commission)) {
+            $errors["commission"][] = __("Commission must be a number.");
+        } elseif ($commission <= 0 || $commission > 100) {
+            $errors["commission"][] = __("Commission must be between 1 and 100.");
         }
-
-        if (!is_numeric($price)) {
-            $errors["price"][] = "Price must be a number.";
+        
+        $error_videos = [];
+        foreach ($videos as $video_url) {
+            if (empty($video_url)) {
+                $error_videos[] = true;
+                break;
+            }
         }
-
-        if (!is_numeric($commission)) {
-            $errors["commission"][] = "Commission must be a number.";
+        if (!empty($error_videos)) {
+            $errors["videos"][] = __("One or more video URLs are not valid.");
         }
-
-        // Specific validation for 'commission' field
-        if ($commission <= 0 || $commission > 100) {
-            $errors["commission"][] = "Commission must be between 1 and 100.";
-        }
-
-        // If there are errors, send JSON response with errors array
+    
         if (!empty($errors)) {
-            wp_send_json_error($errors);
+            wp_send_json_error(['fields' => $errors]);
             wp_die();
         }
-
+    
+        $uploaded_image_ids = [];
+        $uploaded_supporting_material_ids = [];
+    
+    
+        if (isset($_FILES['images']) && !empty($_FILES['images']['name'][0])) {
+            require_once(ABSPATH . 'wp-admin/includes/image.php');
+            require_once(ABSPATH . 'wp-admin/includes/file.php');
+            require_once(ABSPATH . 'wp-admin/includes/media.php');
+        
+            foreach ($_FILES['images']['name'] as $key => $image_name) {
+                if ($_FILES['images']['error'][$key] === 0) {
+                    $file = [
+                        'name'     => $_FILES['images']['name'][$key],
+                        'type'     => $_FILES['images']['type'][$key],
+                        'tmp_name' => $_FILES['images']['tmp_name'][$key],
+                        'error'    => $_FILES['images']['error'][$key],
+                        'size'     => $_FILES['images']['size'][$key]
+                    ];
+        
+                    $attachment_id = media_handle_sideload($file, 0);
+                    
+                    if (is_wp_error($attachment_id)) {
+                        $errors['images'][] = __("Error when saving image: ") . $attachment_id->get_error_message();
+                    } else {
+                        $uploaded_image_ids[] = $attachment_id;
+                    }
+                }
+            }
+        }
+    
+        if (!empty($errors)) {
+            wp_send_json_error(['fields' => $errors]);
+            wp_die();
+        }
+    
         $post_data = [
             'post_title'    => $post_title,
             'post_content'  => $post_content,
             'post_status'   => 'publish',
             'post_type'     => 'opportunity',
         ];
-
-        if(isset($_POST["opportunity_id"]) && !empty($_POST["opportunity_id"])) {
-
+    
+        if (isset($_POST["opportunity_id"]) && !empty($_POST["opportunity_id"])) {
             $post_data["ID"] = $_POST["opportunity_id"];
-            $opportunity_id =  wp_update_post($post_data);
+            $opportunity_id = wp_update_post($post_data);
         } else {
             $opportunity_id = wp_insert_post($post_data);
         }
-        
-
+    
         if (is_wp_error($opportunity_id)) {
-            $operation = isset($_POST["opportunity_id"]) && !empty($_POST["opportunity_id"])?"updating":"creating";
-            wp_send_json_error("Error when $operation the opportunity");
+            $operation = isset($_POST["opportunity_id"]) && !empty($_POST["opportunity_id"]) ? "updating" : "creating";
+            wp_send_json_error(['general' => __("Error when $operation the opportunity: ") . $opportunity_id->get_error_message()]);
             wp_die();
         }
-
-      
-
-
     
-        
+        // Actualizar términos
         if (!empty($language)) {
             wp_set_post_terms($opportunity_id, $language, 'language', false);
         }
@@ -161,12 +182,8 @@ class Company
         if (!empty($type_of_company)) {
             wp_set_post_terms($opportunity_id, $type_of_company, 'type_of_company', false);
         }
-
     
-        if (!empty($profile_image)) {
-            set_post_thumbnail($opportunity_id, $profile_image);
-        }
-      
+        // Guardar metadatos adicionales
         carbon_set_post_meta($opportunity_id, 'target_audience', $target_audience);
         carbon_set_post_meta($opportunity_id, 'age', $age);
         carbon_set_post_meta($opportunity_id, 'gender', $gender);
@@ -181,16 +198,25 @@ class Company
         carbon_set_post_meta($opportunity_id, 'question_4', $question_4);
         carbon_set_post_meta($opportunity_id, 'question_5', $question_5);
         carbon_set_post_meta($opportunity_id, 'question_6', $question_6);
-        carbon_set_post_meta($opportunity_id, 'images', $images);
-        carbon_set_post_meta($opportunity_id, 'supporting_materials', $supporting_materials);
+        carbon_set_post_meta($opportunity_id, 'company_id', $company);
         carbon_set_post_meta($opportunity_id, 'videos', $videos);
-        carbon_set_post_meta($opportunity_id, 'company', $company);
-        
-        // Envía respuesta JSON de éxito
-        wp_send_json_success("Opportunity created successfully");
+    
+     
+        if (!empty($uploaded_image_ids)) {
+            carbon_set_post_meta($opportunity_id, 'images', $uploaded_image_ids);
+        }
+    
+        if (!empty($uploaded_supporting_material_ids)) {
+            carbon_set_post_meta($opportunity_id, 'supporting_materials', $uploaded_supporting_material_ids);
+        }
+    
+        // Enviar respuesta de éxito
+        wp_send_json_success(['message' => __("Opportunity saved successfully.")]);
         wp_die();
-
     }
+    
+    
+    
    
     public function get_contracts($statuses = [], $type = "")
     {
@@ -251,46 +277,51 @@ class Company
 
     public function save_company_profile()
     {
-        $errors = [];
-        $current_user = wp_get_current_user();
-    
         check_ajax_referer('update-profile-nonce', 'security');
+        $current_user = wp_get_current_user();
         $company_id = sanitize_text_field($_POST["company_id"]);
 
+        // Sanitización de datos
         $company_logo = sanitize_text_field($_POST["company_logo"]);
         $company_name = sanitize_text_field($_POST["company_name"]);
         $description = wp_kses_post($_POST['description']);
-        $website_url = sanitize_text_field($_POST["website_url"]);
-        $facebook_url = sanitize_text_field($_POST["facebook_url"]);
-        $instagram_url = sanitize_text_field($_POST["instagram_url"]);
-        $twitter_url = sanitize_text_field($_POST["twitter_url"]);
-        $linkedin_url = sanitize_text_field($_POST["linkedin_url"]);
-        $tiktok_url = sanitize_text_field($_POST["tiktok_url"]);
-        $youtube_url = sanitize_text_field($_POST["youtube_url"]);
+        $website_url = $_POST["website_url"];
+        $facebook_url = $_POST["facebook_url"];
+        $instagram_url = $_POST["instagram_url"];
+        $twitter_url = $_POST["twitter_url"];
+        $linkedin_url = $_POST["linkedin_url"];
+        $tiktok_url = $_POST["tiktok_url"];
+        $youtube_url = $_POST["youtube_url"];
         $industry = isset($_POST["industry"]) ? array_map('sanitize_text_field', $_POST["industry"]) : [];
         $country = isset($_POST["country"]) ? array_map('sanitize_text_field', $_POST["country"]) : [];
         $type_of_company = isset($_POST["type_of_company"]) ? array_map('sanitize_text_field', $_POST["type_of_company"]) : [];
         $activity = isset($_POST["activity"]) ? array_map('sanitize_text_field', $_POST["activity"]) : [];
-       
-
         $employees_number = sanitize_text_field($_POST["employees_number"]);
-    
+
+        $errors = new WP_Error();
+        $field_errors = [];
+
+        // Validaciones
         if (empty($company_id)) {
-            wp_send_json_error("Error when updating the profile");
+            $field_errors['company_id'][] = __('Company ID is required.');
         }
-    
-    
-        if (!empty($errors)) {
-            wp_send_json_error($errors);
+
+        if (empty($company_name)) {
+            $field_errors['company_name'][] = __('Company name is required.');
+        }
+
+        if (!is_numeric($employees_number) || $employees_number < 0) {
+            $field_errors['employees_number'][] = __('Number of employees must be a positive number.');
+        }
+      
+
+
+        if (!empty($field_errors)) {
+            wp_send_json_error(['fields' => $field_errors]);
             wp_die();
         }
-    
-        
-    
-        if (!$current_user) {
-            wp_send_json_error("No se pudo recuperar el usuario");
-        }
-    
+
+        // Actualizar el perfil de la empresa
         $company_post_id = wp_update_post([
             "ID" => $company_id,
             'post_title' => $company_name,
@@ -298,34 +329,35 @@ class Company
             'post_author' => $current_user->ID,
             "post_content" => $description
         ]);
-    
+
         if (is_wp_error($company_post_id)) {
-            wp_send_json_error("Error when updating the profile");
+            wp_send_json_error(['general' => [$company_post_id->get_error_message()]]);
             wp_die();
         }
-    
-      
-    
+
+        // Actualizar términos
         if (!empty($industry)) {
             wp_set_post_terms($company_post_id, $industry, 'industry', false);
         }
-    
+
         if (!empty($activity)) {
             wp_set_post_terms($company_post_id, $activity, 'activity', false);
         }
-    
+
         if (!empty($country)) {
             wp_set_post_terms($company_post_id, $country, 'country', false);
         }
-    
+
         if (!empty($type_of_company)) {
             wp_set_post_terms($company_post_id, $type_of_company, 'type_of_company', false);
         }
 
+        // Actualizar imagen de la empresa
         if (!empty($company_logo)) {
             set_post_thumbnail($company_post_id, $company_logo);
         }
 
+        // Guardar metadatos adicionales
         carbon_set_post_meta($company_post_id, 'company_name', $company_name);
         carbon_set_post_meta($company_post_id, 'employees_number', $employees_number);
         carbon_set_post_meta($company_post_id, 'website_url', $website_url);
@@ -335,10 +367,12 @@ class Company
         carbon_set_post_meta($company_post_id, 'linkedin_url', $linkedin_url);
         carbon_set_post_meta($company_post_id, 'tiktok_url', $tiktok_url);
         carbon_set_post_meta($company_post_id, 'youtube_url', $youtube_url);
-        wp_send_json_success("Profile updated successfully");
+
+        wp_send_json_success($current_user);
         wp_die();
     }
-    
+
+
 
     public function get_opportunities()
     {
@@ -375,10 +409,6 @@ class Company
             wp_send_json_error(['message' => 'Necesitas un ID válido.']);
         }
 
-        // Verificar si el usuario actual tiene permisos para eliminar la oportunidad
-        if (!current_user_can('delete_post', $opportunity_id)) {
-            wp_send_json_error(['message' => 'No tienes permisos para eliminar esta oportunidad.']);
-        }
 
         // Intentar eliminar la oportunidad
         if (wp_delete_post($opportunity_id, true)) {

@@ -1,3 +1,4 @@
 {
-  "php.stubs": ["wordpress", "*"]
+  "php.stubs": ["wordpress", "*"],
+  "commentTranslate.multiLineMerge": true
 }

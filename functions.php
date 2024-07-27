@@ -304,3 +304,28 @@ function get_role_url_link_dashboard_page($route_key)
 
     return '';
 }
+
+
+add_action('wp_ajax_upload_image', 'handle_image_upload');
+add_action('wp_ajax_nopriv_upload_image', 'handle_image_upload');
+
+function handle_image_upload()
+{
+    if (!function_exists('wp_handle_upload')) {
+        require_once(ABSPATH . 'wp-admin/includes/file.php');
+    }
+
+    $uploadedfile = $_FILES['file'];
+    $upload_overrides = ['test_form' => false];
+
+    $movefile = wp_handle_upload($uploadedfile, $upload_overrides);
+
+    if ($movefile && !isset($movefile['error'])) {
+        $url = $movefile['url'];
+        echo json_encode(['success' => true, 'url' => $url]);
+    } else {
+        echo json_encode(['success' => false, 'error' => $movefile['error']]);
+    }
+
+    wp_die(); // Esto termina la ejecución del script después de la respuesta AJAX
+}

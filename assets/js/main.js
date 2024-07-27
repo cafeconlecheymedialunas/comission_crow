@@ -1,103 +1,3 @@
-class CustomMediaUpload {
-  constructor(selector) {
-    this.selector = selector;
-    this.init();
-  }
-
-  init() {
-    jQuery(document).on("click", this.selector, () => {
-      const mediaType = jQuery(this.selector).data("media-type");
-      const isMultiple =
-        jQuery(this.selector).data("multiple") === true ||
-        jQuery(this.selector).data("multiple") === "true";
-      const $mediaIdsField = jQuery(this.selector).siblings(".media-ids");
-      const $previewContainer = jQuery(this.selector).siblings(
-        `.${mediaType}-preview`,
-      );
-      const type =
-        mediaType === "text"
-          ? [
-              "application/pdf",
-              "application/msword",
-              "text/plain",
-              "text/html",
-              "text/csv",
-              "text/xml",
-            ]
-          : ["image"];
-      const mediaUploader = wp.media({
-        multiple: isMultiple,
-        library: {
-          type: type,
-        },
-      });
-
-      mediaUploader.on("select", () => {
-        this.handleMediaSelection(
-          mediaUploader.state().get("selection").toJSON(),
-          $mediaIdsField,
-          $previewContainer,
-          isMultiple,
-        );
-      });
-
-      mediaUploader.open();
-    });
-  }
-
-  handleMediaSelection(
-    attachments,
-    $mediaIdsField,
-    $previewContainer,
-    isMultiple,
-  ) {
-    if (!attachments || attachments.length === 0) {
-      console.error("No files selected.");
-      return;
-    }
-
-    const attachmentIds = attachments
-      .map((attachment) => attachment.id)
-      .join(",");
-
-    if (!isMultiple) {
-      // If single selection, take only the first selected file
-      const attachment = attachments[0];
-      this.showPreview(attachment, $mediaIdsField, $previewContainer);
-    } else {
-      $previewContainer.html("");
-      attachments.forEach((attachment) => {
-        this.showPreview(attachment, $mediaIdsField, $previewContainer);
-      });
-    }
-
-    $mediaIdsField.val(attachmentIds);
-  }
-
-  showPreview(attachment, $mediaIdsField, $previewContainer) {
-    const mediaType = attachment.type;
-    const mediaId = attachment.id;
-
-    if (mediaType === "image") {
-      const imageUrl = attachment.url;
-      $previewContainer.html(
-        `<div class="col-2 col-sm-3 col-md-4 preview-item d-flex flex-column justify-content-center align-items-center">
-              <img width="100" src="${imageUrl}" style="max-width: 100%; height: auto;">
-            </div>`,
-      );
-    } else if (mediaType === "text") {
-      const content = `<div class="col-2 col-sm-3 col-md-4 preview-item d-flex flex-column justify-content-center align-items-center">
-                            <img width="50" src="${attachment.icon}" style="max-width: 100%; height: auto;">
-                            <span>${attachment.title}</span>
-                          </div>`;
-      $previewContainer.append(content);
-    } else {
-      console.error("Unsupported media type.");
-    }
-
-    $previewContainer.addClass("d-flex");
-  }
-}
 jQuery(document).ready(function ($) {
   $(".custom-select").select2({
     placeholder: "Select an option",
@@ -135,56 +35,124 @@ jQuery(document).ready(function ($) {
     });
   });
 
-  $(".add-new-url").click(function (e) {
-    e.preventDefault();
+  var fileInput = $("#images")[0];
+  var preview = $("#preview");
+  var progressBar = $(".progress-bar");
+  var loadingBar = $(".loading-bar");
+  var statusContainer = $(".status");
+  var stateText = $(".status .state");
+  var percentageText = $(".status .percentage");
 
-    const lastUrlField = $('.url-videos input[name="videos[]"]').last();
-    const errorMessage = lastUrlField.next(".error-message");
-    const urlPattern = /^(https?:\/\/)?([a-z\d-]+\.)+[a-z]{2,6}(\/[^\s]*)?$/i;
+  function showPreview(files) {
+    preview.empty(); // Vaciar la vista previa
 
-    if (lastUrlField.val() === "") {
-      errorMessage
-        .text("Please fill out the URL field before adding another.")
-        .show();
-      return;
+    // Determine the column size based on the number of files
+    var columnSize;
+    if (files.length === 1) {
+      columnSize = "col-md-12";
+    } else if (files.length === 2) {
+      columnSize = "col-md-6";
+    } else {
+      columnSize = "col-md-4"; // Default for 3 or more images
     }
 
-    if (!urlPattern.test(lastUrlField.val())) {
-      errorMessage.text("Please enter a valid URL.").show();
-      return;
-    }
-
-    errorMessage.hide(); // Hide error message if the field is filled and is a valid URL
-
-    const newUrlRow = `
-        <div class="row mb-3">
-            <div class="col-sm-10 my-auto">
-                <input type="url" name="videos[]" class="form-control" placeholder="Video URL">
-                <small class="text-danger error-message" style="display: none;">Please fill out the URL field before adding another.</small>
-            </div>
-            <div class="col-sm-2">
-                <i class="fas fa-trash remove-url"></i>
-            </div>
-        </div>
-    `;
-    $(".url-videos").append(newUrlRow);
-  });
-
-  $(document).on("click", ".remove-url", function () {
-    $(this).closest(".row").remove();
-  });
-
-  function displayFormErrors(form, errors) {
-    // Clear previous error messages
-    $(form).find(".error-message").remove();
-
-    // Iterate over the errors and display them next to the respective fields
-    $.each(errors, function (fieldName, errorMessage) {
-        var field = $(form).find('[name="' + fieldName + '"]');
-        if (field.length) {
-            var errorElement = $('<div class="error-message text-danger"></div>').text(errorMessage);
-            field.after(errorElement);
-        }
+    $.each(files, function (index, file) {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        const newRow = `
+                <div class="${columnSize}">
+                    <img class="img-thumbnail" src="${e.target.result}">
+                </div>`;
+        preview.append(newRow);
+      };
+      reader.readAsDataURL(file);
     });
-}
+  }
+
+  function simulateUpload(files) {
+    // Vaciar la vista previa antes de comenzar una nueva carga
+    preview.empty();
+
+    // Mostrar la barra de carga y el estado
+    loadingBar.show(); // Mostrar la barra de carga
+    progressBar.css("width", "0%"); // Inicializar la barra de progreso en 0%
+    stateText.text("Loading");
+    percentageText.text("0%");
+    statusContainer.addClass("visible"); // Mostrar el estado
+
+    let progress = 0;
+
+    var interval = setInterval(function () {
+      progress += 5; // Incrementar el porcentaje
+      if (progress > 100) {
+        progress = 100;
+        clearInterval(interval);
+        stateText.text("Complete");
+        setTimeout(function () {
+          // Ocultar el estado y la barra de carga
+          statusContainer.removeClass("visible"); // Ocultar estado
+          loadingBar.fadeOut(100); // Desaparecer la barra de carga
+          percentageText.fadeOut(100); // Desaparecer el porcentaje
+
+          setTimeout(function () {
+            // Mostrar vista previa después de la carga
+            showPreview(files);
+            // Reiniciar la barra de progreso a 0% para la próxima carga
+            progressBar.css("width", "0%");
+          }, 100); // Esperar un poco antes de mostrar la vista previa
+        }, 100); // Esperar un poco antes de ocultar el estado
+      } else {
+        // Actualizar la barra de progreso y el porcentaje
+        progressBar.css("width", progress + "%");
+        percentageText.text(progress + "%");
+      }
+    }, 50); // Intervalo para simular la carga
+  }
+
+  $(".file_drag_area").on("dragover", function () {
+    $(this).addClass("file_drag_over");
+    return false;
+  });
+
+  $(".file_drag_area").on("dragleave", function () {
+    $(this).removeClass("file_drag_over");
+    return false;
+  });
+
+  $(".file_drag_area").on("drop", function (e) {
+    e.preventDefault();
+    $(this).removeClass("file_drag_over");
+
+    var files_list = e.originalEvent.dataTransfer.files;
+
+    var fileBuffer = Array.from(fileInput.files);
+
+    for (var i = 0; i < files_list.length; i++) {
+      fileBuffer.push(files_list[i]);
+    }
+
+    var dataTransfer =
+      new ClipboardEvent("").clipboardData || new DataTransfer();
+    fileBuffer.forEach((file) => dataTransfer.items.add(file));
+    fileInput.files = dataTransfer.files;
+
+    simulateUpload(fileInput.files);
+  });
+
+  $(".file_drag_area").on("click", function () {
+    fileInput.click();
+  });
+
+  fileInput.addEventListener("change", function (e) {
+    var files_list = e.target.files;
+
+    var fileBuffer = Array.from(fileInput.files);
+
+    var dataTransfer =
+      new ClipboardEvent("").clipboardData || new DataTransfer();
+    fileBuffer.forEach((file) => dataTransfer.items.add(file));
+    fileInput.files = dataTransfer.files;
+
+    simulateUpload(fileInput.files);
+  });
 });

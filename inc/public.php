@@ -47,12 +47,14 @@ class PublicFront
   
 
         wp_enqueue_script('jqueryvalidatejs', "https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js", ["jquery"], "1.19.3", true);
+    
+      
         
         wp_enqueue_script('main', get_template_directory_uri() . '/assets/js/main.js', ['jquery'], '1.0', true);
 
-        wp_enqueue_script('authjs', get_template_directory_uri()."/assets/js/auth.js", ["jquery"], "1.0.0", true);
+        wp_enqueue_script('authjs', get_template_directory_uri()."/assets/js/auth.js", ["jquery","main"], "1.0.0", true);
         
-        wp_localize_script('authjs', 'ajax_object', ['ajax_url' => admin_url('admin-ajax.php'), 'kamerpower_login_nonce' => wp_create_nonce('kamerpower-login-nonce')]);
+        wp_localize_script('authjs', 'ajax_object', ['ajax_url' => admin_url('admin-ajax.php'), 'login_nonce' => wp_create_nonce('login-nonce')]);
 
         wp_enqueue_script('opportunity', get_template_directory_uri() . '/assets/js/opportunity.js', ['jquery'], '1.0', true);
 

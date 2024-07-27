@@ -52,9 +52,7 @@ $opportunities = $company->get_opportunities();
                                             <div class="mb-0">
                                                     <a class="btn btn-link btn-success" href="<?php echo home_url("/dashboard/company/opportunity/edit"). "?opportunity_id=". esc_attr($opportunity->ID); ?>"><i class="fa-regular fa-pen-to-square"></i></a>
                                              
-                                                    <a class="btn btn-link btn-danger" href="#" data-bs-toggle="modal" data-bs-target="#delete<?php echo esc_attr($opportunity->ID); ?>">
-                                                        <i class="fa-solid text-danger fa-trash"></i>
-                                                    </a>
+                                                   
                                                 
                                                  
                                                     <form class="delete-opportunity-form d-inline">

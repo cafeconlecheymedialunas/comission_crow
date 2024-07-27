@@ -131,8 +131,8 @@ class Admin
                     ->set_option_value('yes'),
                 Field::make('text', 'sales_cycle_estimation', __('Sales cycle estimation')),
             ])->add_tab(__('Materials'), [
-            Field::make('media_gallery', 'images', __('Images')),//->set_attribute( 'readOnly', true),
-            Field::make('media_gallery', 'supporting_materials', __('Supporting materials')),
+            Field::make('media_gallery', 'images', __('Images'))->set_type("image"),//->set_attribute( 'readOnly', true),
+            Field::make('media_gallery', 'supporting_materials', __('Supporting materials'))->set_type("text"),
             Field::make('complex', 'videos', __('Videos urls'))
                 ->add_fields([
                     Field::make('oembed', 'video', __('Url Video')),

@@ -1,84 +1,109 @@
 jQuery(document).ready(function ($) {
   // Initialize components for each file type
-  const imageUploader = new CustomMediaUpload("#select-image-button");
-  const textUploader = new CustomMediaUpload("#select-text-button");
+  function displayFormErrors(form, data) {
+    // Clear previous error messages
+    $(form).find(".error-message").remove();
+
+    // Iterate over the errors and display them next to the respective fields
+    $.each(data.fields, function (fieldName, errorMessages) {
+      var field = $(form).find('[name="' + fieldName + '"]');
+      if (field.length) {
+        // Remove existing error messages for the field
+        field.next(".error-message").remove();
+
+        // Create and append error messages
+        $.each(errorMessages, function (index, message) {
+          var errorElement = $(
+            '<div class="error-message text-sm text-danger"></div>',
+          ).text(message);
+          field.after(errorElement);
+        });
+      }
+    });
+
+    if (data.general && data.general.length > 0) {
+      var generalErrorsElement = $(".general-errors");
+      if (generalErrorsElement.length) {
+        // Clear previous general errors
+        generalErrorsElement.empty();
+
+        // Append all general error messages
+        const errors = [];
+        $.each(data.general, function (index, message) {
+          var errorElement = $(
+            '<div class="error-message text-sm text-danger"></div>',
+          ).text(message);
+          errors.push(errorElement);
+        });
+        generalErrorsElement.html(errors);
+      }
+    }
+  }
+
+  $(".add-new-url").click(function (e) {
+    e.preventDefault();
+
+    const newUrlRow = `
+        <div class="row mb-3">
+            <div class="col-sm-10 my-auto">
+                <input type="url" name="videos[]" class="form-control" placeholder="Video URL">
+                <small class="text-danger error-message" style="display: none;">Please fill out the URL field before adding another.</small>
+            </div>
+            <div class="col-sm-2">
+                <i class="fas fa-trash remove-url"></i>
+            </div>
+        </div>
+    `;
+    $(".url-videos").append(newUrlRow);
+  });
+
+  $(document).on("click", ".remove-url", function () {
+    $(this).closest(".row").remove();
+  });
+
   var $customSpinner = $(".custom-spinner");
 
-  $("#opportunity-form").validate({
-    // Specify client-side validation rules
-    rules: {
-      price: {
-        required: true,
-        number: true,
-      },
-      commission: {
-        required: true,
-        number: true,
-      },
-      title: {
-        required: true,
-      },
-      sales_cycle_estimation: {
-        required: true,
-        number: true,
-      },
-    },
-    // Specify client-side validation error messages
-    messages: {
-      title: {
-        required: "Title is a required field.",
-      },
-      price: {
-        required: "Price is a required field.",
-        number: "Price must be a number.",
-      },
-      commission: {
-        required: "Commission is a required field.",
-        number: "Commission must be a number.",
-      },
-      sales_cycle_estimation: {
-        required: "Sales Cycle Estimation is a required field.",
-        number: "Sales Cycle Estimation must be a number.",
-      },
-    },
-    // Handler to submit the form when valid
-    submitHandler: function (form) {
-      var formData = new FormData(form);
-      formData.append("action", "create_opportunity");
-      $customSpinner.addClass("d-flex");
-      $.ajax({
-        type: "POST",
-        url: ajax_object.ajax_url,
-        data: formData,
-        processData: false,
-        contentType: false,
-        success: function (response) {
-          console.log(response);
-          $customSpinner.removeClass("d-flex").hide();
-          if (response.success) {
-            Swal.fire({
-              title: "You have successfully created an opportunity!",
-              text: "You will be redirected in two seconds to the opportunities.",
-              icon: "success",
-              showConfirmButton: false,
-              timer: 2000,
-            }).then(function () {
-              window.location.href = "/dashboard/company/opportunity/all";
-            });
-          } else {
-            // Show server errors if any
-            if (response.data) {
-              // Iterate over server errors and display them
+  $("#opportunity-form").on("submit", function (event) {
+    event.preventDefault();
+    const form = this;
+    var formData = new FormData(form);
+    formData.append("action", "create_opportunity");
+    $customSpinner.addClass("d-flex");
+    $.ajax({
+      type: "POST",
+      url: ajax_object.ajax_url,
+      data: formData,
+      processData: false,
+      contentType: false,
+      type: "POST",
 
-              console.log(response);
-            }
-          }
-        },
-        error: function (error) {
-          console.error("Error creating opportunity:", error);
-        },
-      });
-    },
+      dataType: "json",
+
+      cache: false,
+      processData: false,
+      contentType: false,
+      enctype: "multipart/form-data",
+      success: function (response) {
+        $customSpinner.removeClass("d-flex").hide();
+        console.log(response);
+        if (response.success) {
+          Swal.fire({
+            title: "Profile updated successfully!",
+            text: "Redirecting to the profile page.",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 2000,
+          }).then(function () {
+            //location.reload()
+          });
+        } else {
+          displayFormErrors(form, response.data);
+        }
+      },
+      error: function (error) {
+        console.error("Error creating opportunity:", error);
+      },
+    });
   });
 
   $(".delete-opportunity-form").submit(function (e) {
@@ -87,7 +112,7 @@ jQuery(document).ready(function ($) {
     var form = this; // Save form reference
     var formData = new FormData(form);
     formData.append("action", "delete_opportunity");
-    $customSpinner.addClass("d-flex");
+    //$customSpinner.addClass("d-flex");
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -99,7 +124,6 @@ jQuery(document).ready(function ($) {
       cancelButtonText: "Cancel",
     }).then((result) => {
       if (result.isConfirmed) {
-        $customSpinner.removeClass("d-flex").hide();
         $.ajax({
           type: "POST",
           url: ajax_object.ajax_url,
@@ -108,20 +132,14 @@ jQuery(document).ready(function ($) {
           contentType: false,
           success: function (response) {
             if (response.success) {
-              Swal.fire(
-                "Deleted!",
-                "The opportunity has been deleted.",
-                "success",
-              );
-              // Remove corresponding row from DOM
-              $(
-                'form.delete-opportunity-form input[value="' +
-                  formData.get("opportunity_id") +
-                  '"]',
-              )
-                .closest("tr")
-                .remove();
-              $customSpinner.removeClass("d-flex");
+              Swal.fire({
+                title: "The opportunity has been deleted.",
+                icon: "success",
+                showConfirmButton: false,
+                timer: 2000,
+              }).then(function () {
+                location.reload();
+              });
             } else {
               Swal.fire(
                 "Error!",
