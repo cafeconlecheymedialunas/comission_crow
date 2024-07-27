@@ -41,7 +41,7 @@
             <a href="<?php echo esc_url(get_role_url_link_dashboard_page('disputes')); ?>"><i class="fa fa-fw fa-exclamation-triangle"></i>Disputes</a>
         </li>
         <li>
-            <a href="<?php echo esc_url(get_role_url_link_dashboard_page('commission')); ?>"><i class="fa fa-fw fa-percent"></i><?php echo $dynamic_text;?> Commission Request</a>
+            <a href="<?php echo esc_url(get_role_url_link_dashboard_page('commission')); ?>"><i class="fa fa-fw fa-percent"></i> Commission Request</a>
         </li>
         <?php if (in_array("commercial_agent", $current_user->roles) || in_array("administrator", $current_user->roles)): ?>
         <li>

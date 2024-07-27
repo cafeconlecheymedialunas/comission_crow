@@ -18,103 +18,29 @@
   display: none;
 }
 
-#wrapper {
-  position: relative;
-  width: 100%;
+
+input[type="text"].form-control, 
+input[type="email"].form-control, 
+input[type="password"].form-control,
+input[type="url"].form-control,
+input[type="number"].form-control{
+    height:60px;
 }
 
-.file_drag_area {
-  width: 100%;
-  padding: 20px;
-  text-align: center;
-  cursor: pointer;
+.container {
   position: relative;
   overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  vertical-align: center;
-  min-height: 250px;
-  background: #fafafa;
-  border-radius: 10px;
-  border: 3px dashed #ddd;
-}
-
-.file_drag_over {
-  border-color: #000;
-}
-
-.preview-container {
-  margin-top: 10px;
-}
-
-.preview-container img {
-  max-width: 100%;
-  max-height: 100px;
-  margin: 5px;
-}
-
-.loading-bar {
   width: 100%;
-  height: 20px;
-  background: #dfe6e9;
-  border-radius: 5px;
-  position: relative;
-  display: none; /* Ocultar barra por defecto */
+  padding-top: 56.25%; /* 16:9 Aspect Ratio (divide 9 by 16 = 0.5625) */
 }
 
-.progress-bar {
-  height: 100%;
-  background: #a29bfe;
-  border-radius: 5px;
+/* Then style the iframe to fit in the container div with full height and width */
+.responsive-iframe {
   position: absolute;
-  left: 0;
   top: 0;
-  width: 0%; /* Inicialmente 0% */
-  transition: width 0.4s ease;
-}
-
-.status {
-  margin-top: 10px;
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.9em;
-  letter-spacing: 1pt;
-  opacity: 0;
-  transition: opacity 0.5s ease;
-  position: absolute;
-  top: 10000px;
-}
-
-.status.visible {
-  position: static;
-  opacity: 1; /* Mostrar cuando tenga la clase .visible */
-}
-
-.status .state {
-  float: left;
-  width: 100px;
-  text-align: center;
-}
-
-.status .percentage {
-  float: right;
-  width: 100px;
-  text-align: center;
-}
-
-@keyframes fadeInOut {
-  0% {
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  90% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: auto;
 }

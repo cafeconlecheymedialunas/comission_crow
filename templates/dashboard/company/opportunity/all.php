@@ -16,7 +16,7 @@ $opportunities = $company->get_opportunities();
     <div class="col-md-12">
         <div class="card">
             <div class="table-responsive">
-                <table class="table custom-table">
+                <table class="table custom-table " id="opportunity-table">
                     <thead>
                         <tr>
                             <th scope="col">#</th>
@@ -52,7 +52,7 @@ $opportunities = $company->get_opportunities();
                                             <div class="mb-0">
                                                     <a class="btn btn-link btn-success" href="<?php echo home_url("/dashboard/company/opportunity/edit"). "?opportunity_id=". esc_attr($opportunity->ID); ?>"><i class="fa-regular fa-pen-to-square"></i></a>
                                              
-                                                   
+                                                    <a class="btn btn-link btn-success" href="<?php echo home_url("/dashboard/company/opportunity/view"). "?opportunity_id=". esc_attr($opportunity->ID); ?>"><i class="fa-regular fa-pen-to-square"></i></a>
                                                 
                                                  
                                                     <form class="delete-opportunity-form d-inline">

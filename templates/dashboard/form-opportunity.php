@@ -34,6 +34,7 @@ $company_post = get_user_associated_post_type();
 
 
 
+
 $target_audience = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'target_audience') : '';
 $age = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'age') : '';
 $gender = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'gender') : '';
@@ -56,22 +57,6 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
        
     </div>
 
-    <div class="col-md-12">
-    <div id="wrapper">
-        <div class="file_drag_area">
-            <span><strong>Add Images</strong> to give more information or reference</span>
-            <div id="preview" class="preview-container row mt-4"></div>
-            <div class="loading-bar" id="loadingBar">
-                <div class="progress-bar" id="progressBar"></div>
-            </div>
-            <div class="status">
-                <div class="state" id="stateText">Loading</div>
-                <div class="percentage" id="percentageText">0%</div>
-            </div>
-        </div>
-        <input type="file" id="images" name="images[]" accept="image/*" multiple style="display:none;">
-    </div>
-    </div>
 
     <?php if($industry_terms):?>
     <div class="col-md-6">
@@ -219,24 +204,32 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
         <label for="sales_cycle_estimation" class="form-label">Sales Cycle Estimation:</label>
         <input type="text" id="sales_cycle_estimation" name="sales_cycle_estimation" class="form-control" value="<?php echo isset($opportunity_post) ? esc_attr(carbon_get_post_meta($opportunity_post->ID, "sales_cycle_estimation")):"";?>">
     </div>
-
-    <!--<div class="col-md-6">
-        
-            <label for="formFile" class="form-label">Images</label>
-            <input class="form-control" type="file" multiple name="images" id="formFile">
-       
-    </div>-->
+    <?php if(isset($_GET["opportunity_id"])){?>
     <div class="col-md-6">
-        
-            <label for="supporting_materials" class="form-label">Supporting Materials</label>
-            <input class="form-control" type="file" multiple name="supporting_materials" id="supporting_materials">
-       
+        <label for="images" class="form-label">Images</label>
+        <input class="form-control" type="file" name="images[]" id="images" multiple accept="image/*">
+
     </div>
+    <?php }else{
+        $template_path = 'templates/dashboard/dropzone.php';
+        if (locate_template($template_path)) {
+            include locate_template($template_path);
+        }
+  
+    } ?> 
+   
+
+    <div class="col-md-6">
+        <label for="supporting_materials" class="form-label">Supporting Materials</label>
+        <input class="form-control" type="file" name="supporting_materials[]" id="supporting_materials" multiple accept=".pdf, .txt">
+
+    </div>
+  
 
     <div class="col-md-12">
                 <div class="d-flex justify-content-between mb-5">
                     <h4>Videos</h4>
-                    <a href="#" class="add-new-url prolancer-btn" data-nonce="6ef301fdf4"><i class="fal fa-plus"></i> Add New URL</a>
+                    <a href="#" class="add-new-url prolancer-btn" data-nonce="6ef301fdf4"><i class="fal fa-plus"></i> Add New Video</a>
                 </div>
                 <div class="url-videos">
                     <?php if($videos):?>

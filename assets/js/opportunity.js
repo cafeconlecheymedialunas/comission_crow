@@ -6,18 +6,18 @@ jQuery(document).ready(function ($) {
 
     // Iterate over the errors and display them next to the respective fields
     $.each(data.fields, function (fieldName, errorMessages) {
-      var field = $(form).find('[name="' + fieldName + '"]');
+      var field = $(form).find("#" + fieldName);
       if (field.length) {
         // Remove existing error messages for the field
         field.next(".error-message").remove();
 
-        // Create and append error messages
-        $.each(errorMessages, function (index, message) {
+        // Display only the first error message
+        if (errorMessages.length > 0) {
           var errorElement = $(
             '<div class="error-message text-sm text-danger"></div>',
-          ).text(message);
+          ).text(errorMessages[0]);
           field.after(errorElement);
-        });
+        }
       }
     });
 
@@ -39,6 +39,10 @@ jQuery(document).ready(function ($) {
       }
     }
   }
+
+ /* let table = new DataTable('#opportunity-table', {
+    responsive: true
+});*/
 
   $(".add-new-url").click(function (e) {
     e.preventDefault();
@@ -94,7 +98,7 @@ jQuery(document).ready(function ($) {
             showConfirmButton: false,
             timer: 2000,
           }).then(function () {
-            //location.reload()
+            window.location.href = `/dashboard/company/opportunity/all`;
           });
         } else {
           displayFormErrors(form, response.data);

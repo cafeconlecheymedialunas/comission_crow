@@ -42,7 +42,7 @@ class Company
     public function save_opportunity()
     {
         check_ajax_referer('create-opportunity-nonce', 'security');
-        
+        $current_user = wp_get_current_user();
       
         
         // Sanitización de datos
@@ -102,6 +102,48 @@ class Company
             $errors["videos"][] = __("One or more video URLs are not valid.");
         }
     
+        $allowed_image_types = ['image/jpeg', 'image/png', 'image/gif'];
+        $max_image_size = 5 * 1024 * 1024; // 5 MB
+
+        if (isset($_FILES['images']) && !empty($_FILES['images']['name'][0])) {
+            foreach ($_FILES['images']['name'] as $key => $image_name) {
+                $image_type = $_FILES['images']['type'][$key];
+                $image_size = $_FILES['images']['size'][$key];
+
+                if (!in_array($image_type, $allowed_image_types)) {
+                    $errors['images'][] = __("Invalid file type for image: ") . $image_name;
+                }
+
+                if ($image_size > $max_image_size) {
+                    $errors['images'][] = __("Image size exceeds the limit of 5MB: ") . $image_name;
+                }
+            }
+        }
+        
+        $allowed_supporting_types = ['application/pdf', 'text/plain'];
+        $max_supporting_size = 10 * 1024 * 1024; // 10 MB
+        
+        if (isset($_FILES['supporting_materials']) && !empty($_FILES['supporting_materials']['name'][0])) {
+            foreach ($_FILES['supporting_materials']['name'] as $key => $file_name) {
+                // Verifica el error del archivo
+                if ($_FILES['supporting_materials']['error'][$key] !== 0) {
+                    $errors['supporting_materials'][] = __("Error in file upload: ") . $file_name;
+                    continue; // Salta al siguiente archivo
+                }
+        
+                $file_type = $_FILES['supporting_materials']['type'][$key];
+                $file_size = $_FILES['supporting_materials']['size'][$key];
+        
+                if (!in_array($file_type, $allowed_supporting_types)) {
+                    $errors['supporting_materials'][] = __("Invalid file type for supporting material: ") . $file_name;
+                }
+        
+                if ($file_size > $max_supporting_size) {
+                    $errors['supporting_materials'][] = __("Supporting material size exceeds the limit of 10MB: ") . $file_name;
+                }
+            }
+        }
+
         if (!empty($errors)) {
             wp_send_json_error(['fields' => $errors]);
             wp_die();
@@ -129,9 +171,34 @@ class Company
                     $attachment_id = media_handle_sideload($file, 0);
                     
                     if (is_wp_error($attachment_id)) {
-                        $errors['images'][] = __("Error when saving image: ") . $attachment_id->get_error_message();
+                        $errors['images'][] = __("Error when saving Images") ;
                     } else {
                         $uploaded_image_ids[] = $attachment_id;
+                    }
+                }
+            }
+        }
+
+        if (isset($_FILES['supporting_materials']) && !empty($_FILES['supporting_materials']['name'][0])) {
+            require_once(ABSPATH . 'wp-admin/includes/file.php');
+            require_once(ABSPATH . 'wp-admin/includes/media.php');
+    
+            foreach ($_FILES['supporting_materials']['name'] as $key => $file_name) {
+                if ($_FILES['supporting_materials']['error'][$key] === 0) {
+                    $file = [
+                        'name'     => $_FILES['supporting_materials']['name'][$key],
+                        'type'     => $_FILES['supporting_materials']['type'][$key],
+                        'tmp_name' => $_FILES['supporting_materials']['tmp_name'][$key],
+                        'error'    => $_FILES['supporting_materials']['error'][$key],
+                        'size'     => $_FILES['supporting_materials']['size'][$key]
+                    ];
+    
+                    $attachment_id = media_handle_sideload($file, 0);
+    
+                    if (is_wp_error($attachment_id)) {
+                        $errors['supporting_materials'][] = __("Error when saving Supporting Materials Files");
+                    } else {
+                        $uploaded_supporting_material_ids[] = $attachment_id;
                     }
                 }
             }
@@ -158,7 +225,7 @@ class Company
     
         if (is_wp_error($opportunity_id)) {
             $operation = isset($_POST["opportunity_id"]) && !empty($_POST["opportunity_id"]) ? "updating" : "creating";
-            wp_send_json_error(['general' => __("Error when $operation the opportunity: ") . $opportunity_id->get_error_message()]);
+            wp_send_json_error(['general' => __("Error when $operation the opportunity: ") ]);
             wp_die();
         }
     
@@ -198,7 +265,7 @@ class Company
         carbon_set_post_meta($opportunity_id, 'question_4', $question_4);
         carbon_set_post_meta($opportunity_id, 'question_5', $question_5);
         carbon_set_post_meta($opportunity_id, 'question_6', $question_6);
-        carbon_set_post_meta($opportunity_id, 'company_id', $company);
+        carbon_set_post_meta($opportunity_id, 'company', $company);
         carbon_set_post_meta($opportunity_id, 'videos', $videos);
     
      
@@ -211,7 +278,7 @@ class Company
         }
     
         // Enviar respuesta de éxito
-        wp_send_json_success(['message' => __("Opportunity saved successfully.")]);
+        wp_send_json_success($current_user);
         wp_die();
     }
     
