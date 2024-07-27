@@ -89,7 +89,7 @@ $selected_seller_type = wp_get_post_terms($commercial_agent_post->ID, 'seller_ty
                     <?php if($language_terms):?>
                     <div class="col-md-6">
                         <label for="language" class="form-label">Languages:</label>
-                        <select name="language[]" multiple class="custom-select-multiple">
+                        <select name="language[]" multiple class="">
                             <?php foreach ($language_terms as $term): ?>
                                 <option 
                                     value="<?php echo esc_attr($term->term_id); ?>" 
@@ -104,7 +104,7 @@ $selected_seller_type = wp_get_post_terms($commercial_agent_post->ID, 'seller_ty
                     <?php if($country_terms):?>
                         <div class="col-md-6">
                             <label for="country" class="form-label">Country:</label>
-                            <select name="country[]" class="custom-select">
+                            <select name="country[]" class="form-control">
                                 <option value="">Select an option</option>
                                 <?php foreach ($country_terms as $term): ?>
                                     <option 
@@ -119,7 +119,7 @@ $selected_seller_type = wp_get_post_terms($commercial_agent_post->ID, 'seller_ty
                     <?php if($skill_terms):?>
                     <div class="col-md-6">
                         <label for="skill" class="form-label">Skills:</label>
-                        <select name="skill[]" multiple class="custom-select-multiple">
+                        <select name="skill[]" multiple class="form-control">
                             <?php foreach ($skill_terms as $term): ?>
                                 <option 
                                     value="<?php echo esc_attr($term->term_id); ?>" 
@@ -134,7 +134,7 @@ $selected_seller_type = wp_get_post_terms($commercial_agent_post->ID, 'seller_ty
                     <?php if($industry_terms):?>
                         <div class="col-md-6">
                             <label for="industry" class="form-label">Industry:</label>
-                            <select name="industry[]" class="custom-select">
+                            <select name="industry[]" class="form-control">
                                 <option value="">Select an option</option>
                                 <?php foreach ($industry_terms as $term): ?>
                                     <option 
@@ -149,7 +149,7 @@ $selected_seller_type = wp_get_post_terms($commercial_agent_post->ID, 'seller_ty
                     <?php if($seller_type_terms):?>
                         <div class="col-md-6">
                             <label for="seller_type" class="form-label">Seller Type:</label>
-                            <select name="seller_type[]" class="custom-select">
+                            <select name="seller_type[]" class="form-control">
                                 <option value="">Select an option</option>
                                 <?php foreach ($seller_type_terms as $term): ?>
                                     <option 
@@ -164,7 +164,7 @@ $selected_seller_type = wp_get_post_terms($commercial_agent_post->ID, 'seller_ty
                     <?php if($selling_method_terms):?>
                         <div class="col-md-6">
                             <label for="selling_method[]" class="form-label">Selling Methods:</label>
-                            <select name="selling_method[]" class="custom-select">
+                            <select name="selling_method[]" class="form-control">
                                 <option value="">Select an option</option>
                                 <?php foreach ($selling_method_terms as $term): ?>
                                     <option 

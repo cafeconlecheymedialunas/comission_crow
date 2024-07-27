@@ -1,7 +1,7 @@
 jQuery(document).ready(function ($) {
   var $customSpinner = $(".custom-spinner");
 
-  $("#save-agreement").validate({
+  $("#save-contract").validate({
     // Specify client-side validation rules
     rules: {
       opportunity: {
@@ -22,7 +22,7 @@ jQuery(document).ready(function ($) {
     submitHandler: function (form, event) {
       event.preventDefault(); // Prevent the default form submission
       var formData = new FormData(form);
-      formData.append("action", "create_agreement");
+      formData.append("action", "create_contract");
 
       $customSpinner.addClass("d-flex");
       $.ajax({
@@ -36,8 +36,8 @@ jQuery(document).ready(function ($) {
             console.log(response);
             $customSpinner.removeClass("d-flex").hide();
             Swal.fire({
-              title: "agreement updated successfully!",
-              text: "Redirecting to the agreement page.",
+              title: "contract created successfully!",
+              text: "Redirecting to the contract page.",
               icon: "success",
               showConfirmButton: false,
               timer: 2000,
@@ -46,7 +46,7 @@ jQuery(document).ready(function ($) {
                 response.data.roles[0] === "commercial_agent"
                   ? "commercial-agent"
                   : "company";
-              window.location.href = `/dashboard/${key}/agreement/all`;
+              window.location.href = `/dashboard/${key}/contract/all`;
             });
           } else {
             console.log(response);
@@ -54,6 +54,7 @@ jQuery(document).ready(function ($) {
           }
         },
         error: function (error) {
+          console.log(error)
           console.error("Error updating profile:", error);
         },
         complete: function () {
@@ -63,7 +64,7 @@ jQuery(document).ready(function ($) {
     },
   });
 
-  $(".update-status-agreement-form").on("submit", function (e) {
+  $(".update-status-contract-form").on("submit", function (e) {
     e.preventDefault();
 
     var form = $(this);
@@ -73,17 +74,17 @@ jQuery(document).ready(function ($) {
       url: ajax_object.ajax_url,
       type: "POST",
       data: {
-        action: "update_agreement_status",
+        action: "update_contract_status",
         security: form.find('input[name="security"]').val(),
-        agreement_id: form.find('input[name="agreement_id"]').val(),
+        contract_id: form.find('input[name="contract_id"]').val(),
         status: form.find('input[name="status"]').val(),
       },
       success: function (response) {
         if (response.success) {
           $customSpinner.removeClass("d-flex").hide();
           Swal.fire({
-            title: "agreement updated successfully!",
-            text: "Redirecting to the agreement page.",
+            title: "contract updated successfully!",
+            text: "Redirecting to the contract page.",
             icon: "success",
             showConfirmButton: false,
             timer: 2000,

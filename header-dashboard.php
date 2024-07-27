@@ -57,13 +57,13 @@ $current_user = wp_get_current_user();
 							<div class="dropdown">
 								<span class="dropdown-toggle" type="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
 								<?php
-								$default = get_template_directory_uri() . "/assets/img/placeholder.png";
-								if ($post_thumbnail) {
-									echo $post_thumbnail;
-								} else {
-									echo '<img width="50" height="50" class="rounded-circle" src="' . $default . '"/>';
-								}
-								?>
+                                $default = get_template_directory_uri() . "/assets/img/placeholder.png";
+						    if ($post_thumbnail) {
+						        echo $post_thumbnail;
+						    } else {
+						        echo '<img width="50" height="50" class="rounded-circle" src="' . $default . '"/>';
+						    }
+?>
 								
 								</span>
 								<ul class="dropdown-menu" aria-labelledby="accountDropdown">

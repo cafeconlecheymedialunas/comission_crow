@@ -169,7 +169,12 @@ jQuery(document).ready(function ($) {
             location.reload();
           });
         } else {
-          console.log(response);
+           // Display errors using the utility function
+           if (response.errors) {
+            displayFormErrors(form, response.errors);
+            } else {
+                console.log(response);
+            }
         }
       },
       error: function (xhr, status, error) {

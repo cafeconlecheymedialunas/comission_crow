@@ -42,11 +42,9 @@ class PublicFront
         wp_enqueue_style('quill-editorcss', "https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css", [], "7.3.0", "all");
         wp_enqueue_script('quill-editorjs', "https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js", ["jquery"], "7.3.0", true);
         
-
-
-
-      
-        
+        wp_enqueue_style('select2bootstracss', "https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css", [], $theme_version, "all");
+        ;
+  
 
         wp_enqueue_script('jqueryvalidatejs', "https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js", ["jquery"], "1.19.3", true);
         
@@ -78,7 +76,7 @@ class PublicFront
 
         wp_enqueue_style('dashboardcss', get_template_directory_uri() . '/assets/css/dashboard.css', [], $theme_version, "all");
 
-      
+        
 
         $ajax_data = [
             'ajax_url' => admin_url('admin-ajax.php'),

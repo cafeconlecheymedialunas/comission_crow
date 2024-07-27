@@ -17,11 +17,11 @@ $current_user = wp_get_current_user();
         <div class="card">
             <div class="table-responsive">
             <?php $template_path = 'templates/dashboard/table-dispute.php';
-            if (locate_template($template_path)) {
-                include locate_template($template_path);
-            }
+if (locate_template($template_path)) {
+    include locate_template($template_path);
+}
 
-            ?>
+?>
             </div>
         </div>
     </div>

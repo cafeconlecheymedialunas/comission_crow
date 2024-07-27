@@ -99,7 +99,11 @@ class CustomMediaUpload {
   }
 }
 jQuery(document).ready(function ($) {
-  $(".custom-select").select2();
+  $(".custom-select").select2({
+    placeholder: "Select an option",
+    allowClear: true,
+    theme: "bootstrap-5",
+  });
   $(".custom-select-multiple").select2({
     dropdownAutoWidth: true,
     multiple: true,
@@ -107,6 +111,7 @@ jQuery(document).ready(function ($) {
     height: "30px",
     placeholder: "Select an option",
     allowClear: true,
+    theme: "bootstrap-5",
   });
 
   $(".editor-container").each(function () {
@@ -168,4 +173,18 @@ jQuery(document).ready(function ($) {
   $(document).on("click", ".remove-url", function () {
     $(this).closest(".row").remove();
   });
+
+  function displayFormErrors(form, errors) {
+    // Clear previous error messages
+    $(form).find(".error-message").remove();
+
+    // Iterate over the errors and display them next to the respective fields
+    $.each(errors, function (fieldName, errorMessage) {
+        var field = $(form).find('[name="' + fieldName + '"]');
+        if (field.length) {
+            var errorElement = $('<div class="error-message text-danger"></div>').text(errorMessage);
+            field.after(errorElement);
+        }
+    });
+}
 });

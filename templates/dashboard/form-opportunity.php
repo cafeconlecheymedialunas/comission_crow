@@ -60,7 +60,7 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
     <?php if($industry_terms):?>
     <div class="col-md-6">
         <label for="industry" class="form-label">Industry:</label>
-        <select name="industry[]" class="form-select custom-select">
+        <select name="industry[]" class="select form-control custom-select">
             <option value="">Select an option</option>
             <?php foreach ($industry_terms as $term): ?>
                 <option 
@@ -76,7 +76,7 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
     <?php if($language_terms):?>
     <div class="col-md-6">
         <label for="language" class="form-label">Languages:</label>
-        <select name="language[]" multiple class="form-select custom-select-multiple">
+        <select name="language[]" multiple class="W custom-select-multiple">
             <?php foreach ($language_terms as $term): ?>
                 <option 
                     value="<?php echo esc_attr($term->term_id); ?>" 
@@ -91,7 +91,7 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
     <?php if($country_terms):?>
     <div class="col-md-6">
         <label for="country" class="form-label">Country:</label>
-        <select name="country[]" class="form-select custom-select">
+        <select name="country[]" class="custom-select">
             <option value="">Select an option</option>
             <?php foreach ($country_terms as $term): ?>
                 <option 
@@ -107,7 +107,7 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
     <?php if($currency_terms):?>
     <div class="col-md-6">
         <label for="currency" class="form-label">Currency:</label>
-        <select name="currency[]" class="form-select custom-select">
+        <select name="currency[]" class="custom-select">
             <option value="">Select an option</option>
             <?php foreach ($currency_terms as $term): ?>
                 <option 
@@ -122,7 +122,7 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
     <?php endif;?>
     <div class="col-md-6">
         <label for="target_audience" class="form-label">Target Audience:</label>
-        <select name="target_audience" class="form-select">
+        <select name="target_audience" class="form-select custom-select">
             <option value="">Select an option</option>
             <?php foreach ($target_audience_options as $key => $value): ?>
                 <option 
@@ -162,7 +162,7 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
 
     <div class="col-md-6">
         <label for="age" class="form-label">Age:</label>
-        <select name="age" class="form-select">
+        <select name="age" class="custom-select">
             <option value="">Select an option</option>
             <?php foreach ($age_options as $key => $value): ?>
                 <option value="<?php echo esc_attr($key); ?>" <?php selected($age, $key); ?>><?php echo esc_html($value); ?></option>
@@ -172,7 +172,7 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
 
     <div class="col-md-6">
         <label for="gender" class="form-label">Gender:</label>
-        <select name="gender" class="form-select">
+        <select name="gender" class="form-select cstom-select">
             <option value="">Select an option</option>
             <?php foreach ($gender_options as $key => $value): ?>
                 <option value="<?php echo esc_attr($key); ?>" <?php selected($gender, $key); ?>><?php echo esc_html($value); ?></option>

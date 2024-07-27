@@ -3,7 +3,7 @@ $current_user = wp_get_current_user();
 ?>
 
 <form id="update-user-data" enctype="multipart/form-data">
-    <h2>User</h2>
+    <h4>User</h4>
     <div class="col-md-12">
         <label for="first_name" class="form-label">First Name:</label>
         <input 

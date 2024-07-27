@@ -4,33 +4,19 @@ $current_user = wp_get_current_user();
 
 
 if(in_array("commercial_agent", $current_user->roles)) {
-    $commercial_agent = CommercialAgent::get_instance();
-    $post = $commercial_agent->get_commercial_agent();
+    $post_type = CommercialAgent::get_instance();
+    $post = $post_type->get_commercial_agent();
     $key = "commercial_agent";
 } else {
-    $company = Company::get_instance();
-    $post = $company->get_company();
+    $post_type = Company::get_instance();
+    $post = $post_type->get_company();
     $key = "company";
 }
 
 
 
+$contracts = $post_type->get_contracts()
 
-
-
-$query = new WP_Query([
-  'post_type' => 'contract',
-  'meta_query' => [
-      [
-          'key' => $key,
-          'value' => $post->ID,
-          'compare' => '='
-      ]
-  ],
-  'posts_per_page' => -1,
-]);
-
-$contracts = $query->posts;
 
 
 
@@ -47,14 +33,14 @@ $contracts = $query->posts;
         <form id="commission-form">
           <div class="row">
             
-            <?php if($commission_requests):?>
+            <?php if($contracts):?>
               <div class="col-md-6" id="contract-select" style="display:none">
                   <label for="contract" class="form-label">Contracts:</label>
                   <select  name="contract_id" class="form-select">
                       <option value="">Select an option</option>
-                      <?php foreach ($commission_request as $request): ?>
-                          <option value="<?php echo esc_attr($request->ID); ?>">
-                              <?php echo esc_html($request->post_title); ?>
+                      <?php foreach ($contracts as $contract): ?>
+                          <option value="<?php echo esc_attr($contract->ID); ?>">
+                              <?php echo esc_html($contract->post_title); ?>
                           </option>
                       <?php endforeach;?>
                   </select>

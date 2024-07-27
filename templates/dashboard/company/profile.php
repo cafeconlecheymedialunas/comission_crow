@@ -45,10 +45,14 @@ $youtube_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'y
 //echo do_shortcode('[fullstripe_form name="Prueba" type="inline_save_card"]');
 
 ?>
+<div class="card mb-4">
+    <h2 class="mb-0"><?php echo __("Profile"); ?></h2>
+
+</div>
 <div class="row">
 	<div class="col-md-8">
 	    <div class="card">
-                <h2>Company</h2>
+            <h4>Company</h4>
             <form id="company-profile-form">
                 <div class="row">
                     <!-- User Fields -->
@@ -91,7 +95,7 @@ $youtube_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'y
                     <?php if($industry_terms):?>
                     <div class="col-md-6">
                         <label for="industry" class="form-label">Industry:</label>
-                        <select name="industry[]" class="custom-select">
+                        <select name="industry[]" class="">
                             <?php foreach ($industry_terms as $term): ?>
                                 <option 
                                     value="<?php echo esc_attr($term->term_id); ?>" 
@@ -106,7 +110,7 @@ $youtube_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'y
                     <?php if($country_terms):?>
                         <div class="col-md-6">
                             <label for="country" class="form-label">Country:</label>
-                            <select name="country[]" class="custom-select">
+                            <select name="country[]" class="">
                                 <option value="">Select an option</option>
                                 <?php foreach ($country_terms as $term): ?>
                                     <option 
@@ -121,7 +125,7 @@ $youtube_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'y
                     <?php if($activity_terms):?>
                     <div class="col-md-6">
                         <label for="activity" class="form-label">Activity:</label>
-                        <select name="activity[]"class="custom-select">
+                        <select name="activity[]"class="">
                             <?php foreach ($activity_terms as $term): ?>
                                 <option 
                                         value="<?php echo esc_attr($term->term_id); ?>" 
@@ -136,7 +140,7 @@ $youtube_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'y
                     <?php if($type_of_company_terms):?>
                         <div class="col-md-6">
                             <label for="type_of_company" class="form-label">Company Type:</label>
-                            <select name="type_of_company[]" class="custom-select">
+                            <select name="type_of_company[]" class="">
                                 <option value="">Select an option</option>
                                 <?php foreach ($type_of_company_terms as $term): ?>
                                     <option 

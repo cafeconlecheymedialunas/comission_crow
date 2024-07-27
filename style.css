@@ -280,11 +280,10 @@ blockquote cite:before {
   outline: transparent !important;
   box-shadow: none !important;
 }
-.form-control:focus {
+.form-control:focus,
+.custom-select {
   box-shadow: none !important;
 }
-
-
 
 .subtotal,
 .total {
@@ -294,4 +293,3 @@ blockquote cite:before {
 .custom-spinner {
   z-index: 10000;
 }
-
