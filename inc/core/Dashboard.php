@@ -31,12 +31,13 @@ class Dashboard
         $contract = Contract::get_instance();
         $commission_request = Commissionrequest::get_instance();
         $dispute = Dispute::get_instance();
+        $opportunity = Opportunity::get_instance();
 
-        add_action('wp_ajax_create_opportunity', [$company,'save_opportunity']);
-        add_action('wp_ajax_nopriv_create_opportunity', [$company,'save_opportunity']);
+        add_action('wp_ajax_create_opportunity', [$opportunity,'save_opportunity']);
+        add_action('wp_ajax_nopriv_create_opportunity', [$opportunity,'save_opportunity']);
 
-        add_action('wp_ajax_delete_opportunity', [$company,'delete_opportunity']);
-        add_action('wp_ajax_nopriv_delete_opportunity', [$company,'delete_opportunity']);
+        add_action('wp_ajax_delete_opportunity', [$opportunity,'delete_opportunity']);
+        add_action('wp_ajax_nopriv_delete_opportunity', [$opportunity,'delete_opportunity']);
 
         add_action('wp_ajax_save_agent_profile', [$commercial_agent,'save_agent_profile']);
         add_action('wp_ajax_nopriv_save_agent_profile', [$commercial_agent,'save_agent_profile']);

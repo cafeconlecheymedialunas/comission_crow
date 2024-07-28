@@ -18,7 +18,7 @@ $files_to_require = [
     __DIR__ . '/inc/setup/customizer.php',
     __DIR__ . '/inc/setup/setup-theme.php',
 
-
+    __DIR__ . '/inc/core/Crud.php',
 
   
      __DIR__ . '/inc/data/Company.php',
@@ -27,7 +27,7 @@ $files_to_require = [
      __DIR__ . '/inc/data/Contract.php',
      __DIR__ . '/inc/data/Commissionrequest.php',
      __DIR__ . '/inc/data/Dispute.php',
-
+     __DIR__ . '/inc/data/Opportunity.php',
      __DIR__ . '/inc/core/CustomPostType.php',
      __DIR__ . '/inc/core/CustomTaxonomy.php',
      __DIR__ . '/inc/core/Admin.php',
