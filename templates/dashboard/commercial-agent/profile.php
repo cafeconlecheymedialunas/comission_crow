@@ -54,32 +54,10 @@ $selected_seller_type = wp_get_post_terms($commercial_agent_post->ID, 'seller_ty
             <form id="agent-profile-form">
                 <div class="row">
                     <!-- User Fields -->
-                    <div class="col-md-6">
-                        <label for="image-ids" class="form-label">Profile Image:</label>
-                        <input type="hidden" id="image-ids" value="<?php echo $profile_image;?>" name="profile_image" class="regular-text media-ids">
-                        <button type="button" id="select-image-button" class="button select-media-button btn btn-secondary" data-media-type="image" data-multiple="false">Select Image</button>
-                        <div class="image-preview row" style="<?php echo (empty($profile_image))?'display:none;':'';?>">
-                            <?php
-                            if($profile_image):
-                                foreach($profile_image as $image):
-                                    // Obtener metadatos de la imagen
-                                    $attachment_metadata = wp_get_attachment_metadata($image);
-                                    // Obtener la URL de la imagen
-                                    $image_url = wp_get_attachment_url($image);
-                                    if($image_url):?>
-                            
-                                    <div class="col-2 col-sm-3 col-md-4 preview-item d-flex flex-column justify-content-center align-items-center">
-                                        <img width="100" src="<?php echo esc_url($image_url); ?>" style="max-width: 100%; height: auto;">
-                                    </div>
-                                    
-                            <?php
-                                    endif;
-                                endforeach;
-                            endif;
-?>
-                        </div>
+                    <div class="col-md-12">
+                        <label for="profile_image" class="form-label">Profile Image</label>
+                        <input type="file" id="profile_image" class="form-control" name="profile_image">
                     </div>
-
                     <div class="col-md-12">
                         <label for="description" class="form-label">Description</label>
                         <div class="editor-container" data-target="description"></div>

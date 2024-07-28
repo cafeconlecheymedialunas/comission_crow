@@ -1,3 +1,85 @@
+/*General Styles */
+.btn.btn-primary {
+  padding: 15px 25px;
+  border-radius: 50px;
+  border: 2px solid;
+  margin-top: 10px;
+  display: inline-block;
+  color: #fff;
+  background: #6787fe;
+  line-height: 1rem;
+}
+
+.btn.btn-secondary,
+.btn.btn-primary {
+  padding: 15px 25px;
+  border-radius: 50px;
+  border: 2px solid;
+  margin-top: 10px;
+  display: inline-block;
+ line-height: 1rem;
+}
+.custom-spinner {
+  z-index: 10000;
+}
+
+/*Forms*/
+.editor-container {
+  height: 120px !important; /* Establecer una altura fija para el contenedor del editor */
+  border: 1px solid #ccc;
+  padding: 10px;
+  overflow-y: auto; /* Añadir scroll si el contenido sobrepasa el contenedor */
+}
+.form-control.error,
+.form-control:focus .error {
+  border-color: #dc3545 !important;
+  outline: transparent !important;
+  box-shadow: none !important;
+}
+.form-control:focus,
+.custom-select {
+  box-shadow: none !important;
+}
+
+
+.custom-table th {
+  font-weight: 500;
+  border: none;
+}
+.custom-table {
+  border-radius: 10px;
+  overflow: hidden;
+}
+.custom-table thead {
+  border-bottom: 1px solid #ccc;
+}
+.custom-table tbody tr td,
+.custom-table tbody tr th {
+  padding: 0 10px;
+  border: none;
+  vertical-align: middle;
+}
+
+/*Dashboard Header*/
+
+
+.dashboard {
+  background: #f8fafb;
+}
+
+.dashboard .card {
+  border-radius: 20px;
+  background: #fff;
+  padding: 30px;
+}
+
+/*Commission Requests */
+.subtotal,
+.total {
+  font-weight: bold;
+} 
+
+/*Profile Page*/
 .view-profile {
   padding: 10px 25px;
   border-radius: 50px;
@@ -59,30 +141,5 @@
   font-size: 15px;
 }
 
-.btn.btn-primary {
-  padding: 15px 25px;
-  border-radius: 50px;
-  border: 2px solid;
-  margin-top: 10px;
-  display: inline-block;
-  color: #fff;
-  background: #6787fe;
-  line-height: 1rem;
-}
-.custom-table th {
-  font-weight: 500;
-  border: none;
-}
-.custom-table {
-  border-radius: 10px;
-  overflow: hidden;
-}
-.custom-table thead {
-  border-bottom: 1px solid #ccc;
-}
-.custom-table tbody tr td,
-.custom-table tbody tr th {
-  padding: 0 10px;
-  border: none;
-  vertical-align: middle;
-}
+
+

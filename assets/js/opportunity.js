@@ -40,7 +40,7 @@ jQuery(document).ready(function ($) {
     }
   }
 
- /* let table = new DataTable('#opportunity-table', {
+  /* let table = new DataTable('#opportunity-table', {
     responsive: true
 });*/
 

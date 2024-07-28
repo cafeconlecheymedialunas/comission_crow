@@ -251,7 +251,7 @@ class Auth
                     'post_status' => 'any', // Consider all post statuses
                 ]);
     
-                if (empty($company->posts)) {
+                if (!empty($company->posts)) {
                     $field_errors['company_name'][] = __('There is already a company with that name.');
                 }
             }

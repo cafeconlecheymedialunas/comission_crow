@@ -83,7 +83,7 @@ class Crud
     }
 
     // Método para actualizar una publicación por su ID
-    public function update($post_id, $data, $field_mappings)
+    public function update($post_id, $data , $field_mappings)
     {
         $post = [
             'ID' => $post_id,

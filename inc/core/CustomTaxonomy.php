@@ -3,8 +3,8 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-if (!class_exists('Custom_Taxonomy')) {
-    class Custom_Taxonomy
+if (!class_exists('CustomTaxonomy')) {
+    class CustomTaxonomy
     {
         private static $instance = null;
 

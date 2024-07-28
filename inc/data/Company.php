@@ -424,6 +424,30 @@ class Company
             set_post_thumbnail($company_post_id, $company_logo);
         }
 
+        // Subir la imagen de la empresa
+        if (!empty($_FILES['company_logo']['name'])) {
+            $uploaded_file = $_FILES['company_logo'];
+            $upload = wp_handle_upload($uploaded_file, ['test_form' => false]);
+
+            if (isset($upload['error']) && $upload['error'] != 0) {
+                wp_send_json_error(['general' => ['There was an error uploading the image.']]);
+                wp_die();
+            } else {
+                $filetype = wp_check_filetype(basename($upload['file']), null);
+                $attachment = [
+                    'post_mime_type' => $filetype['type'],
+                    'post_title' => sanitize_file_name($uploaded_file['name']),
+                    'post_content' => '',
+                    'post_status' => 'inherit'
+                ];
+                $attach_id = wp_insert_attachment($attachment, $upload['file'], $company_id);
+                require_once(ABSPATH . 'wp-admin/includes/image.php');
+                $attach_data = wp_generate_attachment_metadata($attach_id, $upload['file']);
+                wp_update_attachment_metadata($attach_id, $attach_data);
+                set_post_thumbnail($company_post_id, $attach_id);
+            }
+        }
+
         // Guardar metadatos adicionales
         carbon_set_post_meta($company_post_id, 'company_name', $company_name);
         carbon_set_post_meta($company_post_id, 'employees_number', $employees_number);

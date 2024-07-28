@@ -159,7 +159,63 @@ class Commissionrequest
     
     
     
-    
+    /* Cron para chequear la finalizacion de un contrato
+function schedule_contract_finalization_event()
+{
+    if (!wp_next_scheduled('finalize_scheduled_contracts')) {
+        wp_schedule_event(time(), 'daily', 'finalize_scheduled_contracts');
+    }
+}
+add_action('wp', 'schedule_contract_finalization_event');
+
+function finalize_scheduled_contracts()
+{
+    $args = [
+        'post_type' => 'contract',
+        'meta_query' => [
+            [
+                'key' => 'status',
+                'value' => 'finishing',
+                'compare' => '=',
+            ],
+            [
+                'key' => 'finalization_date',
+                'value' => time(),
+                'compare' => '<=',
+                'type' => 'NUMERIC',
+            ],
+        ],
+    ];
+
+    $query = new WP_Query($args);
+
+    if ($query->have_posts()) {
+        foreach ($query->posts as $contract) {
+            $contract_id = $contract->ID;
+
+            // Actualizar el estado del acuerdo a "finalizado"
+            update_post_meta($contract_id, 'status', 'finished');
+
+            // Actualizar el historial de estados
+            $status_history = get_post_meta($contract_id, 'status_history', true);
+            if (!is_array($status_history)) {
+                $status_history = [];
+            }
+
+            $status_history[] = [
+                'status' => 'finished',
+                'date' => current_time('mysql'),
+                'changed_by' => 0, // ID 0 indica que fue un cambio automático
+            ];
+
+            update_post_meta($contract_id, 'status_history', $status_history);
+        }
+    }
+
+    wp_reset_postdata();
+}
+add_action('finalize_scheduled_contracts', 'finalize_scheduled_contracts');
+*/
 
 
 

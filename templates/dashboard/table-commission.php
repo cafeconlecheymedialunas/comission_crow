@@ -19,11 +19,13 @@
                                 $commercial_agent = carbon_get_post_meta($contract->ID, 'commercial_agent');
                                 
 
-                                $counterparter_key = in_array("company", $current_user->roles)?"commercial_agent":"company";
+                                $counterparter_key = in_array("company", $current_user->roles)?"company":"commercial_agent";
                                 
                                 $counterparty = carbon_get_post_meta($contract->ID, $counterparter_key);
 
                                 $counterparty = get_post($counterparty);
+                                
+                                
 
                                 $user_counterparty_id = carbon_get_post_meta($counterparty->ID, 'user_id');
 
@@ -97,19 +99,21 @@
                                         <td><?php echo esc_html($current_user->ID === $sender_commission_request ? "Sent" : "Received"); ?></td>
                                         <td><?php echo esc_html($date_commission_request); ?></td>
                                         <td>
-                                            <ul class="list-inline mb-0">
+                                            <ul class="p-0 mb-0 d-flex justify-content-center align-items-center">
                                         
                                                 <li class="list-inline-item">
-                                                    <button class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#chat-modal-<?php echo $user_counterparty_id ;?>" data-user-id="<?php echo esc_attr($user_counterparty_id); ?>"><i class="fas fa-envelope"></i></button>
+                                                    <button class="" data-bs-toggle="modal" data-bs-target="#chat-modal-<?php echo $user_counterparty_id ;?>" data-user-id="<?php echo esc_attr($user_counterparty_id); ?>">
+                                                        <i class="chat text-secondary fa-solid fa-comments"></i>
+                                                    </button>
                                                 </li>
                                                 
                                                 <?php if(in_array("company", $current_user->roles) && $commission_request):?>
                                                  
                                                         <li class="list-inline-item">
-                                                            <a class="btn btn-secondary btn-sm"  href="<?php //echo home_url("".$contract->ID);?>">View</a>
+                                                            <a class=""  href="<?php //echo home_url("".$contract->ID);?>"><i class="text-secondary view fa-regular fa-eye"></i></a>
                                                         </li>
                                                         <li class="list-inline-item">
-                                                            <a class="btn btn-secondary btn-sm"  href="<?php //echo home_url("".$contract->ID);?>">Pay</a>
+                                                            <a class=""  href="<?php //echo home_url("".$contract->ID);?>"><i class="text-info fa-solid fa-money-check-dollar"></i></a>
                                                         </li>
                                                         <?php
                                                             
@@ -117,7 +121,7 @@
                                                            
                                                     ?>
                                                         <li class="list-inline-item">
-                                                            <a class="btn btn-secondary btn-sm"  href="<?php echo $url; ?>">Dispute</a>
+                                                            <a class="btn btn-secondary btn-sm"  href="<?php echo $url; ?>"><i class="text-primary fa-solid fa-scale-balanced"></i></a>
                                                         </li>
                                                         
                                                 <?php endif;?>
@@ -143,3 +147,9 @@
                         <?php endif; ?>
                     </tbody>
                 </table>
+                <?php
+        $template_path = 'templates/dashboard/form-request-commission.php';
+                        if (locate_template($template_path)) {
+                            include locate_template($template_path);
+                        }
+                        ?> 

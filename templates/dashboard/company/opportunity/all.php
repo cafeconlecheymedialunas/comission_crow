@@ -49,16 +49,16 @@ $opportunities = $company->get_opportunities();
                                         <td><?php echo esc_html($country[0]); ?></td>
                                         
                                         <td>
-                                            <div class="mb-0">
-                                                    <a class="btn btn-link btn-success" href="<?php echo home_url("/dashboard/company/opportunity/edit"). "?opportunity_id=". esc_attr($opportunity->ID); ?>"><i class="fa-regular fa-pen-to-square"></i></a>
+                                            <div class="mb-0 d-flex justify-content-center align-items-center">
+                                                    <a class="operation" href="<?php echo home_url("/dashboard/company/opportunity/edit"). "?opportunity_id=". esc_attr($opportunity->ID); ?>"><i class="text-primary fa-regular fa-pen-to-square"></i></a>
                                              
-                                                    <a class="btn btn-link btn-success" href="<?php echo home_url("/dashboard/company/opportunity/view"). "?opportunity_id=". esc_attr($opportunity->ID); ?>"><i class="fa-regular fa-pen-to-square"></i></a>
+                                                    <a class="operation" href="<?php echo home_url("/dashboard/company/opportunity/view"). "?opportunity_id=". esc_attr($opportunity->ID); ?>"><i class="text-secondary text-secondary view fa-regular fa-eye"></i></a>
                                                 
                                                  
                                                     <form class="delete-opportunity-form d-inline">
                                                         <input type="hidden" name="security" value="<?php echo wp_create_nonce("delete-opportunity-nonce"); ?>"/>
                                                         <input type="hidden" name="opportunity_id" value="<?php echo esc_attr($opportunity->ID); ?>">
-                                                        <button type="submit" class="btn btn-link btn-danger"><i class="fa-solid text-danger fa-trash"></i></button>
+                                                        <button type="submit" class="operation"><i class="fa-solid text-danger fa-trash"></i></button>
                                                     </form>
    
                                                 

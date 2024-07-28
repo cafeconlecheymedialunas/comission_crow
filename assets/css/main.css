@@ -19,14 +19,9 @@
 }
 
 
-input[type="text"].form-control, 
-input[type="email"].form-control, 
-input[type="password"].form-control,
-input[type="url"].form-control,
-input[type="number"].form-control{
-    height:60px;
-}
 
+
+/*Iframe*/
 .container {
   position: relative;
   overflow: hidden;
@@ -43,4 +38,33 @@ input[type="number"].form-control{
   right: 0;
   width: 100%;
   height: auto;
+}
+
+
+/*tables*/
+button.operation{
+  padding:0;
+  border:none;
+  background-color: transparent;
+  border:1px solid transparent;
+}
+
+
+/* Forms */
+input[type="text"].form-control, 
+input[type="email"].form-control, 
+input[type="password"].form-control,
+input[type="url"].form-control,
+input[type="number"].form-control{
+    height:60px;
+}
+
+/* Commision request */
+.commission-request-items{
+  list-style: none;
+    padding: 10px;
+}
+
+.total label{
+  margin-bottom:0;
 }

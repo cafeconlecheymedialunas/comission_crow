@@ -1,11 +1,23 @@
 <?php
 
-$commercial_agent = CommercialAgent::get_instance();
-$company_post = $commercial_agent->get_commercial_agent();
+$post_type = get_user_associated_post_type();
 
-$contracts = $commercial_agent->get_contracts();
 
-$current_user = wp_get_current_user();
+
+$args = [
+    'post_type'   => 'contract',
+    'meta_query'  => [
+        [
+            'key'     => $post_type->post_type,
+            'value'   => $post_type->ID,
+            'compare' => '=',
+        ],
+    ],
+];
+$query = new Wp_Query($args);
+
+$contracts = $query->posts;
+
 
 ?>
 <div class="card mb-4 flex-row d-flex justify-content-between align-items-center">

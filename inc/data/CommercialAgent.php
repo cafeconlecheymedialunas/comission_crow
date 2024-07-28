@@ -132,9 +132,30 @@ class CommercialAgent
         }
     
         // Actualizar imagen del perfil
-        if (!empty($profile_image)) {
-            set_post_thumbnail($commercial_agent_id, $profile_image);
+        // Subir y establecer la imagen del perfil
+        if (!empty($_FILES['profile_image']['name'])) {
+            $uploaded_file = $_FILES['profile_image'];
+            $upload = wp_handle_upload($uploaded_file, ['test_form' => false]);
+
+            if (isset($upload['error']) && $upload['error'] != 0) {
+                wp_send_json_error(['general' => ['There was an error uploading the image.']]);
+                wp_die();
+            } else {
+                $filetype = wp_check_filetype(basename($upload['file']), null);
+                $attachment = [
+                    'post_mime_type' => $filetype['type'],
+                    'post_title' => sanitize_file_name($uploaded_file['name']),
+                    'post_content' => '',
+                    'post_status' => 'inherit'
+                ];
+                $attach_id = wp_insert_attachment($attachment, $upload['file'], $commercial_agent_id);
+                require_once(ABSPATH . 'wp-admin/includes/image.php');
+                $attach_data = wp_generate_attachment_metadata($attach_id, $upload['file']);
+                wp_update_attachment_metadata($attach_id, $attach_data);
+                set_post_thumbnail($commercial_agent_id, $attach_id);
+            }
         }
+
     
         wp_send_json_success($current_user);
         wp_die();

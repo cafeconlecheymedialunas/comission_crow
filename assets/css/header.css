@@ -52,3 +52,20 @@
 .dashboard {
   background: #f8fafb;
 }
+
+
+.dashboard-header .custom-logo {
+  max-width: 80px;
+  height: auto;
+}
+
+.dashboard-header .balance {
+  background: rgb(255 187 0 / 20%);
+  position: relative;
+  font-size: 26px;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 10px;
+  padding: 10px 30px;
+  display: inline-block;
+}

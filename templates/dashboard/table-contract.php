@@ -19,7 +19,9 @@
                                 
                                 $counterparter_key = in_array("company", $current_user->roles)?"commercial_agent":"company";
                                 
-                                $counterparty = carbon_get_post_meta($contract->ID, $counterparter_key);
+                                $counterparty = carbon_get_post_meta($contract->ID, "company");
+
+                                
 
                                 $counterparty = get_post($counterparty);
 
@@ -95,14 +97,14 @@
                                         <td><?php echo esc_html($current_user->ID === $last_sender_counterparty ? "Sent" : "Received"); ?></td>
                                         <td><?php echo esc_html($date); ?></td>
                                         <td>
-                                            <ul class="list-inline mb-0">
+                                            <ul class="p-0 mb-0 d-flex justify-content-center align-items-center">
                                                 <?php if ($status === "pending" && $last_sender_counterparty !== $current_user->ID) : ?>
                                                 <li class="list-inline-item">
                                                     <form class="update-status-contract-form">
                                                         <input type="hidden" name="security" value="<?php echo wp_create_nonce("update-status-contract-nonce"); ?>"/>
                                                         <input type="hidden" name="contract_id" value="<?php echo esc_attr($contract->ID); ?>">
                                                         <input type="hidden" name="status" value="accepted">
-                                                        <button type="submit" class="btn btn-success btn-sm">Accept</button>
+                                                        <button type="submit" class="operation"><i class="accepted text-success fa-solid fa-check"></i></button>
                                                     </form>
                                                 </li>
                                                 <li class="list-inline-item">
@@ -110,7 +112,7 @@
                                                         <input type="hidden" name="security" value="<?php echo wp_create_nonce("update-status-contract-nonce"); ?>"/>
                                                         <input type="hidden" name="contract_id" value="<?php echo esc_attr($contract->ID); ?>">
                                                         <input type="hidden" name="status" value="refused">
-                                                        <button type="submit" class="btn btn-danger btn-sm">Refuse</button>
+                                                        <button type="submit" class="operation"><i class="text-danger refused fa-solid fa-xmark"></i></button>
                                                     </form>
                                                 </li>
                                                 <?php endif; ?>
@@ -120,18 +122,22 @@
                                                         <input type="hidden" name="security" value="<?php echo wp_create_nonce("update-status-contract-nonce"); ?>"/>
                                                         <input type="hidden" name="contract_id" value="<?php echo esc_attr($contract->ID); ?>">
                                                         <input type="hidden" name="status" value="finished">
-                                                        <button type="submit" class="btn btn-warning btn-sm">Finished</button>
+                                                        <button type="submit" class="operation"><i class="finished text-warning fa-solid fa-flag-checkered"></i></button>
                                                     </form>
                                                 </li>
                                                 <?php endif; ?>
                                                 <li class="list-inline-item">
-                                                    <button class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#chat-modal-<?php echo $user_counterparty_id;?>" data-user-id="<?php echo esc_attr($user_counterparty_id); ?>"><i class="fas fa-envelope"></i></button>
+                                                    <button class="operation" data-bs-toggle="modal" data-bs-target="#chat-modal-<?php echo $user_counterparty_id;?>" data-user-id="<?php echo esc_attr($user_counterparty_id); ?>">
+                                                        <i class="chat text-secondary fa-solid fa-comments"></i>
+                                                    </button>
                                                 </li>
                                                 <?php if(in_array("commercial_agent", $current_user->roles)):?>
                                                     <?php if ($status === "accepted" || $status === "finished" || $status === "finishing") : ?>
                                                         <?php if(!$commission_requests):?>
                                                         <li class="list-inline-item">
-                                                            <button class="btn btn-secondary commission-request-button btn-sm" data-bs-toggle="modal" data-bs-target="#modal-commission" data-contract-id="<?php echo esc_attr($contract->ID); ?>"><i class="fas fa-percentage"></i></button>
+                                                            <button class="operation" data-bs-toggle="modal" data-bs-target="#modal-commission" data-contract-id="<?php echo esc_attr($contract->ID); ?>">
+                                                                <i class="request-commission  text-primaryfas fa-percentage"></i>
+                                                            </button>
                                                         </li>
                                                         <?php endif;?>
                                                     <?php endif;?>

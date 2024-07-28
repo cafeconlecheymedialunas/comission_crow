@@ -30,30 +30,30 @@ class Admin
    
     public function create_post_types()
     {
-        $custom_post_types = Custom_Post_Type::get_instance();
-        $custom_taxonomy = Custom_Taxonomy::get_instance();
+        $CustomPostTypes = CustomPostType::get_instance();
+        $CustomTaxonomy = CustomTaxonomy::get_instance();
        
         //Cpt
-        $custom_post_types->register('opportunity', 'Opportunity', 'Opportunities', ['menu_icon' => 'dashicons-search']);
-        $custom_post_types->register('review', 'Review', 'Reviews', ['menu_icon' => 'dashicons-star-empty']);
-        $custom_post_types->register('company', 'Company', 'Companies', ['menu_icon' => 'dashicons-store']);
-        $custom_post_types->register('commercial_agent', 'Commercial Agent', 'Commercial Agents', ['menu_icon' => 'dashicons-businessperson']);
-        $custom_post_types->register('contract', 'Contract', 'Contracts', ['menu_icon' => 'dashicons-heart']);
-        $custom_post_types->register('transaction', 'Transaction', 'Transactions', ['menu_icon' => 'dashicons-bank']);
-        $custom_post_types->register('commission_request', 'Commission Request', 'Commission Requests', ['menu_icon' => 'dashicons-bank']);
-        $custom_post_types->register('dispute', 'Dispute', 'Disputes', ['menu_icon' => 'dashicons-warning']);
+        $CustomPostTypes->register('opportunity', 'Opportunity', 'Opportunities', ['menu_icon' => 'dashicons-search']);
+        $CustomPostTypes->register('review', 'Review', 'Reviews', ['menu_icon' => 'dashicons-star-empty']);
+        $CustomPostTypes->register('company', 'Company', 'Companies', ['menu_icon' => 'dashicons-store']);
+        $CustomPostTypes->register('commercial_agent', 'Commercial Agent', 'Commercial Agents', ['menu_icon' => 'dashicons-businessperson']);
+        $CustomPostTypes->register('contract', 'Contract', 'Contracts', ['menu_icon' => 'dashicons-heart']);
+        $CustomPostTypes->register('transaction', 'Transaction', 'Transactions', ['menu_icon' => 'dashicons-bank']);
+        $CustomPostTypes->register('commission_request', 'Commission Request', 'Commission Requests', ['menu_icon' => 'dashicons-bank']);
+        $CustomPostTypes->register('dispute', 'Dispute', 'Disputes', ['menu_icon' => 'dashicons-warning']);
 
         //Taxonomies
-        $custom_taxonomy->register('skill', ['commercial_agent'], 'Skill', 'Skills');
-        $custom_taxonomy->register('selling_method', ['commercial_agent'], 'Selling Method', 'Selling Methods');
-        $custom_taxonomy->register('industry', ['commercial_agent','company',"opportunity"], 'Industry', 'Industries');
-        $custom_taxonomy->register('seller_type', ['commercial_agent'], 'Seller Type', 'Seller Types');
+        $CustomTaxonomy->register('skill', ['commercial_agent'], 'Skill', 'Skills');
+        $CustomTaxonomy->register('selling_method', ['commercial_agent'], 'Selling Method', 'Selling Methods');
+        $CustomTaxonomy->register('industry', ['commercial_agent','company',"opportunity"], 'Industry', 'Industries');
+        $CustomTaxonomy->register('seller_type', ['commercial_agent'], 'Seller Type', 'Seller Types');
 
-        $custom_taxonomy->register('activity', ['company'], 'Activity', 'Activities');
-        $custom_taxonomy->register('type_of_company', ["opportunity"], 'Company Type', 'Company Types');
-        $custom_taxonomy->register('country', ['company',"commercial_agent","opportunity"], 'Country', 'Countries');
-        $custom_taxonomy->register('language', ["commercial_agent","opportunity"], 'Language', 'Languages');
-        $custom_taxonomy->register('currency', ["opportunity"], 'Currency', 'Currencies');
+        $CustomTaxonomy->register('activity', ['company'], 'Activity', 'Activities');
+        $CustomTaxonomy->register('type_of_company', ["opportunity"], 'Company Type', 'Company Types');
+        $CustomTaxonomy->register('country', ['company',"commercial_agent","opportunity"], 'Country', 'Countries');
+        $CustomTaxonomy->register('language', ["commercial_agent","opportunity"], 'Language', 'Languages');
+        $CustomTaxonomy->register('currency', ["opportunity"], 'Currency', 'Currencies');
     }
 
     public function create_role_company()
@@ -637,10 +637,10 @@ class Admin
         global $typenow;
 
         // Lista de tipos de publicaciones personalizadas
-        $custom_post_types = ['opportunity', 'review', 'contract', "company", "commercial_agent", "transaction","dispute","commission_request"];
+        $CustomPostTypes = ['opportunity', 'review', 'contract', "company", "commercial_agent", "transaction","dispute","commission_request"];
 
         // Verificar si el tipo de publicación actual está en la lista
-        if (in_array($typenow, $custom_post_types)) {
+        if (in_array($typenow, $CustomPostTypes)) {
             echo '
             <style>
                 /* Ejemplo de CSS personalizado */

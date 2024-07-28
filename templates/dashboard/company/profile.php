@@ -27,10 +27,12 @@ $company_post = $company->get_company();
 
 $profile_image = isset($company_post) ? [get_post_thumbnail_id($company_post->ID)] : '';
 
-$industry = wp_get_post_terms($company_post->ID, 'industry', ['fields' => 'ids']);
-$activity = wp_get_post_terms($company_post->ID, 'activity', ['fields' => 'ids']);
-$type_of_company = wp_get_post_terms($company_post->ID, 'type_of_company', ['fields' => 'ids']);
-$country = wp_get_post_terms($company_post->ID, 'country', ['fields' => 'ids']);
+$industry = wp_get_post_terms($company_post->ID, 'industry', ['fields' => 'ids'])??[];
+$activity = wp_get_post_terms($company_post->ID, 'activity', ['fields' => 'ids'])??[];
+$type_of_company = wp_get_post_terms($company_post->ID, 'type_of_company', ['fields' => 'ids'])??[];
+$country = wp_get_post_terms($company_post->ID, 'country', ['fields' => 'ids'])?? [];
+
+
 
 $company_name = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'company_name') : '';
 $employees_number = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'employees_number') : '';
@@ -55,35 +57,13 @@ $youtube_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'y
             <h4>Company</h4>
             <form id="company-profile-form">
                 <div class="row">
-                    <!-- User Fields -->
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <label for="company_name">Company Name</label>
                         <input type="text" name="company_name" class="form-control" value="<?php echo esc_attr($company_name); ?>" placeholder="Company Name">
                     </div>
-                    <div class="col-md-6">
-                        <label for="image-ids" class="form-label">Company Logo:</label>
-                        <input type="hidden" id="image-ids" value="<?php echo $profile_image;?>" name="company_logo" class="regular-text media-ids">
-                        <button type="button" id="select-image-button" class="button select-media-button btn btn-secondary" data-media-type="image" data-multiple="false">Select Image</button>
-                        <div class="image-preview row" style="<?php echo (empty($profile_image))?'display:none;':'';?>">
-                            <?php
-                            if($profile_image):
-                                foreach($profile_image as $image):
-                                    // Obtener metadatos de la imagen
-                                    $attachment_metadata = wp_get_attachment_metadata($image);
-                                    // Obtener la URL de la imagen
-                                    $image_url = wp_get_attachment_url($image);
-                                    if($image_url):?>
-                            
-                                    <div class="col-2 col-sm-3 col-md-4 preview-item d-flex flex-column justify-content-center align-items-center">
-                                        <img width="100" src="<?php echo esc_url($image_url); ?>" style="max-width: 100%; height: auto;">
-                                    </div>
-                                    
-                            <?php
-                                    endif;
-                                endforeach;
-                            endif;
-?>
-                        </div>
+                    <div class="col-md-12">
+                        <label for="company_Logo" class="form-label">Company Logo:</label>
+                        <input type="file" id="company_logo" name="company_logo" class="form-control">
                     </div>
                  
                     <div class="col-md-12">
@@ -115,7 +95,7 @@ $youtube_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'y
                                 <?php foreach ($country_terms as $term): ?>
                                     <option 
                                         value="<?php echo esc_attr($term->term_id); ?>" 
-                                        <?php selected($country[0], $term->term_id); ?>>
+                                        <?php (is_array($country) && !empty($country))??selected($country[0], $term->term_id); ?>>
                                         <?php echo esc_html($term->name); ?>
                                     </option>
                                 <?php endforeach;?>

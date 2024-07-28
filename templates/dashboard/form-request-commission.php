@@ -22,7 +22,7 @@ $contracts = $post_type->get_contracts()
 
 
 ?>
-  <div class="modal fade" id="modal-dispute" tabindex="-1" aria-labelledby="chatModalLabel" aria-hidden="true">
+  <div class="modal fade" id="modal-commission" tabindex="-1" aria-labelledby="chatModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
@@ -49,23 +49,20 @@ $contracts = $post_type->get_contracts()
             
             <div class="col-md-6">
                 <label for="text-ids" class="form-label">General Invoice:</label>
-                <input type="hidden" id="text-ids" value="" name="general_invoice" class="regular-text media-ids">
-                <button type="button" id="select-text-button" class="button select-media-button btn btn-secondary" data-media-type="text" data-multiple="true">Select Text File</button>
-                <div class="text-preview row" style="display:none;">
-              
-                </div>
+                <input type="file" id="text-ids" value="" name="general_invoice" class="form-control">
+               
             </div>
             
             <div class="col-12">
               <div class="request-detail py-3 px-2 border">
 
               <div class="d-flex justify-content-end mb-2">
-                <button type="button" class="btn btn-info btn-sm add-new-item">Add New Item</button>
+                <button type="button" class="btn btn-link btn-sm add-new-item">Add New Item</button>
               </div>
               
-              <ul class="commission-request-items list-group mb-2">
-                <li class="item list-group-item position-relative">
-                <div class="row">
+              <ul class="commission-request-items mb-2">
+                <li class="item position-relative">
+                <div class="row border">
                   <div class="col-6 col-md-2">
                     <label for="price" class="form-label">Price:</label>
                     <input type="number" step="0.01" name="price[]" class="form-control" placeholder="Price">
@@ -76,13 +73,9 @@ $contracts = $post_type->get_contracts()
                     <input type="number" name="quantity[]" class="form-control" placeholder="Quantity">
                     <small class="text-danger error-message">Please fill out the quantity field.</small>
                   </div>
-                  <div class="col-md-2">
+                  <div class="col-md-3">
                       <label for="text-ids" class="form-label">Invoice:</label>
-                      <input type="hidden" id="text-ids" value="" name="invoice" class="regular-text media-ids">
-                      <button type="button" id="select-text-button" class="button d-block select-media-button btn btn-secondary" data-media-type="text" data-multiple="true">
-                        <i class="fa-solid fa-file-invoice"></i>
-                      </button>
-                      <div class="text-preview row" style="display:none;"></div>
+                      <input type="file" id="invoice" name="invoice" class="form-control">
                   </div>
                   <div class="col-6 col-md-3">
                       <label for="detail" class="form-label">Detail:</label>

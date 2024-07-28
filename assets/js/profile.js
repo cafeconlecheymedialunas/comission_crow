@@ -108,7 +108,7 @@ jQuery(document).ready(function ($) {
             showConfirmButton: false,
             timer: 2000,
           }).then(function () {
-            //location.reload()
+            location.reload();
           });
         } else {
           displayFormErrors(form, response.data);

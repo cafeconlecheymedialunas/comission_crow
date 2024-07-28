@@ -3,8 +3,8 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-if (!class_exists('Custom_Post_Type')) {
-    class Custom_Post_Type
+if (!class_exists('CustomPostType')) {
+    class CustomPostType
     {
         private static $instance = null;
 

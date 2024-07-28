@@ -204,13 +204,13 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
         <label for="sales_cycle_estimation" class="form-label">Sales Cycle Estimation:</label>
         <input type="text" id="sales_cycle_estimation" name="sales_cycle_estimation" class="form-control" value="<?php echo isset($opportunity_post) ? esc_attr(carbon_get_post_meta($opportunity_post->ID, "sales_cycle_estimation")):"";?>">
     </div>
-    <?php if(isset($_GET["opportunity_id"])){?>
+    <?php if(isset($_GET["opportunity_id"])) {?>
     <div class="col-md-6">
         <label for="images" class="form-label">Images</label>
         <input class="form-control" type="file" name="images[]" id="images" multiple accept="image/*">
 
     </div>
-    <?php }else{
+    <?php } else {
         $template_path = 'templates/dashboard/dropzone.php';
         if (locate_template($template_path)) {
             include locate_template($template_path);
