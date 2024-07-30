@@ -20,7 +20,7 @@ class Commissionrequest
         // Verify nonce for security
         check_ajax_referer('create_commission_request_nonce', 'security');
         
-        $errors = new WP_Error();
+        
         $general_errors = []; // Array for general errors
         $item_errors = []; // Array for item-specific errors
         
@@ -28,24 +28,27 @@ class Commissionrequest
         $contract_id = sanitize_text_field($_POST['contract_id']);
         $general_invoice = sanitize_text_field($_POST["general_invoice"]);
         $comments = wp_kses_post($_POST["comments"]);
+
+        
         
         // Validate contract_id
         if (empty($contract_id)) {
             $general_errors[] = 'Contract ID is required.';
         }
     
+
+        $contract = get_post($contract_id);
+
+        if(empty($contract)) {
+            $general_errors[] = 'Contract Not Found.';
+        }
     
         // Validate current user
         $current_user = wp_get_current_user();
         if (!in_array("commercial_agent", $current_user->roles)) {
             $general_errors[] = 'You must be a commercial agent to create a commission request.';
         }
-        
-        // Validate contract existence
-        $contract = get_post($contract_id);
-        if (!$contract) {
-            $general_errors[] = 'The specified contract does not exist.';
-        }
+       
         
         // Verify the status of the contract
         $status = carbon_get_post_meta($contract_id, "status");
@@ -85,23 +88,18 @@ class Commissionrequest
                 $quantity = intval(sanitize_text_field($_POST['quantity'][$index]));
                 $detail = sanitize_text_field($_POST['detail'][$index]);
                 $invoice = sanitize_text_field($_POST['invoice'][$index]);
-                $item_errors[$index] = []; // Initialize item-specific errors array
+                
     
                 // Validate item data
                 if ($price_paid <= 0) {
-                    $item_errors[$index][] = 'Price must be a positive number.';
+                    $general_errors[] = 'There is a row without price.';
                 }
                 if ($quantity <= 0) {
-                    $item_errors[$index][] = 'Quantity must be a positive integer.';
+                    $general_errors[] = 'There is a row without quntity.';
                 }
-                if (empty($detail)) {
-                    $item_errors[$index][] = 'Detail is required.';
-                }
-                if (empty($invoice)) {
-                    $item_errors[$index][] = 'Invoice number is required.';
-                }
+               
     
-                if (empty($item_errors[$index])) {
+                if ($quantity >= 0 && $price_paid >= 0) {
                     $subtotal = $price_paid * $quantity;
                     $total += $subtotal;
     
@@ -124,10 +122,14 @@ class Commissionrequest
     
         $total_agent = ($commission * $total) / 100;
         $status_history = add_item_to_status_history($contract_id);
+        $sku = carbon_get_post_meta($contract_id, "sku");
+        $contract_title_key = $sku ?? $contract_id;
+        
+        
         $post_id = wp_insert_post([
             'post_type' => 'commission_request',
             'post_status' => 'publish',
-            'post_title' => 'Commission Request by contract' . $contract_id, // Customize the title as needed
+            'post_title' => 'Commission Request by contract ' . $contract_title_key, // Customize the title as needed
         ]);
 
         
@@ -152,12 +154,52 @@ class Commissionrequest
         carbon_set_post_meta($post_id, "comments", $comments);
         carbon_set_post_meta($post_id, "status", "pending");
         carbon_set_post_meta($post_id, "status_history", $status_history);
+        carbon_set_post_meta($post_id, "initiating_user", get_current_user_id());
         
         wp_send_json_success(['message' => 'Commission request successfully created.']);
         wp_die();
     }
     
     
+    
+    public function delete_commission_request()
+    {
+      
+    
+        // Verificar el nonce para la seguridad
+        check_ajax_referer('delete_commission_request_nonce', 'security');
+
+        $commission_request_id = intval($_POST['commission_request_id']);
+
+        if (!$commission_request_id) {
+            wp_send_json_error(['message' => 'You need a valid ID.']);
+        }
+        
+
+
+        $commission_request = get_post($commission_request_id);
+
+
+  
+
+        if(!$commission_request) {
+            wp_send_json_error(['message' => 'Commission Request Not found']);
+        }
+        $initiating_user_id = carbon_get_post_meta($commission_request->ID, "initiating_user");
+
+
+        if(get_current_user_id() !== $initiating_user_id) {
+            wp_send_json_error(['message' => 'This commission request can only be deleted by the user who created it.']);
+        }
+
+        // Intentar eliminar la oportunidad
+        if (wp_delete_post($commission_request_id, true)) {
+            wp_send_json_success(['message' => 'Commission Request Succesfully Deleted!']);
+        } else {
+            wp_send_json_error(['message' => 'Error deleting the post. Try again later.']);
+        }
+        wp_die();
+    }
     
     /* Cron para chequear la finalizacion de un contrato
 function schedule_contract_finalization_event()

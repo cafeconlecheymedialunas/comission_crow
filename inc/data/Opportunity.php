@@ -1,9 +1,10 @@
-<?php 
-class Opportunity extends Crud{
+<?php
+class Opportunity extends Crud
+{
     private function __construct()
     {
       
-            parent::__construct('opportunity');
+        parent::__construct('opportunity');
         
     }
     private static $instance = null;
@@ -14,7 +15,8 @@ class Opportunity extends Crud{
         }
         return self::$instance;
     }
-    public function save_opportunity() {
+    public function save_opportunity()
+    {
         check_ajax_referer('create-opportunity-nonce', 'security');
         $current_user = wp_get_current_user();
 
@@ -127,16 +129,16 @@ class Opportunity extends Crud{
         $company = get_user_associated_post_type();
 
         
-        if(is_wp_error($company) || empty($company->ID)){
+        if(is_wp_error($company) || empty($company->ID)) {
             $general_errors = "You need be a company to create an opportunity";
         }
 
         $data["company"] = $company->ID;
 
-        if(isset($_POST["opportunity_id"])){
+        if(isset($_POST["opportunity_id"])) {
             $opportunity = get_post($_POST["opportunity_id"]);
 
-            if(is_wp_error($opportunity)){
+            if(is_wp_error($opportunity)) {
                 $general_errors[] = "Opportunity does not exist";
             }
 
@@ -232,7 +234,7 @@ class Opportunity extends Crud{
         }
     
         $opportunity_id = isset($opportunity_id) && !empty($opportunity_id) ? $this->update($opportunity_id, $data, $field_mappings) : $this->create($data, $field_mappings);
-        if($this->has_errors()){
+        if($this->has_errors()) {
             wp_send_json_error(['general' => $this->get_errors()]);
         }
 

@@ -6,7 +6,7 @@ class Company extends Crud
     private function __construct()
     {
       
-            parent::__construct('company');
+        parent::__construct('company');
         
     }
     private static $instance = null;
@@ -105,7 +105,8 @@ class Company extends Crud
 
 
 
-    public function save_company_profile() {
+    public function save_company_profile()
+    {
         check_ajax_referer('update-profile-nonce', 'security');
         $current_user = wp_get_current_user();
         $company_id = sanitize_text_field($_POST["company_id"]);
@@ -129,9 +130,15 @@ class Company extends Crud
         $errors = new WP_Error();
         $field_errors = [];
     
-        if (empty($company_id)) $field_errors['company_id'][] = __('Company ID is required.');
-        if (empty($company_name)) $field_errors['company_name'][] = __('Company name is required.');
-        if (!is_numeric($employees_number) || $employees_number < 0) $field_errors['employees_number'][] = __('Number of employees must be a positive number.');
+        if (empty($company_id)) {
+            $field_errors['company_id'][] = __('Company ID is required.');
+        }
+        if (empty($company_name)) {
+            $field_errors['company_name'][] = __('Company name is required.');
+        }
+        if (!is_numeric($employees_number) || $employees_number < 0) {
+            $field_errors['employees_number'][] = __('Number of employees must be a positive number.');
+        }
     
         if (!empty($field_errors)) {
             wp_send_json_error(['fields' => $field_errors]);
@@ -171,10 +178,18 @@ class Company extends Crud
             wp_die();
         }
     
-        if (!empty($industry)) wp_set_post_terms($company_id, $industry, 'industry', false);
-        if (!empty($activity)) wp_set_post_terms($company_id, $activity, 'activity', false);
-        if (!empty($country)) wp_set_post_terms($company_id, $country, 'country', false);
-        if (!empty($type_of_company)) wp_set_post_terms($company_id, $type_of_company, 'type_of_company', false);
+        if (!empty($industry)) {
+            wp_set_post_terms($company_id, $industry, 'industry', false);
+        }
+        if (!empty($activity)) {
+            wp_set_post_terms($company_id, $activity, 'activity', false);
+        }
+        if (!empty($country)) {
+            wp_set_post_terms($company_id, $country, 'country', false);
+        }
+        if (!empty($type_of_company)) {
+            wp_set_post_terms($company_id, $type_of_company, 'type_of_company', false);
+        }
     
         if (!empty($company_logo['name'])) {
             $upload_result = $this->handle_company_logo_upload($company_logo, $company_id);
@@ -188,7 +203,8 @@ class Company extends Crud
         wp_die();
     }
 
-    private function handle_company_logo_upload($company_logo, $company_id) {
+    private function handle_company_logo_upload($company_logo, $company_id)
+    {
         $upload = wp_handle_upload($company_logo, ['test_form' => false]);
     
         if (isset($upload['error']) && $upload['error'] != 0) {
@@ -233,5 +249,5 @@ class Company extends Crud
 
  
 
-   
+
 }

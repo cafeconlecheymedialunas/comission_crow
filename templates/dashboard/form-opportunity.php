@@ -301,7 +301,8 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
     <?php if(isset($_GET["opportunity_id"]) && !empty($_GET["opportunity_id"])):?>
      <input type="hidden" name="opportunity_id" value="<?php echo  $_GET["opportunity_id"];?>"/>
      <?php endif;?>
-    <div class="errors"></div>
+     <div class="alert alert-danger general-errors" role="alert" style="display:none;">
+     </div>
     <div class="col-12">
         <button type="submit" class="btn btn-primary">Submit</button>
     </div>

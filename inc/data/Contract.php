@@ -17,55 +17,83 @@ class Contract
     public function create_contract()
     {
         check_ajax_referer('create_contract_nonce', 'security');
-    
-        $entity_type = $_POST["entity_type"];
-    
-        $company = sanitize_text_field($entity_type == "company"?$_POST['company_id']:$_POST['company'][0]);
-    
-        $commercial_agent = sanitize_text_field($entity_type == "commercial_agent"?($_POST['commercial_agent_id']):$_POST['commercial_agent'][0]);
-    
-        $opportunity = sanitize_text_field($_POST['opportunity'][0]);
-    
-        $minimal_price = sanitize_text_field($_POST['minimal_price']);
-    
-        $commission = sanitize_text_field($_POST['commission']);
-    
-        $content = wp_kses_post($_POST['content']);
-    
-    
-        if (!isset($company) || empty($company)) {
-            wp_send_json_error('Company is required.');
-        }
-        if (!isset($commercial_agent) || empty($commercial_agent)) {
-            wp_send_json_error('Commercial Agent is required.');
-        }
-        if (!isset($_POST['opportunity'][0]) || empty($_POST['opportunity'][0])) {
-            wp_send_json_error('Opportunity is required.');
-        }
-        if (!isset($_POST['minimal_price']) || empty($_POST['minimal_price'])) {
-            wp_send_json_error('Minimal Price is required.');
-        }
-        if (!isset($_POST['commission']) || empty($_POST['commission'])) {
-            wp_send_json_error('Commission is required.');
-        }
         
+        $errors = [];
+        $general_errors = [];
+        
+        $entity_type = sanitize_text_field($_POST["entity_type"]);
+        
+        $company = sanitize_text_field($entity_type == "company" ? $_POST['company_id'] : $_POST['company'][0]);
+        $commercial_agent = sanitize_text_field($entity_type == "commercial_agent" ? $_POST['commercial_agent_id'] : $_POST['commercial_agent'][0]);
+        $opportunity = sanitize_text_field($_POST['opportunity'][0]);
+        $minimal_price = sanitize_text_field($_POST['minimal_price']);
+        $commission = sanitize_text_field($_POST['commission']);
+        $content = wp_kses_post($_POST['content']);
+        
+        // Validations
+        if (empty($company)) {
+            $errors['company'][] = 'Company is required.';
+        }
+        if (empty($commercial_agent)) {
+            $errors['commercial_agent'][] = 'Commercial Agent is required.';
+        }
+        if (empty($opportunity)) {
+            $errors['opportunity'][] = 'Opportunity is required.';
+        }
+        if (empty($minimal_price)) {
+            $errors['minimal_price'][] = 'Minimal Price is required.';
+        }
+        if (empty($commission)) {
+            $errors['commission'][] = 'Commission is required.';
+        }
+    
+        // Check if there are any validation errors
+        if (!empty($errors)) {
+            wp_send_json_error([
+                'fields' => $errors
+            ]);
+        }
+    
+        $opportunity_post = get_post($opportunity);
+        $company_post = get_post($company);
+        $commercial_agent_post = get_post($commercial_agent);
+    
+        if (!$opportunity_post) {
+            $general_errors[] = 'Opportunity not found.';
+        }
+    
+        if (!$company_post) {
+            $general_errors[] = 'Company not found.';
+        }
+    
+        if (!$commercial_agent_post) {
+            $general_errors[] = 'Commercial Agent not found.';
+        }
+    
+        // Check if there are any general errors
+        if (!empty($general_errors)) {
+            wp_send_json_error([
+                'general' => $general_errors
+            ]);
+        }
+    
         $args = [
             'post_type'   => 'contract',
             'meta_query'  => [
                 'relation' => 'AND',
                 [
                     'key'     => 'opportunity',
-                    'value'   => $opportunity,
+                    'value'   => $opportunity_post->ID,
                     'compare' => '=',
                 ],
                 [
                     'key'     => 'company',
-                    'value'   => $company,
+                    'value'   => $company_post->ID,
                     'compare' => '=',
                 ],
                 [
                     'key'     => 'commercial_agent',
-                    'value'   => $commercial_agent,
+                    'value'   => $commercial_agent_post->ID,
                     'compare' => '=',
                 ]
             ],
@@ -74,63 +102,65 @@ class Contract
         $query = new WP_Query($args);
     
         if (is_wp_error($query)) {
-            wp_send_json_error('Failed to retrieve contracts.');
+            $general_errors[] = 'Failed to retrieve contracts.';
         }
-
-        if (!empty($query->posts)) {
-            wp_send_json_error('Already exist a vigent contract.');
+        
+        
+    
+        // Check if there are any general errors
+        if (!empty($general_errors)) {
+            wp_send_json_error([
+                'general' => $general_errors
+            ]);
         }
-       
-     
-        $status = [];
-        foreach($query->posts as $item) {
+    
+        foreach ($query->posts as $item) {
             $status = carbon_get_post_meta($item->ID, 'status');
     
-            if($status == "pending") {
-                wp_send_json_error("There is already an requested contract proposal. Accept or rejet that proposal before starting another one.");
+            if ($status == "pending") {
+                $general_errors[] = "There is already a requested contract proposal. Accept or reject that proposal before starting another one.";
+            } elseif ($status == "accepted") {
+                $general_errors[] = "There is already an accepted contract proposal. Finish that proposal before starting another one.";
             }
-    
-            if($status == "accepted") {
-                wp_send_json_error("There is already an accepted contract proposal. Finish that proposal before starting another one.");
-            }
-    
         }
     
-       
-        $opportunity_title = get_the_title($opportunity);
-        $company_title = get_the_title($company);
-        $commercial_agent_title = get_the_title($commercial_agent);
-    
+        // Check if there are any general errors
+        if (!empty($general_errors)) {
+            wp_send_json_error([
+                'general' => $general_errors
+            ]);
+        }
+        $timestamp = current_time('timestamp'); // Obtiene el timestamp actual en segundos
+        $sku =$opportunity_post->ID . "-".$company_post->ID ."-". $commercial_agent_post->ID ."-". $timestamp;
         $contract_data = [
-            'post_title' => "Opportunity: $opportunity_title, Company: $company_title, Commercial Agent: $commercial_agent_title",
-            "post_content" => $content,
-            'post_type' => 'contract',
-            'post_status' => 'publish'
+            'post_title'   => "Sku: #" . $sku,
+            'post_content' => $content,
+            'post_type'    => 'contract',
+            'post_status'  => 'publish'
         ];
     
         $contract_id = wp_insert_post($contract_data);
     
         if (is_wp_error($contract_id)) {
-            wp_send_json_error('Failed to save contract.');
+            $general_errors[] = 'Failed to save contract.';
+            wp_send_json_error([
+                'general' => $general_errors
+            ]);
         }
-        
+    
         $status_history = $this->add_item_to_status_history($contract_id);
     
-        
-     
-    
-        carbon_set_post_meta($contract_id, 'company', $company);
-        carbon_set_post_meta($contract_id, 'commercial_agent', $commercial_agent);
-        carbon_set_post_meta($contract_id, 'opportunity', $opportunity);
+        carbon_set_post_meta($contract_id, 'company', $company_post->ID);
+        carbon_set_post_meta($contract_id, 'commercial_agent', $commercial_agent_post->ID);
+        carbon_set_post_meta($contract_id, 'opportunity', $opportunity_post->ID);
         carbon_set_post_meta($contract_id, 'minimal_price', $minimal_price);
         carbon_set_post_meta($contract_id, 'commission', $commission);
         carbon_set_post_meta($contract_id, 'date', current_time("mysql"));
         carbon_set_post_meta($contract_id, "status_history", $status_history);
-    
-    
-    
+        carbon_set_post_meta($contract_id, "sku", $sku);
         wp_send_json_success(wp_get_current_user());
     }
+    
 
 
     public function update_contract_status()

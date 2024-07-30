@@ -19,6 +19,8 @@ $query = new Wp_Query($args);
 $contracts = $query->posts;
 
 
+
+
 ?>
 <div class="card mb-4 flex-row d-flex justify-content-between align-items-center">
     <h2 class="mb-0 d-inline"><?php echo __("All contracts"); ?></h2>
@@ -52,7 +54,7 @@ if (locate_template($template_path)) {
 
 
 ?>
-<?php $template_path = 'templates/dashboard/form-request-commission.php';
+<?php $template_path = 'templates/dashboard/form-commission-request.php';
 if (locate_template($template_path)) {
     include locate_template($template_path);
 }

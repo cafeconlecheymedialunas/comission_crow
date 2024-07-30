@@ -1,167 +1,187 @@
 jQuery(document).ready(function ($) {
   var $customSpinner = $(".custom-spinner");
-  // Function to validate the commission request form
-  function validateCommissionForm() {
-    let isValid = true;
-    let hasValidRow = false;
+  function displayFormErrors(form, data) {
+    // Clear previous error messages
+    $(form).find(".error-message").remove();
 
-    $(".commission-request-items .item").each(function () {
-      let price = $(this).find("input[name='price[]']").val();
-      let quantity = $(this).find("input[name='quantity[]']").val();
-      let priceError = $(this).find(".error-message-price");
-      let quantityError = $(this).find(".error-message-quantity");
+    // Iterate over the errors and display them next to the respective fields
+    $.each(data.fields, function (fieldName, errorMessages) {
+      var field = $(form).find("#" + fieldName);
+      if (field.length) {
+        // Remove existing error messages for the field
+        field.next(".error-message").remove();
 
-      if (price === "") {
-        priceError.show();
-        isValid = false;
-      } else {
-        priceError.hide();
-      }
-
-      if (quantity === "") {
-        quantityError.show();
-        isValid = false;
-      } else {
-        quantityError.hide();
-      }
-
-      if (price !== "" && quantity !== "") {
-        hasValidRow = true;
+        // Display only the first error message
+        if (errorMessages.length > 0) {
+          var errorElement = $(
+            '<div class="error-message text-sm text-danger"></div>',
+          ).text(errorMessages[0]);
+          field.after(errorElement);
+        }
       }
     });
 
-    if (!hasValidRow) {
-      $(".detail-error").text(
-        "Please add at least one row with filled price and quantity.",
-      );
-      isValid = false;
+    if (data.general && data.general.length > 0) {
+      var generalErrorsElement = $(".general-errors");
+      if (generalErrorsElement.length) {
+        // Clear previous general errors
+        generalErrorsElement.empty();
+
+        // Append all general error messages
+        const errors = [];
+        $.each(data.general, function (index, message) {
+          var errorElement = $('<div class="text-danger"></div>').text(message);
+          errors.push(errorElement);
+        });
+        generalErrorsElement.html(errors);
+        generalErrorsElement.show();
+      }
     }
+  }
+
+  function addRow() {
+    // Variables
+    var templateRow, newRow, element;
+    var s, t;
+
+    // Find the template row
+    templateRow = $(".row_to_clone").first();
+    if (templateRow.length === 0) return false;
+
+    // Clone the template row
+    newRow = templateRow.clone();
+
+    // Update the names of the inputs
+    newRow.find("input, textarea").each(function () {
+      element = $(this);
+      s = element.attr("name");
+      if (s) {
+        t = s.split("[]");
+        if (t.length > 1) {
+          s = t[0] + "[" + $(".row_to_clone").length + "]";
+          element.attr("name", s);
+        }
+      }
+      // Clear the value of the input/textarea
+      element.val("");
+    });
+
+    // Add the new row to the table
+    $("#data-table tbody").append(newRow);
+    return true;
+  }
+
+  function calculateSum() {
+    var sum = 0;
+    // Iterate through each price and quantity to calculate the total sum
+    $("#data-table .price").each(function () {
+      var price = parseFloat($(this).val()) || 0;
+      var quantity =
+        parseFloat($(this).closest("tr").find(".quantity").val()) || 0;
+      sum += price * quantity;
+    });
+
+    // Update the sum in the DOM
+    $("#sum").html(sum.toFixed(2));
+  }
+
+  // Function to validate fields
+  function validateFields() {
+    let isValid = true;
+
+    // Iterate over each item to check for validation
+    $(".commission-request-items .item").each(function () {
+      const price = $(this).find("input[name='price[]']");
+      const quantity = $(this).find("input[name='quantity[]']");
+
+      if (price.val() === "") {
+        price.next(".error-message").show();
+        isValid = false;
+      } else {
+        price.next(".error-message").hide();
+      }
+
+      if (quantity.val() === "") {
+        quantity.next(".error-message").show();
+        isValid = false;
+      } else {
+        quantity.next(".error-message").hide();
+      }
+    });
 
     return isValid;
   }
 
-  // Handler for adding new item
-  $(".add-new-item").click(function (e) {
+  // Function to remove row and recalculate sum
+  function removeRow(e) {
     e.preventDefault();
-    let isValid = true;
-
-    // Validate fields of the last item
-    $(".commission-request-items .item")
-      .last()
-      .find("input")
-      .each(function () {
-        if ($(this).val() === "" && $(this).attr("type") !== "file") {
-          $(this).next(".error-message").show();
-          isValid = false;
-        } else {
-          $(this).next(".error-message").hide();
-        }
-      });
-
-    // If valid, add new row
-    if (isValid) {
-      const newItemRow = `
-            <li class="item list-group-item position-relative">
-              <div class="row">
-                <div class="col-6 col-md-2">
-                  <label for="price" class="form-label">Price:</label>
-                  <input type="number" step="0.01" name="price[]" class="form-control" placeholder="Price">
-                  <small class="text-danger error-message">Please fill out the price field.</small>
-                </div>
-                <div class="col-6 col-md-2">
-                  <label for="quantity" class="form-label">Quantity:</label>
-                  <input type="number" name="quantity[]" class="form-control" placeholder="Quantity">
-                  <small class="text-danger error-message">Please fill out the quantity field.</small>
-                </div>
-                <div class="col-6 col-md-2">
-                  <label for="invoice" class="form-label">Invoice:</label>
-                  <input type="file" name="invoice[]" class="form-control">
-                  <small class="text-danger error-message">Please upload the invoice file.</small>
-                </div>
-                <div class="col-6 col-md-4">
-                    <label for="detail" class="form-label">Detail:</label>
-                    <textarea id="detail" name="detail[]"></textarea>
-                </div>
-                <div class="col-6 col-md-2">
-                  <label for="subtotal" class="form-label">Subtotal:</label>
-                  <span class="subtotal">0.00</span>
-                </div>
-              </div>
-              <span class="position-absolute top-0 end-0 remove-item"><i class="fa fa-trash" aria-hidden="true"></i></span>
-              </li>`;
-      $(".commission-request-items").append(newItemRow);
-    }
-  });
-
-  // Function to remove item row
-  $(document).on("click", ".remove-item", function () {
-    $(this).closest(".item").remove();
-    calculateTotal();
-  });
-
-  // Function to calculate subtotal and total
-  $(document).on(
-    "input",
-    ".commission-request-items input[name='price[]'], .commission-request-items input[name='quantity[]']",
-    function () {
-      const row = $(this).closest(".item");
-      const price = parseFloat(row.find("input[name='price[]']").val()) || 0;
-      const quantity =
-        parseFloat(row.find("input[name='quantity[]']").val()) || 0;
-      const subtotal = price * quantity;
-      row.find(".subtotal").text(subtotal.toFixed(2));
-      calculateTotal();
-    },
-  );
-
-  // Function to calculate the total
-  function calculateTotal() {
-    let total = 0;
-    $(".commission-request-items .subtotal").each(function () {
-      total += parseFloat($(this).text()) || 0;
-    });
-    $("#total").text(total.toFixed(2));
+    $(this).closest("tr").remove();
+    calculateSum();
   }
 
-  $(".commission-request-button ").on("click", function (e) {
+  // Event bindings
+  $(".addRow").on("click", function (e) {
+    e.preventDefault();
+    addRow();
+  });
+
+  $("#data-table").on("input", ".price, .quantity", function () {
+    calculateSum();
+  });
+
+  $("#data-table").on("click", ".removeRow", removeRow);
+
+  $("#modal-dispute").on("show.bs.modal", function (e) {
+    // Obtén el botón que abrió el modal desde el evento relatedTarget
+    const button = $(e.relatedTarget);
+
+    console.log(button);
+
+    // Obtén el valor del data-attribute del botón
+    const commissionRequestId = button.data("commission-request");
+
+    console.log(commissionRequestId);
+
+    if (commissionRequestId !== undefined) {
+      $("#commission_request_select").val(commissionRequestId).change();
+      $("#commission_request_select").attr("disabled", true);
+    } else {
+      $("#commission_request_select").val("").change();
+      $("#commission_request_select").attr("disabled", false);
+    }
+    $("#commission_request_id").val(commissionRequestId);
+  });
+
+  $("#commission_request_select").on("change", function (e) {
+    const commissionRequestId = $("#commission_request_select").val();
+
+    $("#commission_request_id").val(commissionRequestId);
+  });
+
+  // Form submission handling
+  $("#commission-form").on("submit", function (e) {
     e.preventDefault();
 
-    const contract_id = $(this).data("contractId");
-
-    if (contract_id) {
-      $("#commission-form #hidden_contract_id").val(contract_id);
-    } else {
-      $("#contract-select").show();
-    }
-  });
-  $("#contract-select").on("change", function (e) {
-    $("#commission-form #hidden_contract_id").val(e.target.value);
-  });
-
-  $("#commission-form").on("submit", function (e) {
-    e.preventDefault(); // Prevent the default form submission
-
-    // Validate the form before submitting
-    if (!validateCommissionForm()) {
+    if (!validateFields()) {
       return;
     }
 
-    var form = this; // Get the native form element
-    var formData = new FormData(form); // Create a new FormData object
+    var form = this;
+    var formData = new FormData(form);
 
-    formData.append("action", "create_commission_request"); // Append action for AJAX handler
+    formData.append("action", "create_commission_request");
     $customSpinner.addClass("d-flex");
     $.ajax({
-      url: ajax_object.ajax_url, // AJAX URL
+      url: ajax_object.ajax_url,
       type: "POST",
       data: formData,
-      processData: false, // Prevent jQuery from automatically transforming the data into a query string
-      contentType: false, // Prevent jQuery from setting the content-type header
+      processData: false,
+      contentType: false,
       success: function (response) {
+        $customSpinner.removeClass("d-flex").hide();
         if (response.success) {
           Swal.fire({
-            title: "You have successfully created a commission request!",
-            text: "You will be redirected in two seconds...",
+            title: "Commission request created successfully!",
             icon: "success",
             showConfirmButton: false,
             timer: 2000,
@@ -169,21 +189,78 @@ jQuery(document).ready(function ($) {
             location.reload();
           });
         } else {
-          // Display errors using the utility function
           if (response.errors) {
             displayFormErrors(form, response.errors);
-          } else {
-            console.log(response);
           }
         }
       },
       error: function (xhr, status, error) {
-        console.error("Error:", error); // Log any errors
+        console.error("Error:", error);
         alert("An error occurred while creating the commission request.");
       },
-      complete: function () {
-        $customSpinner.hide();
-      },
+      completed: function () {},
+    });
+  });
+
+  $(".delete-commission-request-form").submit(function (e) {
+    e.preventDefault();
+
+    var form = this;
+    var formData = new FormData(form);
+    formData.append("action", "delete_commission_request");
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $customSpinner.addClass("d-flex");
+        $.ajax({
+          type: "POST",
+          url: ajax_object.ajax_url,
+          data: formData,
+          processData: false,
+          contentType: false,
+          cache: false,
+
+          success: function (response) {
+            console.log(response);
+            if (response.success) {
+              Swal.fire({
+                title: "The commission request has been deleted.",
+                icon: "success",
+                showConfirmButton: false,
+                timer: 2000,
+              }).then(function () {
+                location.reload();
+              });
+            } else {
+              Swal.fire(
+                "Error!",
+                response.data.message ||
+                  "There was an error deleting the commission request.",
+                "error",
+              );
+            }
+          },
+          error: function (error) {
+            Swal.fire(
+              "Error!",
+              "There was an error deleting the commission request. Please try again later.",
+              "error",
+            );
+          },
+          completed: function () {
+            $customSpinner.removeClass("d-flex").hide();
+          },
+        });
+      }
     });
   });
 });

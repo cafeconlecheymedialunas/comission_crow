@@ -125,7 +125,8 @@ class Auth
                 </p>
                 <p class="another-pages">
                     <a href="<?php echo esc_url(home_url("/auth?action=register")); ?>"><?php _e('Register'); ?></a> | 
-                    <a href="<?php echo esc_url(home_url("/auth?action=password_reset")); ?>"><?php _e('Lost your password?'); ?></a>
+                    <a href="<?php echo esc_url(home_url("/auth?action=password_reset")); ?>"><?php _e('Lost your password?'); ?></a> | 
+                    <a href="<?php echo esc_url(home_url("/auth?action=register&role=company")); ?>"><?php _e('Register your company'); ?></a>
                 </p>
             </fieldset>
         </form>
@@ -359,7 +360,7 @@ class Auth
         $user = wp_signon($login_data, false);
     
         if (is_wp_error($user)) {
-            wp_send_json_error(['general' => [$user->get_error_message()]]);
+            wp_send_json_error(['general' => [strip_tags($user->get_error_message())]]);
         } else {
             wp_send_json_success($user);
         }

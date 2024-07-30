@@ -211,7 +211,7 @@ class Admin
                 Field::make('select', 'opportunity', __('Opportunity'))
                 ->add_options([$this,'get_opportunities']),
 
-               
+                Field::make('text', 'sku', 'Sku'),
             
                 Field::make('date_time', 'date', 'Contract Date'),
 
@@ -262,6 +262,9 @@ class Admin
                     Field::make('media_gallery', 'invoice', 'Invoice'),
                     Field::make('text', 'detail', 'Detail'),
                 ]),
+             
+                Field::make('select', 'initiating_user', __('Initiating User:'))
+                    ->add_options([$this,'get_users']),
 
                 Field::make('text', 'total_cart', 'Total'),
 
@@ -285,6 +288,50 @@ class Admin
                 ->set_layout('tabbed-horizontal')
                 
             ])->where('post_type', '=', 'commission_request');
+
+          
+    }
+
+    public function register_dispute_fields()
+    {
+        Container::make('post_meta', __('Dispute Conditions'))
+
+            ->add_fields([
+         
+
+                Field::make('select', 'commission_request_id', __('Transaction'))
+                ->add_options([$this,'get_commission_requests']),
+
+                Field::make('text', 'subject', __('Subject:')),
+                Field::Make("media_gallery", "documents", "Documents"),
+
+
+                Field::make('select', 'initiating_user', __('Initiating User:'))
+                    ->add_options([$this,'get_users']),
+              
+
+                Field::make('select', 'user_winnerr_dispute', __('Winner Dispute:'))
+                    ->add_options([$this,'get_users']),
+            
+                
+                Field::make('rich_text', 'admin_decission_comments', __('Admin Comments:')),
+                
+
+                Field::make('select', 'status', __('Status'))
+                ->set_options([$this,"get_statuses_dispute"]),
+
+                Field::make('complex', 'status_history', 'Dispute Status History')
+                ->add_fields([
+                    Field::make('select', 'history_status', __('Status'))
+                    ->set_options([$this,"get_status_commission_request"]),
+                    Field::make('text', 'date_status', 'Date'),
+                    Field::make('select', 'changed_by', __('Changed by:'))->add_options([$this,'get_users']),
+
+                   
+                ])
+                ->set_layout('tabbed-horizontal')
+
+            ])->where('post_type', '=', 'dispute');
 
           
     }
@@ -349,45 +396,7 @@ class Admin
           
     }
 
-    public function register_dispute_fields()
-    {
-        Container::make('post_meta', __('Dispute Conditions'))
-
-            ->add_fields([
-         
-
-                Field::make('select', 'transaction_id', __('Transaction'))
-                ->add_options([$this,'get_transactions']),
-
-
-
-                Field::make('complex', 'messages', __('Messages'))
-                ->add_fields([
-                    Field::make('select', 'from', __('From:'))
-                    ->add_options([$this,'get_users']),
-    
-                    Field::make('select', 'to', __('To:'))
-                    ->add_options([$this,'get_users']),
-            
-                    Field::make('rich_text', 'message', 'Mesage'),
-                ]),
-
-              
-
-                Field::make('select', 'user_winnerr_dispute', __('Wiiner Dispute:'))
-                    ->add_options([$this,'get_users']),
-            
-                
-                Field::make('rich_text', 'admin_decission_comments', __('Admin Comments:')),
-                
-
-                Field::make('select', 'status', __('Status'))
-                ->set_options([$this,"get_statuses_dispute"]),
-
-            ])->where('post_type', '=', 'dispute');
-
-          
-    }
+   
 
     public function get_contract_status()
     {
@@ -404,7 +413,7 @@ class Admin
     {
         return [
             'pending' => 'Pending',
-            "dispute" => "In Dispute",
+            "in_dispute" => "In Dispute",
             "accepted" => "Accepted"
         ];
     }
@@ -413,6 +422,7 @@ class Admin
     {
         return [
             'pending' => 'Pending',
+            "decline" => "Decline",
             "resolve" => "Resolve"
         ];
     }
@@ -512,6 +522,25 @@ class Admin
             $options[""]="Select a Opportunity";
             foreach ($opportunities as $opportunity) {
                 $options[$opportunity->ID] = $opportunity->post_title;
+            }
+        }
+    
+        return $options;
+    }
+
+    public function get_commission_requests()
+    {
+        $commission_requests = get_posts([
+            'post_type' => 'commission_request',
+            'posts_per_page' => -1,
+            'post_status' => 'publish'
+        ]);
+    
+        $options = [];
+        if (!empty($commission_requests)) {
+            $options[""]="Select a Commission Request";
+            foreach ($commission_requests as $commission_request) {
+                $options[$commission_request->ID] = $commission_request->post_title;
             }
         }
     
@@ -668,6 +697,28 @@ class Admin
     
         return $use_block_editor; // Usa el editor de bloques para todos los demás post types
     }
+    public function get_human_time_diff($date)
+    {
+        // Check if the date is valid
+        if (!$date || !strtotime($date)) {
+            return 'Invalid date';
+        }
+    
+        // Convert the stored date to a timestamp
+        $timestamp_commission_request = strtotime($date);
+    
+        // Get the current timestamp
+        $current_timestamp = current_time('timestamp');
+    
+        // Calculate the human-readable time difference
+        $time_diff = human_time_diff($timestamp_commission_request, $current_timestamp);
+    
+        // Display the time elapsed in a readable format
+        $human_date =  $time_diff;
+    
+        return $human_date;
+    }
+
     
 
 }

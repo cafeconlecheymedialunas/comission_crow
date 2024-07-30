@@ -33,11 +33,11 @@ class Dashboard
         $dispute = Dispute::get_instance();
         $opportunity = Opportunity::get_instance();
 
+
         add_action('wp_ajax_create_opportunity', [$opportunity,'save_opportunity']);
         add_action('wp_ajax_nopriv_create_opportunity', [$opportunity,'save_opportunity']);
 
-        add_action('wp_ajax_delete_opportunity', [$opportunity,'delete_opportunity']);
-        add_action('wp_ajax_nopriv_delete_opportunity', [$opportunity,'delete_opportunity']);
+        
 
         add_action('wp_ajax_save_agent_profile', [$commercial_agent,'save_agent_profile']);
         add_action('wp_ajax_nopriv_save_agent_profile', [$commercial_agent,'save_agent_profile']);
@@ -57,9 +57,19 @@ class Dashboard
         add_action('wp_ajax_create_commission_request', [$commission_request,'create_commission_request']);
         add_action('wp_ajax_nopriv_create_commission_request', [$commission_request,'create_commission_request']);
 
+        add_action('wp_ajax_delete_commission_request', [$commission_request,'delete_commission_request']);
+        add_action('wp_ajax_nopriv_delete_commission_request', [$commission_request,'delete_commission_request']);
 
-        add_action('wp_ajax_save_message', [$this,'save_message']);
-        add_action('wp_ajax_nopriv_save_message', [$this,'save_message']);
+        //TO DO
+        add_action('wp_ajax_nopriv_update_commission_request_status', [$commission_request,'update_commission_request_status']);
+        
+
+        add_action('wp_ajax_create_dispute', [$dispute,'handle_create_dispute']);
+        add_action('wp_ajax_delete_dispute', [$dispute,'delete_dispute']);
+        add_action('wp_ajax_nopriv_delete_dispute', [$dispute,'delete_dispute']);
+        
+        
+     
     }
 
 

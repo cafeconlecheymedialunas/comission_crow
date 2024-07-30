@@ -14,24 +14,160 @@ class Dispute
         return self::$instance;
     }
 
-    public function save_message()
+   
+
+  
+
+    public function handle_create_dispute()
     {
-        check_ajax_referer('save_message_nonce', 'security');
+        // Verify nonce for security
+        check_ajax_referer('create_dispute_nonce', 'security');
+    
+        $subject = sanitize_textarea_field($_POST['subject']);
+        $description = sanitize_textarea_field($_POST['description']);
+    
+        $errors = [];
+        $general_errors = [];
+    
+        // Validar commission_request_id
+        $commission_request_id = intval($_POST['commission_request_id']);
+        $commission_request = get_post($commission_request_id);
 
-        $post_id = intval($_POST['post_id']);
-        $from = intval($_POST['from']);
-        $to = intval($_POST['to']);
-        $message = wp_kses_post($_POST['message']);
 
-        $messages = carbon_get_post_meta($post_id, 'messages');
-        $messages[] = [
-            'from' => $from,
-            'to' => $to,
-            'message' => $message,
-        ];
+    
+        if (!$commission_request) {
+            $general_errors[] = 'Commission Request not found.';
+            wp_send_json_error(['general' => $general_errors]);
+            wp_die();
+        }
 
-        carbon_set_post_meta($post_id, 'messages', $messages);
+        $dispute_query = new WP_Query([
+            'post_type'  => 'dispute',
+            'meta_query' => [
+                [
+                    'key'   => "commission_request_id",
+                    'value' => $commission_request_id,
+                    'compare' => '=',
+                ]
+            ]
+        ]);
 
-        wp_send_json_success(['messages' => $messages]);
+        if($dispute_query->have_posts()) {
+            $general_errors[] = 'There is already a dispute with this contract';
+            wp_send_json_error(['general' => $general_errors]);
+            wp_die();
+        }
+    
+        // Validar description
+        if (empty($_POST['description'])) {
+            $errors['description'][] = 'Description is required.';
+        }
+    
+        // Validar subject
+        if (empty($_POST['subject'])) {
+            $errors['subject'][] = 'Subject is required.';
+        }
+    
+        if (isset($_FILES['documents']) && !empty($_FILES['documents']['name'][0])) {
+            $validation_result = validate_files($_FILES['documents']);
+            if (isset($validation_result['error'])) {
+                $errors['documents'][] = $validation_result['error'];
+            }
+        }
+    
+        // Si hay errores de validación, devolverlos
+        if (!empty($errors)) {
+            wp_send_json_error(['fields' => $errors]);
+            wp_die();
+        }
+    
+        // Validar y manejar la carga de documentos si existen
+        if (isset($_FILES['documents']) && !empty($_FILES['documents']['name'][0])) {
+        
+            $uploads = handle_multiple_file_upload($_FILES['documents']);
+            if (isset($uploads['error'])) {
+                $general_errors[] = $uploads['error'];
+                wp_send_json_error(['general' => $errors]);
+                wp_die();
+            }
+        }
+    
+        // Crear el post de dispute
+        $post_id = wp_insert_post([
+            'post_type'   => 'dispute',
+            'post_status' => 'publish',
+            'post_title'  => 'Dispute related to request ' . $commission_request_id
+        ]);
+    
+        // Check for errors
+        if (is_wp_error($post_id)) {
+            $general_errors[] = 'Could not create dispute.';
+            wp_send_json_error(['general' => $general_errors]);
+            wp_die();
+        }
+    
+        // Set post meta
+        $status_history = add_item_to_status_history($post_id);
+        carbon_set_post_meta($post_id, 'commission_request_id', $commission_request_id);
+        carbon_set_post_meta($post_id, 'description', $description);
+        carbon_set_post_meta($post_id, 'subject', $subject);
+        carbon_set_post_meta($post_id, 'status', "pending");
+        carbon_set_post_meta($post_id, 'initiating_user', get_current_user_id());
+        carbon_set_post_meta($post_id, 'status_history', $status_history);
+
+
+        // Updatge Commission Request to in_DISPUTE
+        $status_commision_request_history = add_item_to_status_history($commission_request_id, "in_dispute");
+        carbon_set_post_meta($commission_request_id, 'status_history', $status_commision_request_history);
+        carbon_set_post_meta($commission_request_id, 'status', "in_dispute");
+
+        if (!empty($uploads)) {
+            carbon_set_post_meta($post_id, 'documents', $uploads); // Save as array of attachment IDs
+        }
+    
+        wp_send_json_success(['message' => 'Dispute successfully created.']);
+        wp_die();
     }
+
+
+    public function delete_dispute()
+    {
+      
+    
+        // Verificar el nonce para la seguridad
+        check_ajax_referer('delete_dispute_nonce', 'security');
+
+        $dispute_id = intval($_POST['dispute_id']);
+
+        if (!$dispute_id) {
+            wp_send_json_error(['message' => 'You need a valid ID.']);
+        }
+        
+
+
+        $dispute = get_post($dispute_id);
+
+
+  
+
+        if(!$dispute) {
+            wp_send_json_error(['message' => 'Dispute Not found']);
+        }
+        
+        $initiating_user_id = carbon_get_post_meta($dispute->ID, "initiating_user");
+
+
+        if(get_current_user_id() !== $initiating_user_id) {
+            wp_send_json_error(['message' => 'This dispute can only be deleted by the user who created it.']);
+        }
+
+        if (wp_delete_post($dispute_id, true)) {
+            wp_send_json_success(['message' => 'Dispute Succesfully Deleted!']);
+        } else {
+            wp_send_json_error(['message' => 'Error deleting the post. Try again later.']);
+        }
+        wp_die();
+    }
+
+
 }

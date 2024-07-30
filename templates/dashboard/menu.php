@@ -38,11 +38,12 @@
             <a href="<?php echo esc_url($dasboard->get_role_url_link_dashboard_page('commission')); ?>"><i class="fa fa-fw fa-percent"></i> Commission Request</a>
         </li>
         <li>
-            <a href="<?php echo esc_url($dasboard->get_role_url_link_dashboard_page('payments')); ?>"><i class="fa fa-fw fa-university"></i>Payments</a>
+            <a href="<?php echo esc_url($dasboard->get_role_url_link_dashboard_page('disputes')); ?>"><i class="fa-solid fa-scale-balanced"></i>Disputes</a>
         </li>
         <li>
-            <a href="<?php echo esc_url($dasboard->get_role_url_link_dashboard_page('disputes')); ?>"><i class="fa fa-fw fa-exclamation-triangle"></i>Disputes</a>
+            <a href="<?php echo esc_url($dasboard->get_role_url_link_dashboard_page('payments')); ?>"><i class="fa-solid fa-money-check-dollar"></i>Payments</a>
         </li>
+       
        
         <?php if (in_array("commercial_agent", $current_user->roles) || in_array("administrator", $current_user->roles)): ?>
         <li>

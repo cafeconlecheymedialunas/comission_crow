@@ -46,8 +46,10 @@ $current_user = wp_get_current_user();
     </div>
     <input type="hidden" name="security" value="<?php echo wp_create_nonce('update-userdata'); ?>"/>
     <input type="hidden" name="user_id" value="<?php echo $current_user->ID; ?>">
-    <div class="general-errors"></div>
+    <div class="alert alert-danger general-errors" role="alert" style="display:none;">
+    </div>
     <div class="col-12">
         <button type="submit" class="btn btn-primary">Submit</button>
     </div>
+    
 </form>

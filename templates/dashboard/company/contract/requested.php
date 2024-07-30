@@ -40,7 +40,7 @@ if (locate_template($template_path)) {
 
 
 ?>
-<?php $template_path = 'templates/dashboard/form-request-commission.php';
+<?php $template_path = 'templates/dashboard/form-commission-request.php';
 if (locate_template($template_path)) {
     include locate_template($template_path);
 }

@@ -5,6 +5,8 @@ $company_post = $commercial_agent->get_commercial_agent();
 
 $contracts = $commercial_agent->get_contracts();
 
+
+
 $current_user = wp_get_current_user();
 
 ?>
@@ -32,14 +34,8 @@ if (locate_template($template_path)) {
 
 
 
-<?php $template_path = 'templates/dashboard/form-contract.php';
-if (locate_template($template_path)) {
-    include locate_template($template_path);
-}
 
-
-?>
-<?php $template_path = 'templates/dashboard/form-request-commission.php';
+<?php $template_path = 'templates/dashboard/form-commission-request.php';
 if (locate_template($template_path)) {
     include locate_template($template_path);
 }

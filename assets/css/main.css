@@ -18,11 +18,8 @@
   display: none;
 }
 
-
-
-
 /*Iframe*/
-.container {
+.container-irame {
   position: relative;
   overflow: hidden;
   width: 100%;
@@ -40,31 +37,29 @@
   height: auto;
 }
 
-
 /*tables*/
-button.operation{
-  padding:0;
-  border:none;
+button.operation {
+  padding: 0;
+  border: none;
   background-color: transparent;
-  border:1px solid transparent;
+  border: 1px solid transparent;
 }
 
-
 /* Forms */
-input[type="text"].form-control, 
-input[type="email"].form-control, 
+input[type="text"].form-control,
+input[type="email"].form-control,
 input[type="password"].form-control,
 input[type="url"].form-control,
-input[type="number"].form-control{
-    height:60px;
+input[type="number"].form-control {
+  height: 60px;
 }
 
 /* Commision request */
-.commission-request-items{
+.commission-request-items {
   list-style: none;
-    padding: 10px;
+  padding: 10px;
 }
 
-.total label{
-  margin-bottom:0;
+.total label {
+  margin-bottom: 0;
 }

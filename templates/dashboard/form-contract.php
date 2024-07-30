@@ -107,7 +107,9 @@ $opportunities = $opportunities_query->posts;
        <input type="hidden" name="commercial_agent_id" value="<?php echo $commercial_agent_post->ID;?>">
        <input type="hidden" name="entity_type" value="<?php echo "commercial_agent";?>">
        <?php endif;?>
-       <div class="errors"></div>
+       
+       <div class="alert alert-warning general-errors" role="alert">
+        </div>
        
    </form>
       </div>

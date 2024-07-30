@@ -1,7 +1,7 @@
 <table class="table custom-table">
                     <thead>
                         <tr>
-                            <th scope="col">#</th>
+                            <th scope="col">#SKU</th>
                             <th scope="col">Opportunity</th>
                             <th scope="col"><?php echo in_array("commercial_agent", $current_user->roles)?"Company":"Commercial Agent";?></th>
                             <th scope="col">Commission</th>
@@ -19,7 +19,7 @@
                                 
                                 $counterparter_key = in_array("company", $current_user->roles)?"commercial_agent":"company";
                                 
-                                $counterparty = carbon_get_post_meta($contract->ID, "company");
+                                $counterparty = carbon_get_post_meta($contract->ID, $counterparter_key);
 
                                 
 
@@ -33,6 +33,7 @@
                                 $opportunity = get_post($opportunity);
 
                                 $date = carbon_get_post_meta($contract->ID, 'date');
+                                $human_date = $admin->get_human_time_diff($date);
                                 $commission = carbon_get_post_meta($contract->ID, 'commission');
                                 $minimal_price = carbon_get_post_meta($contract->ID, 'minimal_price');
                                 $status = carbon_get_post_meta($contract->ID, 'status');
@@ -74,7 +75,8 @@
                                     case 'finishing':
                                         $status_class = 'text-bg-warning';
                                         $finalization_date = carbon_get_post_meta($contract->ID, 'finalization_date');
-                                        $status_text = "Finishing at $finalization_date";
+                                        $human_finalization_date = $admin->get_human_time_diff($finalization_date);
+                                        $status_text = "Finishing in  $human_finalization_date";
                                         break;
                                     case 'finished':
                                         $status_class = 'text-bg-info';
@@ -86,16 +88,16 @@
                                 ?>
                                 
                                     <tr>
-                                        <th scope="row"><?php echo $contract->ID; ?></th>
-                                        <td><?php echo esc_html($opportunity->post_title); ?></td>
+                                        <th scope="row"><a class="text-sm" href=""><?php echo carbon_get_post_meta($contract->ID, "sku"); ?></a></th>
+                                        <td><a href=""><?php echo esc_html($opportunity->post_title); ?></a></td>
                                         
                                         <td><?php echo esc_html($counterparty->post_title); ?></td>
                                     
-                                        <td><?php echo esc_html($commission); ?></td>
-                                        <td><?php echo esc_html($minimal_price); ?></td>
+                                        <td><?php echo esc_html($commission); ?> %</td>
+                                        <td><?php echo esc_html("$".$minimal_price); ?></td>
                                         <td><span class="badge <?php echo $status_class; ?>"><?php echo esc_html($status_text); ?></span></td>
                                         <td><?php echo esc_html($current_user->ID === $last_sender_counterparty ? "Sent" : "Received"); ?></td>
-                                        <td><?php echo esc_html($date); ?></td>
+                                        <td><?php echo esc_html($human_date . " ago"); ?></td>
                                         <td>
                                             <ul class="p-0 mb-0 d-flex justify-content-center align-items-center">
                                                 <?php if ($status === "pending" && $last_sender_counterparty !== $current_user->ID) : ?>
@@ -136,7 +138,7 @@
                                                         <?php if(!$commission_requests):?>
                                                         <li class="list-inline-item">
                                                             <button class="operation" data-bs-toggle="modal" data-bs-target="#modal-commission" data-contract-id="<?php echo esc_attr($contract->ID); ?>">
-                                                                <i class="request-commission  text-primaryfas fa-percentage"></i>
+                                                                <i class="commission-request  text-primaryfas fa-percentage"></i>
                                                             </button>
                                                         </li>
                                                         <?php endif;?>
