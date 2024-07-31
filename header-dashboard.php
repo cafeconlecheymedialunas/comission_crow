@@ -1,6 +1,6 @@
 <?php
 
-$associated_post = get_user_associated_post_type();
+$associated_post = ProfileUser::get_instance()->get_user_associated_post_type();
 $current_user = wp_get_current_user();
 ?>
 <!DOCTYPE html>

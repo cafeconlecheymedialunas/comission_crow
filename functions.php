@@ -28,6 +28,7 @@ $files_to_require = [
      __DIR__ . '/inc/data/Commissionrequest.php',
      __DIR__ . '/inc/data/Dispute.php',
      __DIR__ . '/inc/data/Opportunity.php',
+     __DIR__ . '/inc/data/Payment.php',
      __DIR__ . '/inc/core/CustomPostType.php',
      __DIR__ . '/inc/core/CustomTaxonomy.php',
      __DIR__ . '/inc/core/Admin.php',
@@ -58,6 +59,21 @@ $dasboard = new Dashboard();
 
 
 
+add_action('wp_ajax_nopriv_calculate_total', 'calculate_total_ajax');
+add_action('wp_ajax_calculate_total', 'calculate_total_ajax');
+function calculate_total_ajax() {
+    $commission_request_id = intval($_POST['commission_request_id']);
+
+    $total = calculate_total($commission_request_id);
+    
+    if ($total) {
+        wp_send_json_success(array('total' => $total));
+    } else {
+        wp_send_json_error(array('message' => 'Error calculating total'));
+    }
+}
+
+
 
 
 
@@ -69,7 +85,6 @@ function add_item_to_status_history($contract_id, $status = "pending")
         $status_history = [];
     }
 
-    // Agregar el nuevo estado al historial
     $status_history[] = [
         'history_status' => $status,
         'date_status' => current_time('mysql'),
@@ -78,135 +93,82 @@ function add_item_to_status_history($contract_id, $status = "pending")
     return $status_history;
 }
 
+function calculate_agent_price($commission_request_id) {
+    $post = get_post($commission_request_id);
+    if (!$post) return;
+
+    $contract_id = carbon_get_post_meta($commission_request_id,"contract_id");
+    $total_cart = floatval(carbon_get_post_meta($commission_request_id, "total_cart"));
+    $commission = floatval(carbon_get_post_meta($contract_id, "commission"));
+
+    if (empty($total_cart) || !is_numeric($total_cart)) return;
+    if (empty($commission) || !is_numeric($commission)) return;
+
+    $discount = $total_cart * $commission / 100;
+
+    return $discount;
+}
+
+function calculate_tax_stripe_price($commission_request_id) {
+    $post = get_post($commission_request_id);
+    if (!$post) return;
+
+    $total_cart = floatval(carbon_get_post_meta($commission_request_id, "total_cart"));
+    if (empty($total_cart) || !is_numeric($total_cart)) return;
+
+    $tax = $total_cart * 3 / 100;
+
+    return $tax;
+}
+
+function calculate_platform_price($commission_request_id) {
+    $post = get_post($commission_request_id);
+    if (!$post) return;
+
+    $total = floatval(carbon_get_post_meta($commission_request_id, "total_cart"));
+    if (empty($total) || !is_numeric($total)) return;
+
+    // Calcular la tasa del 5%
+    $tax = $total * 5 / 100;
+
+    return $tax;
+}
+
+function calculate_total($commission_request_id) {
+    $post = get_post($commission_request_id);
+    if (!$post) return;
+
+    $total = floatval(carbon_get_post_meta($commission_request_id, "total_cart"));
+    if (empty($total) || !is_numeric($total)) return;
+    $agent_price = calculate_agent_price($commission_request_id);
+    $tax_price = calculate_tax_stripe_price($commission_request_id);
+    $platform_price = calculate_platform_price($commission_request_id);
+
+    $total_final = $agent_price + $tax_price + $platform_price;
+
+    return $total_final;
+}
 
 
+add_action('updated_post_meta', function($meta_id, $post_id, $meta_key, $meta_value) {
+    // Verifica si el campo actualizado es el campo 'status' y el tipo de post es 'payment'
+    if ($meta_key === 'status' && get_post_type($post_id) === 'payment') {
+        // Obtén el session_id del post meta si es necesario
+        $session_id = get_post_meta($post_id, 'session_id', true);
 
-
-
-function get_commission_requests_for_user()
-{
-   
-
-    // Obtener el tipo de post asociado al usuario actual
-    $post = get_user_associated_post_type();
-    if (!$post) {
-        return []; // No hay post asociado al usuario
+        if ($session_id) {
+            // Llama a la función para generar la factura
+            Payment::get_instance()->generate_invoice($session_id);
+        } else {
+            // En producción, evita usar echo en hooks; puedes usar logging si es necesario
+            error_log('Session ID not found for post ID ' . $post_id);
+        }
     }
-
-    // Consulta para obtener los contratos asociados al usuario actual
-    $contract_query = new WP_Query([
-        'post_type'  => 'contract',
-        'meta_query' => [
-            [
-                'key'   => $post->post_type,
-                'value' => $post->ID,
-                'compare' => '=',
-            ]
-        ]
-    ]);
-
-    // Array para almacenar los IDs de los contratos
-    $contract_ids = [];
-    foreach ($contract_query->posts as $contract) {
-        $contract_ids[] = $contract->ID;
-    }
-
-    if (empty($contract_ids)) {
-        return []; // No hay contratos asociados
-    }
-
-    // Consulta para obtener las solicitudes de comisión asociadas a los contratos
-    $commission_request_query = new WP_Query([
-        'post_type'  => 'commission_request',
-        'meta_query' => [
-            [
-                'key'   => 'contract_id', // Asegúrate de que el meta_key sea correcto
-                'value' => $contract_ids,
-                'compare' => 'IN',
-            ]
-        ]
-    ]);
-
-    // Devolver los resultados
-    return $commission_request_query->posts;
-}
-
-function get_disputes_for_user()
-{
-    $commission_requests = get_commission_requests_for_user();
-    // Consulta para obtener las disputas asociadas a los contratos
-
-    $commission_request_ids = [];
-    foreach ($commission_requests as $commission_request) {
-        $commission_request_ids[] = $commission_request->ID;
-    }
-    $dispute_query = new WP_Query([
-        'post_type'  => 'dispute',
-        'meta_query' => [
-            [
-                'key'   => 'commission_request_id', // Asegúrate de que el meta_key sea correcto
-                'value' => $commission_request_ids,
-                'compare' => 'IN',
-            ]
-        ]
-    ]);
-
-    // Devolver los resultados
-    return $dispute_query->posts;
-}
-
-
-
-function get_user_associated_post_type()
-{
-    $current_user = wp_get_current_user();
-
-    $query = new WP_Query([
-        'post_type'  => $current_user->roles[0],
-        'meta_query' => [
-            [
-                'key'   => 'user_id',
-                'value' => $current_user->ID,
-                'compare' => '=',
-            ]
-        ]
-    ]);
-        
-
-
-    return  $query->posts[0] ?? false;
-
-}
+}, 10, 4);
 
 
 
 
-
-function get_another_part_of_contract($post_id)
-{
-    $current_user = wp_get_current_user();
-    $counterparter_key = in_array("company", $current_user->roles)?"commercial_agent":"company";
-                                
-    $counterparty_id = carbon_get_post_meta($post_id, $counterparter_key);
-
-    $counterparty = get_post($counterparty_id);
-
-    return $counterparty;
-
-}
-
-function get_user_another_part_of_contract($post_id)
-{
-    $current_user = wp_get_current_user();
-    $counterparter_key = in_array("company", $current_user->roles)?"commercial_agent":"company";
-                                
-    $counterparty_id = carbon_get_post_meta($post_id, $counterparter_key);
-                                
-    $user_id = carbon_get_post_meta($counterparty_id, 'user_id');
-
-    return get_user_by("ID", $user_id);
-
-}
 
 
 
@@ -214,20 +176,21 @@ function get_user_another_part_of_contract($post_id)
 
 // Función para validar los archivos
 function validate_files($files, $allowed_types = ['application/pdf', 'text/plain'], $max_size = 10485760) // 10MB
-{foreach ($files['name'] as $key => $value) {
-    if ($files['error'][$key] === UPLOAD_ERR_OK) {
-        $file_type = $files['type'][$key];
-        $file_size = $files['size'][$key];
+{
+    foreach ($files['name'] as $key => $value) {
+        if ($files['error'][$key] === UPLOAD_ERR_OK) {
+            $file_type = $files['type'][$key];
+            $file_size = $files['size'][$key];
 
-        if (!in_array($file_type, $allowed_types)) {
-            return ['error' => 'Invalid file type. Only PDF and text files are allowed.'];
-        }
+            if (!in_array($file_type, $allowed_types)) {
+                return ['error' => 'Invalid file type. Only PDF and text files are allowed.'];
+            }
 
-        if ($file_size > $max_size) {
-            return ['error' => 'File size exceeds the maximum limit of 10MB.'];
+            if ($file_size > $max_size) {
+                return ['error' => 'File size exceeds the maximum limit of 10MB.'];
+            }
         }
     }
-}
     return ['success' => true];
 }
 
@@ -267,3 +230,38 @@ function handle_multiple_file_upload($files)
     }
     return $uploads;
 }
+
+/*function afterInlinePaymentCharge($params)
+{
+    $paymentIntent = $params[ 'stripePaymentIntent' ];
+    $stripeCustomer = MM_WPFS_API_v1::getStripeCustomer($paymentIntent->customer);
+
+    $customerEmail   = $stripeCustomer->email;
+    $paymentCurrency = $paymentIntent->currency;
+    $paymentAmount   = $paymentIntent->amount_received;
+    $paymentMetadata = $paymentIntent->metadata;
+    $paymentFormName = $params['formName'];
+
+    // Registro de un nuevo post de tipo 'payment'
+    $payment_post = [
+        'post_title'   => 'Payment from ' . $customerEmail . ' - ' . date('Y-m-d H:i:s'),
+        'post_content' => 'Amount: ' . $paymentAmount / 100 . ' ' . strtoupper($paymentCurrency) . '<br>Form: ' . $paymentFormName . '<br>Metadata: ' . json_encode($paymentMetadata),
+        'post_status'  => 'publish',
+        'post_type'    => 'payment',
+    ];
+    
+    $post_id = wp_insert_post($payment_post);
+
+    if (is_wp_error($post_id)) {
+        error_log(__FUNCTION__ . "(): Error creating payment post: " . $post_id->get_error_message());
+    } else {
+        error_log(__FUNCTION__ . "(): Successfully created payment post with ID " . $post_id);
+    }
+}
+    */
+    define("STRIPE_SECRET_KEY","sk_test_51OuK5YKEo9Rkz0Yaxf4YwQlbrNesUsoxhAz3GKOv1ZQWzp6AtuwHpJ6zQxGNBcfeJQjHHQPW9AgauNpta6w4JHFY00BBjGB9U8");
+
+   
+    
+   
+    

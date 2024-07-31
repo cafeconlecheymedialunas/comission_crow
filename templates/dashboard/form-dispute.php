@@ -1,6 +1,6 @@
 <?php
 $current_user = wp_get_current_user();
-$commission_requests = get_commission_requests_for_user();
+$commission_requests = ProfileUser::get_instance()->get_commission_requests_for_user();
 
 
 
@@ -11,7 +11,7 @@ $commission_requests = get_commission_requests_for_user();
   <div class="modal-dialog modal-dialog-scrollable  modal-dialog-centered modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Create a Dispute</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">

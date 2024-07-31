@@ -20,9 +20,10 @@ class Admin
         add_action('carbon_fields_register_fields', [$this, 'register_company_fields']);
         add_action('carbon_fields_register_fields', [$this, 'register_contract_fields']);
         add_action('carbon_fields_register_fields', [$this, 'register_review_fields']);
-        add_action('carbon_fields_register_fields', [$this, 'register_transaction_fields']);
+        add_action('carbon_fields_register_fields', [$this, 'register_payment_fields']);
         add_action('carbon_fields_register_fields', [$this, 'register_dispute_fields']);
         add_action('carbon_fields_register_fields', [$this, 'register_commission_request_fields']);
+        add_action('carbon_fields_register_fields', [$this, 'register_payment_fields']);
         add_filter('use_block_editor_for_post_type', [$this,'disable_block_editor_for_post_type'], 10, 2);
     
     }
@@ -39,7 +40,7 @@ class Admin
         $CustomPostTypes->register('company', 'Company', 'Companies', ['menu_icon' => 'dashicons-store']);
         $CustomPostTypes->register('commercial_agent', 'Commercial Agent', 'Commercial Agents', ['menu_icon' => 'dashicons-businessperson']);
         $CustomPostTypes->register('contract', 'Contract', 'Contracts', ['menu_icon' => 'dashicons-heart']);
-        $CustomPostTypes->register('transaction', 'Transaction', 'Transactions', ['menu_icon' => 'dashicons-bank']);
+        $CustomPostTypes->register('payment', 'Payment', 'Payments', ['menu_icon' => 'dashicons-money-alt']);
         $CustomPostTypes->register('commission_request', 'Commission Request', 'Commission Requests', ['menu_icon' => 'dashicons-bank']);
         $CustomPostTypes->register('dispute', 'Dispute', 'Disputes', ['menu_icon' => 'dashicons-warning']);
 
@@ -299,7 +300,7 @@ class Admin
             ->add_fields([
          
 
-                Field::make('select', 'commission_request_id', __('Transaction'))
+                Field::make('select', 'commission_request_id', __('payment'))
                 ->add_options([$this,'get_commission_requests']),
 
                 Field::make('text', 'subject', __('Subject:')),
@@ -336,53 +337,38 @@ class Admin
           
     }
 
-    public function register_transaction_fields()
+    public function register_payment_fields()
     {
-        Container::make('post_meta', __('Transaction Conditions'))
+        Container::make('post_meta', __('payment Conditions'))
 
             ->add_fields([
 
                 Field::make('select', 'commission_request_id', __('Contract'))
                 ->add_options([$this,'get_commission_requests']),
+                Field::make('text', 'total_paid', 'Total Paid'),
+                Field::make('text', 'total_cart', 'Total Cart'),
 
-    
+                Field::make('text', 'total_agent', 'Total Agent'),
+
+                Field::make('text', 'total_platform', 'Total Platform'),
+
+                Field::make('text', 'total_tax_service', 'Total Tax Serves'),
+                
                 Field::make('select', 'source', 'Source')->add_options([
-                    "deposit" => "Deposit",
                     "stripe" => "Stripe"
                 ]),
 
-                Field::make('complex', 'deposits', __('Invoices'))
-                ->add_fields([
-                    Field::make('text', 'title', 'Title'),
-                    Field::make('file', 'invoice', 'Invoice'),
-                    Field::make('text', 'description', 'Description'),
-                    Field::make('text', 'bank_account_name_holder', __('Name of account holder')),
-                    Field::make('text', 'bank_account_id_holder', __('Number of ID of account holder')),
-                    Field::make('text', 'bank_account_number', __('Bank Account Number')),
-                    Field::make('text', 'bak_account_cvu_alias', __('CVU or Alias')),
-
-                ])->set_layout("tabbed-horizontal"),
+                Field::make('media_gallery', 'invoice', 'Invoice'),
 
 
                 Field::make('text', 'payment_stripe_id', 'Stripe Payment Id'),
                 
 
             
-                Field::make('date_time', 'date', 'Transaction Date'),
+                Field::make('date_time', 'date', 'payment Date'),
 
                 Field::make('select', 'status', __('Status'))
-                ->set_options([$this,"get_status_commission_request"]),
-                
-                Field::make('complex', 'status_history', 'Contract Status History')
-                ->add_fields([
-                    Field::make('select', 'history_status', __('Status'))
-                    ->set_options([$this,"get_status_commission_request"]),
-                    Field::make('text', 'date_status', 'Date'),
-                    Field::make('select', 'changed_by', __('Changed by:'))->add_options([$this,'get_users']),
-
-                   
-                ])
-                ->set_layout('tabbed-horizontal')
+                ->set_options([$this,"get_status_payment"]),
 
                 
     
@@ -391,7 +377,7 @@ class Admin
 
 
 
-            ])->where('post_type', '=', 'deposit');
+            ])->where('post_type', '=', 'payment');
 
           
     }
@@ -424,6 +410,21 @@ class Admin
             'pending' => 'Pending',
             "decline" => "Decline",
             "resolve" => "Resolve"
+        ];
+    }
+
+    public function get_status_payment()
+    {
+        return [
+            'succeeded' => 'El pago se completó exitosamente.',
+            'pending' => 'El pago está pendiente de completarse.',
+            'failed' => 'El pago falló.',
+            'canceled' => 'El pago fue cancelado.',
+            'requires_payment_method' => 'El pago requiere un método de pago.',
+            'requires_confirmation' => 'El pago requiere confirmación.',
+            'requires_action' => 'El pago requiere acción adicional.',
+            'in_process' => 'El pago está en proceso.',
+            'authorized' => 'El pago ha sido autorizado pero aún no capturado.',
         ];
     }
     public function get_target_audiences()
@@ -567,19 +568,19 @@ class Admin
         return $options;
     }
 
-    public function get_transactions()
+    public function get_payments()
     {
-        $transactions = get_posts([
-            'post_type' => 'transaction',
+        $payments = get_posts([
+            'post_type' => 'payment',
             'posts_per_page' => -1,
             'post_status' => 'publish'
         ]);
     
         $options = [];
-        if (!empty($transactions)) {
-            $options[""]="Select a Transaction";
-            foreach ($transactions as $transaction) {
-                $options[$transaction->ID] = $transaction->post_title;
+        if (!empty($payments)) {
+            $options[""]="Select a payment";
+            foreach ($payments as $payment) {
+                $options[$payment->ID] = $payment->post_title;
             }
         }
     
@@ -666,7 +667,7 @@ class Admin
         global $typenow;
 
         // Lista de tipos de publicaciones personalizadas
-        $CustomPostTypes = ['opportunity', 'review', 'contract', "company", "commercial_agent", "transaction","dispute","commission_request"];
+        $CustomPostTypes = ['opportunity', 'review', 'contract', "company", "commercial_agent", "payment","dispute","commission_request"];
 
         // Verificar si el tipo de publicación actual está en la lista
         if (in_array($typenow, $CustomPostTypes)) {
@@ -688,7 +689,7 @@ class Admin
     public function disable_block_editor_for_post_type($use_block_editor, $post_type)
     {
         // Define los post types donde quieres deshabilitar el editor de bloques
-        $post_types = ['commercial_agent', 'company',"contract","opportunity","review","dispute","transaction","deposit"]; // Reemplaza con tus post types
+        $post_types = ['commercial_agent', 'company',"contract","opportunity","review","dispute","payment","deposit"]; // Reemplaza con tus post types
     
         // Comprueba si el post type actual está en la lista definida
         if (in_array($post_type, $post_types)) {

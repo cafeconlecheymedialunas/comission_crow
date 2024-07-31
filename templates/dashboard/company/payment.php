@@ -1,19 +1,19 @@
 <?php
 
-$disputes = ProfileUser::get_instance()->get_disputes_for_user();
-
+$payments = ProfileUser::get_instance()->get_payments_for_user();
+$commission_requests = ProfileUser::get_instance()->get_commission_requests_for_user()
 ?>
 <div class="card mb-4 flex-row d-flex justify-content-between align-items-center">
-    <h2 class="mb-0 d-inline"><?php echo __("Disputes"); ?></h2>
+    <h2 class="mb-0 d-inline"><?php echo __("Payments"); ?></h2>
     <?php if(in_array("company", $current_user->roles)):?>
-        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal-dispute">Add new</button>
+        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal-payment">Add new</button>
     <?php endif;?>
 </div>
 <div class="row">
     <div class="col-md-12">
         <div class="card">
             <div class="table-responsive">
-            <?php $template_path = 'templates/dashboard/table-dispute.php';
+            <?php $template_path = 'templates/dashboard/table-payment.php';
 if (locate_template($template_path)) {
     include locate_template($template_path);
 }

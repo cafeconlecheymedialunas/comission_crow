@@ -1,6 +1,6 @@
 <?php
 
-$post_type = get_user_associated_post_type();
+$post_type = ProfileUser::get_instance()->get_user_associated_post_type();
 
 
 

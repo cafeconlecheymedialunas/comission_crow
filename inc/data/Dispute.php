@@ -156,8 +156,10 @@ class Dispute
         
         $initiating_user_id = carbon_get_post_meta($dispute->ID, "initiating_user");
 
+       
 
-        if(get_current_user_id() !== $initiating_user_id) {
+
+        if(get_current_user_id() != $initiating_user_id) {
             wp_send_json_error(['message' => 'This dispute can only be deleted by the user who created it.']);
         }
 

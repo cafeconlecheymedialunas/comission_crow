@@ -119,13 +119,3 @@
         <?php endif; ?>
     </tbody>
 </table>
-
-
-<?php $template_path = 'templates/dashboard/form-dispute.php';
-        if (locate_template($template_path)) {
-            include locate_template($template_path);
-        }
-
-
-        ?>
-

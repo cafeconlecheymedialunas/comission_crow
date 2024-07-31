@@ -28,7 +28,7 @@ $gender_options = $admin->get_genders();
 
 
 
-$company_post = get_user_associated_post_type();
+$company_post = ProfileUser::get_instance()->get_user_associated_post_type();
 
 
 

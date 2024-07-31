@@ -32,7 +32,7 @@ class Dashboard
         $commission_request = Commissionrequest::get_instance();
         $dispute = Dispute::get_instance();
         $opportunity = Opportunity::get_instance();
-
+        $payment = Payment::get_instance();
 
         add_action('wp_ajax_create_opportunity', [$opportunity,'save_opportunity']);
         add_action('wp_ajax_nopriv_create_opportunity', [$opportunity,'save_opportunity']);
@@ -61,12 +61,16 @@ class Dashboard
         add_action('wp_ajax_nopriv_delete_commission_request', [$commission_request,'delete_commission_request']);
 
         //TO DO
-        add_action('wp_ajax_nopriv_update_commission_request_status', [$commission_request,'update_commission_request_status']);
         
 
         add_action('wp_ajax_create_dispute', [$dispute,'handle_create_dispute']);
         add_action('wp_ajax_delete_dispute', [$dispute,'delete_dispute']);
         add_action('wp_ajax_nopriv_delete_dispute', [$dispute,'delete_dispute']);
+        add_action('init', [$payment,"create_payment"]);
+
+        // add_action('fullstripe_after_payment_charge', [$payment,'after_checkout_payment_charge'], 10, 1);
+        //add_action('fullstripe_after_checkout_payment_charge', [$payment,'after_checkout_payment_charge'], 10, 1);
+        
         
         
      
@@ -111,9 +115,17 @@ class Dashboard
                 "company" => "dashboard/company/contract/requested",
                 "commercial_agent" => "dashboard/commercial-agent/contract/requested"
             ],
-            "payments" => [
-                "company" => "dashboard/company/payments/",
-                "commercial_agent" => "dashboard/commercial-agent/payments/"
+            "payment_list" => [
+                "company" => "dashboard/company/payment/all",
+                "commercial_agent" => "dashboard/commercial-agent/payment/all"
+            ],
+            "payment_create" => [
+                "company" => "dashboard/company/payment/create",
+                "commercial_agent" => "dashboard/commercial-agent/payment/create"
+            ],
+            "payment_show" => [
+                "company" => "dashboard/company/payment/show",
+                "commercial_agent" => "dashboard/commercial-agent/payment/show"
             ],
             "disputes" => [
                 "company" => "dashboard/company/dispute/",
@@ -124,8 +136,8 @@ class Dashboard
                 "commercial_agent" => "dashboard/commercial-agent/commission"
             ],
             "reviews" => [
-                "company" => "dashboard/company/reviews/",
-                "commercial_agent" => "dashboard/commercial-agent/reviews/"
+                "company" => "dashboard/company/review/",
+                "commercial_agent" => "dashboard/commercial-agent/review/"
             ],
         ];
 

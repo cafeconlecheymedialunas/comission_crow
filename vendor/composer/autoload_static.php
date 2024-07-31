@@ -37,6 +37,7 @@ class ComposerStaticInit24e41bbaee1332276f826502c7093d78
             'Symfony\\Component\\Filesystem\\' => 29,
             'Symfony\\Component\\EventDispatcher\\' => 34,
             'Symfony\\Component\\Console\\' => 26,
+            'Stripe\\' => 7,
         ),
         'R' => 
         array (
@@ -54,6 +55,10 @@ class ComposerStaticInit24e41bbaee1332276f826502c7093d78
             'Psr\\EventDispatcher\\' => 20,
             'Psr\\Container\\' => 14,
             'PhpCsFixer\\' => 11,
+        ),
+        'K' => 
+        array (
+            'Konekt\\PdfInvoice\\' => 18,
         ),
         'F' => 
         array (
@@ -138,6 +143,10 @@ class ComposerStaticInit24e41bbaee1332276f826502c7093d78
         array (
             0 => __DIR__ . '/..' . '/symfony/console',
         ),
+        'Stripe\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/stripe/stripe-php/lib',
+        ),
         'React\\Stream\\' => 
         array (
             0 => __DIR__ . '/..' . '/react/stream/src',
@@ -182,6 +191,10 @@ class ComposerStaticInit24e41bbaee1332276f826502c7093d78
         array (
             0 => __DIR__ . '/..' . '/friendsofphp/php-cs-fixer/src',
         ),
+        'Konekt\\PdfInvoice\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/konekt/pdf-invoice/src',
+        ),
         'Fidry\\CpuCoreCounter\\' => 
         array (
             0 => __DIR__ . '/..' . '/fidry/cpu-core-counter/src',
@@ -216,6 +229,7 @@ class ComposerStaticInit24e41bbaee1332276f826502c7093d78
         'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
         'CURLStringFile' => __DIR__ . '/..' . '/symfony/polyfill-php81/Resources/stubs/CURLStringFile.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'FPDF' => __DIR__ . '/..' . '/setasign/fpdf/fpdf.php',
         'Normalizer' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php',
         'PhpToken' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/PhpToken.php',
         'ReturnTypeWillChange' => __DIR__ . '/..' . '/symfony/polyfill-php81/Resources/stubs/ReturnTypeWillChange.php',
