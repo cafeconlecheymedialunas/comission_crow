@@ -3,14 +3,14 @@ function calculate_total_income($commission_request_ids)
 {
     $payments = get_posts([
         'post_type' => 'payment',
-        'posts_per_page' => -1
+        'posts_per_page' => -1,
     ]);
 
     $total_income = 0;
 
     foreach ($payments as $payment) {
         $commission_request_id = carbon_get_post_meta($payment->ID, 'commission_request_id');
-        
+
         // Verifica si el commission_request_id está en la lista de IDs de commission_requests del usuario
         if (in_array($commission_request_id, $commission_request_ids)) {
             $total_paid = carbon_get_post_meta($payment->ID, 'total_paid');
@@ -30,9 +30,9 @@ function calculate_total_expenses($commercial_agent_id)
             [
                 'key' => 'user',
                 'value' => get_current_user_id(),
-                'compare' => '='
-            ]
-        ]
+                'compare' => '=',
+            ],
+        ],
     ]);
 
     $total_expenses = 0;
@@ -54,8 +54,6 @@ $commission_request_ids = array_map(function ($post) {
     return $post->ID;
 }, $commission_requests);
 
-
-
 $total_income = calculate_total_income($commission_request_ids);
 $total_expenses = calculate_total_expenses($post_associated_user->ID);
 
@@ -70,12 +68,10 @@ $deposits = get_posts([
         [
             'key' => 'user',
             'value' => $current_user_id,
-            'compare' => '='
-        ]
-    ]
+            'compare' => '=',
+        ],
+    ],
 ]);
-
-
 
 ?>
 <div class="card mb-4">
@@ -84,10 +80,10 @@ $deposits = get_posts([
 <div class="row mb-4">
     <div class="col-md-12">
         <div class="card d-flex justify-content-between align-items-center">
-            
+
             <h1 class="d-inline">Balance</h1>
 
-            <span>$<?php echo $wallet_balance;?></span>
+            <span>$<?php echo $wallet_balance; ?></span>
 
         </div>
     </div>
@@ -96,21 +92,21 @@ $deposits = get_posts([
 <div class="row mb-4">
     <div class="col-md-12">
         <div class="card">
-            
-       
+
+
             <form id="update-email-stripe-form">
                 <div class="row">
                     <!-- User Fields -->
                     <div class="col-md-12">
                         <i class="fa-brands fs-2 fa-cc-stripe me-3" style></i><label for="stripe_email" class="form-label">  Stripe Email</label>
-                        <input type="text" name="stripe_email" id="stripe_email" value="<?php echo carbon_get_post_meta($post_associated_user->ID, "stripe_email");?>" class="form-control w-100" >
+                        <input type="text" name="stripe_email" id="stripe_email" value="<?php echo carbon_get_post_meta($post_associated_user->ID, "stripe_email"); ?>" class="form-control w-100" >
                         <div class="error-message"></div>
                     </div>
 
-                    
+
                 </div>
                 <input type="hidden" name="security" value="<?php echo wp_create_nonce('update_stripe_email_nonce'); ?>"/>
-                <input type="hidden" name="commercial_agent_id" value="<?php echo $post_associated_user->ID;?>">
+                <input type="hidden" name="commercial_agent_id" value="<?php echo $post_associated_user->ID; ?>">
                 <div class="alert alert-danger general-errors" role="alert" style="display:none;"></div>
                 <div class="col-md-12">
                     <button type="submit" class="btn btn-primary">Save Method</button>
@@ -137,45 +133,40 @@ $deposits = get_posts([
     </thead>
     <tbody>
         <?php if (!empty($deposits)):
-            foreach ($deposits as $deposit):
-    
+    foreach ($deposits as $deposit):
 
-        
+        $total_paid = carbon_get_post_meta($deposit->ID, 'total_paid');
 
-                $total_paid = carbon_get_post_meta($deposit->ID, 'total_paid');
+        $date = carbon_get_post_meta($deposit->ID, 'date');
 
-                $date = carbon_get_post_meta($deposit->ID, 'date');
+        $source = carbon_get_post_meta($deposit->ID, 'source');
 
-                $source = carbon_get_post_meta($deposit->ID, 'source');
+        $invoice = carbon_get_post_meta($deposit->ID, 'invoice');
 
-                $invoice = carbon_get_post_meta($deposit->ID, 'invoice');
+        ?>
 
-     
+								                <tr>
+						                            <td><?php echo $deposit->ID; ?></td>
 
-                ?>
+						                            <td><?php echo esc_html("$" . $total_paid); ?></td>
+								                    <td><i class="fa-brands fa-cc-stripe"></i></td>
 
-						                <tr>
-				                            <td><?php echo $deposit->ID; ?></td>
-						                 
-				                            <td><?php echo esc_html("$".$total_paid); ?></td>
-						                    <td><i class="fa-brands fa-cc-stripe"></i></td>
 
-						                    
-				                            <td><?php echo Helper::get_human_time_diff($date). " ago"; ?></td>
-						                    <td>
-						                        <ul class="p-0 mb-0 d-flex justify-content-center align-items-center">
+						                            <td><?php echo Helper::get_human_time_diff($date) . " ago"; ?></td>
+								                    <td>
+								                        <ul class="p-0 mb-0 d-flex justify-content-center align-items-center">
 
-		                                              <?php if (!empty($invoice)): ?>
-		                                                <li class="list-inline-item"></li>
-		                                                <a href="<?php echo wp_get_attachment_url($invoice[0]); ?>" download class="btn btn-sm btn-primary">
-		                                                    <i class="fa-solid fa-file-invoice"></i>
-		                                                </a>
-		                                                </li>
-		                                                <?php endif;?>
-	                                        </ul>
-			                            </td>
-			                        </tr>
-	                            <?php endforeach;?>
+				                                              <?php if (!empty($invoice)): ?>
+				                                                <li class="list-inline-item"></li>
+				                                                <a href="<?php echo wp_get_attachment_url($invoice[0]); ?>" download class="btn btn-sm btn-primary">
+				                                                    <i class="fa-solid fa-file-invoice"></i>
+				                                                </a>
+				                                                </li>
+				                                                <?php endif;?>
+		                                        </ul>
+				                            </td>
+				                        </tr>
+		                            <?php endforeach;?>
                         <?php endif;?>
                     </table>
                 </div>
