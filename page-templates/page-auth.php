@@ -32,16 +32,16 @@ get_header("login");
                     <?php
                     the_custom_logo();
 
-                    if (isset($_GET['action']) && $_GET['action'] == 'register') {
-                        echo do_shortcode('[register_form]');
-                    } elseif (isset($_GET['action']) && $_GET['action'] == 'password_reset') {
-                        echo do_shortcode('[password_reset_form]');
-                    } elseif (isset($_GET['action']) && $_GET['action'] == 'new_password') {
-                        echo do_shortcode('[new_password_form]');
-                    } else {
-                        echo do_shortcode('[login_form]');
-                    }
-                    ?>
+if (isset($_GET['action']) && $_GET['action'] == 'register') {
+    echo do_shortcode('[register_form]');
+} elseif (isset($_GET['action']) && $_GET['action'] == 'password_reset') {
+    echo do_shortcode('[password_reset_form]');
+} elseif (isset($_GET['action']) && $_GET['action'] == 'new_password') {
+    echo do_shortcode('[new_password_form]');
+} else {
+    echo do_shortcode('[login_form]');
+}
+?>
                 </div>
             </div>
         </div>

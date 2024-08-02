@@ -12,43 +12,43 @@
     </thead>
     <tbody>
         <?php if (!empty($disputes)):
-    foreach ($disputes as $dispute):
+            foreach ($disputes as $dispute):
 
-        $commission_request_id = carbon_get_post_meta($dispute->ID, "commission_request_id");
-        $initiating_user_id = carbon_get_post_meta($dispute->ID, "initiating_user");
-        $commission_request = get_post($commission_request_id);
-        $contract_id = carbon_get_post_meta($commission_request_id, "contract_id");
-        $contract_sku = carbon_get_post_meta($contract_id, "sku");
-        $another_part = ProfileUser::get_instance()->get_another_part_of_contract($contract_id);
-        $another_part_user = ProfileUser::get_instance()->get_user_another_part_of_contract($contract_id);
+                $commission_request_id = carbon_get_post_meta($dispute->ID, "commission_request_id");
+                $initiating_user_id = carbon_get_post_meta($dispute->ID, "initiating_user");
+                $commission_request = get_post($commission_request_id);
+                $contract_id = carbon_get_post_meta($commission_request_id, "contract_id");
+                $contract_sku = carbon_get_post_meta($contract_id, "sku");
+                $another_part = ProfileUser::get_instance()->get_another_part_of_contract($contract_id);
+                $another_part_user = ProfileUser::get_instance()->get_user_another_part_of_contract($contract_id);
         
 
 
-        $status = carbon_get_post_meta($dispute->ID, "status");
-        $status_class = '';
-        $status_text = '';
+                $status = carbon_get_post_meta($dispute->ID, "status");
+                $status_class = '';
+                $status_text = '';
 
-        switch ($status) {
-            case 'pending':
-                $status_class = 'text-bg-primary';
-                $status_text = "Pending";
-                break;
-            case 'cancelled':
-                    $status_class = 'text-bg-warning';
-                    $status_text = "Cancelled";
-                    break;
-            case 'resolved':
-                $status_class = 'text-bg-success';
-                $status_text = "Accepted";
-                break;
-        }
+                switch ($status) {
+                    case 'pending':
+                        $status_class = 'text-bg-primary';
+                        $status_text = "Pending";
+                        break;
+                    case 'cancelled':
+                        $status_class = 'text-bg-warning';
+                        $status_text = "Cancelled";
+                        break;
+                    case 'resolved':
+                        $status_class = 'text-bg-success';
+                        $status_text = "Accepted";
+                        break;
+                }
 
      
-            // Obtener los usuarios administradores
-            $users = get_users(['role' => 'administrator']);
-            $admin_id = $users[0]->ID; // Usar el ID del primer administrador como ejemplo
+                // Obtener los usuarios administradores
+                $users = get_users(['role' => 'administrator']);
+                $admin_id = $users[0]->ID; // Usar el ID del primer administrador como ejemplo
 
-            ?>
+                ?>
 			                    <tr>
 			                        <th scope="row"><?php echo $dispute->ID; ?></th>
 			                        <td><?php echo esc_html($contract_sku); ?></td>
@@ -62,14 +62,14 @@
 
 			                                <?php
 
-                                            $user_ids = [$admin_id, $current_user->ID];
-                                            $unique_key = $contract_sku;
-                                            // Subject will be used only if conversation not exists yet
-                                            $subject = 'Questions about your Dispute about contract: ' . $contract_sku;
+                                                $user_ids = [$admin_id, $current_user->ID];
+                $unique_key = $contract_sku;
+                // Subject will be used only if conversation not exists yet
+                $subject = 'Questions about your Dispute about contract: ' . $contract_sku;
 
-                                            $thread_id = Better_Messages()->functions->get_unique_conversation_id($user_ids, $unique_key, $subject);
+                $thread_id = Better_Messages()->functions->get_unique_conversation_id($user_ids, $unique_key, $subject);
 
-                                            ?>
+                ?>
                                               <?php if(!empty($invoice)):?>
                                                 <li class="list-inline-item"></li>
                                                 <a href="<?php echo wp_get_attachment_url($invoice[0]); ?>" download class="btn btn-primary">
@@ -122,9 +122,9 @@
 
 
 <?php $template_path = 'templates/dashboard/form-dispute.php';
-if (locate_template($template_path)) {
-    include locate_template($template_path);
-}
+        if (locate_template($template_path)) {
+            include locate_template($template_path);
+        }
 
-?>
+        ?>
 

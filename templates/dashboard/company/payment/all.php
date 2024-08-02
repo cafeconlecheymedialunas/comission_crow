@@ -25,54 +25,54 @@ $payments = ProfileUser::get_instance()->get_payments_for_user();
     </thead>
     <tbody>
         <?php if (!empty($payments)):
-    foreach ($payments as $payment):
-        $commission_request_id = carbon_get_post_meta($payment->ID, 'commission_request_id');
+            foreach ($payments as $payment):
+                $commission_request_id = carbon_get_post_meta($payment->ID, 'commission_request_id');
 
-        $contract_id = carbon_get_post_meta($commission_request_id, 'contract_id');
+                $contract_id = carbon_get_post_meta($commission_request_id, 'contract_id');
 
-        $sku = carbon_get_post_meta($contract_id, 'sku');
+                $sku = carbon_get_post_meta($contract_id, 'sku');
 
-        $total_paid = carbon_get_post_meta($payment->ID, 'total_paid');
+                $total_paid = carbon_get_post_meta($payment->ID, 'total_paid');
 
-        $date = carbon_get_post_meta($payment->ID, 'date');
+                $date = carbon_get_post_meta($payment->ID, 'date');
 
-        $status = 'succeeded';
+                $status = 'succeeded';
 
-        $source = carbon_get_post_meta($payment->ID, 'source');
+                $source = carbon_get_post_meta($payment->ID, 'source');
 
-        $invoice = carbon_get_post_meta($payment->ID, 'invoice');
+                $invoice = carbon_get_post_meta($payment->ID, 'invoice');
 
-        switch ($status) {
-            case 'succeeded':
-                $payment_badge = '<span class="badge bg-success">Payment Success</span>';
-                break;
-            case 'pending':
-                $payment_badge = '<span class="badge bg-warning">Pending Payment</span>';
-                break;
-            case 'failed':
-                $payment_badge = '<span class="badge bg-danger">Failed Payment</span>';
-                break;
-            case 'canceled':
-                $payment_badge = '<span class="badge bg-secondary">Canceled Payment</span>';
-                break;
-            case 'requires_payment_method':
-                $payment_badge = '<span class="badge bg-info">Payment Requires Payment Method</span>';
-                break;
-            case 'requires_confirmation':
-                $payment_badge = '<span class="badge bg-info">Payment Requires Confirmation</span>';
-                break;
-            case 'requires_action':
-                $payment_badge = '<span class="badge bg-info">Payment Requires Action</span>';
-                break;
-            case 'in_process':
-                $payment_badge = '<span class="badge bg-info">Payment In Process</span>';
-                break;
-            case 'authorized':
-                $payment_badge = '<span class="badge bg-info">Authorized</span>';
-                break;
-        }
+                switch ($status) {
+                    case 'succeeded':
+                        $payment_badge = '<span class="badge bg-success">Payment Success</span>';
+                        break;
+                    case 'pending':
+                        $payment_badge = '<span class="badge bg-warning">Pending Payment</span>';
+                        break;
+                    case 'failed':
+                        $payment_badge = '<span class="badge bg-danger">Failed Payment</span>';
+                        break;
+                    case 'canceled':
+                        $payment_badge = '<span class="badge bg-secondary">Canceled Payment</span>';
+                        break;
+                    case 'requires_payment_method':
+                        $payment_badge = '<span class="badge bg-info">Payment Requires Payment Method</span>';
+                        break;
+                    case 'requires_confirmation':
+                        $payment_badge = '<span class="badge bg-info">Payment Requires Confirmation</span>';
+                        break;
+                    case 'requires_action':
+                        $payment_badge = '<span class="badge bg-info">Payment Requires Action</span>';
+                        break;
+                    case 'in_process':
+                        $payment_badge = '<span class="badge bg-info">Payment In Process</span>';
+                        break;
+                    case 'authorized':
+                        $payment_badge = '<span class="badge bg-info">Authorized</span>';
+                        break;
+                }
 
-        ?>
+                ?>
 
 				                <tr>
 		                            <td><?php echo $payment->ID; ?></td>
@@ -82,8 +82,8 @@ $payments = ProfileUser::get_instance()->get_payments_for_user();
 
 				                    <td>
 				                        <?php if ($status) {
-                                            echo $payment_badge;
-                                        }?>
+				                            echo $payment_badge;
+				                        }?>
 
 				                    </td>
 		                            <td><?php echo $date; ?></td>

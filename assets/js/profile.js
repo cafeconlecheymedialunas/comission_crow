@@ -121,4 +121,44 @@ jQuery(document).ready(function ($) {
       },
     });
   });
+
+  $("#update-email-stripe-form").on("submit", function (event) {
+    event.preventDefault(); // Prevent the default form submission
+
+    var form = $(this);
+    var formData = new FormData(form[0]); // Usar el primer elemento del formulario
+    formData.append("action", "update_stripe_email");
+
+    // Asumiendo que tienes un spinner de carga
+    var $customSpinner = $(".custom-spinner");
+    $customSpinner.addClass("d-flex");
+
+    $.ajax({
+      type: "POST",
+      url: ajax_object.ajax_url,
+      data: formData,
+      processData: false,
+      contentType: false,
+      success: function (response) {
+        $customSpinner.removeClass("d-flex").hide();
+        console.log(response);
+        if (response.success) {
+          Swal.fire({
+            title: "Updated Stripe email successfully!",
+            text: "Redirecting to the profile page.",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 2000,
+          }).then(function () {
+            window.location.href = `/dashboard/commercial-agent/deposit/all`;
+          });
+        } else {
+          displayFormErrors(form, response.data); // Asegúrate de que displayFormErrors esté definido para manejar errores
+        }
+      },
+      error: function (error) {
+        console.error("Error updating email:", error);
+      },
+    });
+  });
 });

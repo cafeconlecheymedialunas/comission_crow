@@ -47,6 +47,10 @@ class Dashboard
         add_action('wp_ajax_update_user_data', [$profileUser, 'update_user_data']);
         add_action('wp_ajax_nopriv_update_user_data', [$profileUser, 'update_user_data']);
 
+        
+        add_action('wp_ajax_update_stripe_email', [$profileUser,  'update_stripe_email']);
+        add_action('wp_ajax_nopriv_update_stripe_email', [$profileUser, 'update_stripe_email']);
+
         add_action('wp_ajax_create_contract', [$contract, 'create_contract']);
         add_action('wp_ajax_nopriv_create_contract', [$contract, 'create_contract']);
 
@@ -66,11 +70,10 @@ class Dashboard
         add_action('wp_ajax_delete_dispute', [$dispute, 'delete_dispute']);
         add_action('wp_ajax_nopriv_delete_dispute', [$dispute, 'delete_dispute']);
         
-        add_action('admin_post_nopriv_create_payment',[$payment , 'create_payment']);
+        add_action('admin_post_nopriv_create_payment', [$payment , 'create_payment']);
         add_action('admin_post_create_payment', [$payment ,'create_payment']);
        
-        // add_action('fullstripe_after_payment_charge', [$payment,'after_checkout_payment_charge'], 10, 1);
-        //add_action('fullstripe_after_checkout_payment_charge', [$payment,'after_checkout_payment_charge'], 10, 1);
+      
 
     }
 
@@ -114,15 +117,15 @@ class Dashboard
             ],
             "payment_list" => [
                 "company" => "dashboard/company/payment/all",
-                "commercial_agent" => "dashboard/commercial-agent/payment/all",
             ],
             "payment_create" => [
                 "company" => "dashboard/company/payment/create",
-                "commercial_agent" => "dashboard/commercial-agent/payment/create",
             ],
             "payment_show" => [
                 "company" => "dashboard/company/payment/show",
-                "commercial_agent" => "dashboard/commercial-agent/payment/show",
+            ],
+            "deposit_list" => [
+                "company" => "dashboard/company/deposit/all",
             ],
             "disputes" => [
                 "company" => "dashboard/company/dispute/",
@@ -146,5 +149,3 @@ class Dashboard
     }
 
 }
-
-

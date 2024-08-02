@@ -14,7 +14,8 @@ class Payment
         }
         return self::$instance;
     }
-    public function create_payment() {
+    public function create_payment()
+    {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['payment_init'])) {
             $commission_request_id = intval($_POST['commission_request_id']);
     
@@ -24,9 +25,9 @@ class Payment
             $total_tax_service = calculate_tax_stripe_price($commission_request_id);
             $total_paid = calculate_total($commission_request_id);
     
-            $contract_id = carbon_get_post_meta($commission_request_id, 'contract_id'); 
-            $opportunity_id = carbon_get_post_meta($contract_id, 'opportunity'); 
-            $commercial_agent_id = carbon_get_post_meta($contract_id, 'commercial_agent'); 
+            $contract_id = carbon_get_post_meta($commission_request_id, 'contract_id');
+            $opportunity_id = carbon_get_post_meta($contract_id, 'opportunity');
+            $commercial_agent_id = carbon_get_post_meta($contract_id, 'commercial_agent');
             $commercial_agent_title = get_the_title($commercial_agent_id);
             $opportunity_title = get_the_title($opportunity_id);
     
@@ -84,7 +85,7 @@ class Payment
                 carbon_set_post_meta($payment_id, "payment_stripe_id", $checkout_session->id);
                 carbon_set_post_meta($payment_id, "date", current_time('mysql'));
                 carbon_set_post_meta($payment_id, "status", 'pending'); // Inicializar el estado
-                carbon_set_post_meta($payment_id, "user", get_current_user_id()); 
+                carbon_set_post_meta($payment_id, "user", get_current_user_id());
                 // Redirigir a la página de checkout de Stripe
                 header("HTTP/1.1 303 See Other");
                 header("Location: " . $checkout_session->url);
@@ -98,7 +99,8 @@ class Payment
         }
     }
     
-    public function generate_invoice($session_id) {
+    public function generate_invoice($session_id)
+    {
         // Buscar el session_id en el payment post type
         $payment_id = $this->get_post_id_by_stripe_session($session_id);
         if (!$payment_id) {
@@ -150,12 +152,12 @@ class Payment
         $sku = carbon_get_post_meta($contract_id, 'sku');
     
         // Obtener el nombre de la empresa desde las opciones de WordPress
-        $company_name = carbon_get_post_meta($company_id,'company_name');
-        $company_street = carbon_get_post_meta($company_id,'company_street');
-        $company_number = carbon_get_post_meta($company_id,'company_number');
-        $company_city = carbon_get_post_meta($company_id,'company_city');
-        $company_state = carbon_get_post_meta($company_id,'company_state');
-        $company_postalcode = carbon_get_post_meta($company_id,'company_postalcode');
+        $company_name = carbon_get_post_meta($company_id, 'company_name');
+        $company_street = carbon_get_post_meta($company_id, 'company_street');
+        $company_number = carbon_get_post_meta($company_id, 'company_number');
+        $company_city = carbon_get_post_meta($company_id, 'company_city');
+        $company_state = carbon_get_post_meta($company_id, 'company_state');
+        $company_postalcode = carbon_get_post_meta($company_id, 'company_postalcode');
 
 
         $platform_billing_address_street = carbon_get_theme_option("billing_address_street");
@@ -235,7 +237,8 @@ class Payment
     }
     
     
-    private function get_or_create_stripe_customer($email) {
+    private function get_or_create_stripe_customer($email)
+    {
         $existing_customers = \Stripe\Customer::all(['email' => $email, 'limit' => 1]);
         if (count($existing_customers->data) > 0) {
             return $existing_customers->data[0];
@@ -244,7 +247,8 @@ class Payment
         }
     }
 
-    public function get_post_id_by_stripe_session($session_id) {
+    public function get_post_id_by_stripe_session($session_id)
+    {
         $args = [
             'post_type' => 'payment',
             'meta_query' => [

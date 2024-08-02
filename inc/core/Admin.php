@@ -1,6 +1,5 @@
 <?php
-use Carbon_Fields\Container\Container;
-use Carbon_Fields\Field;
+
 
 class Admin
 {
@@ -12,12 +11,17 @@ class Admin
         add_action('admin_head', [$this, 'custom_admin_css_for_post_types']);
         $this->create_post_types();
 
-        add_action('init', [$this, 'create_role_company']);
-        add_action('init', [$this, 'create_role_commercial_agent']);
-        $containerCustomFields = ContainerCustomFields::get_instance();
-        add_action( 'carbon_fields_register_fields', [$containerCustomFields,'register_fields'] );
+        add_action('init', [$this, 'create_roles']);
+       
+     
         add_filter('use_block_editor_for_post_type', [$this,'disable_block_editor_for_post_type'], 10, 2);
     
+    }
+
+    public function create_roles()
+    {
+        $this->create_role_company();
+        $this->create_role_commercial_agent();
     }
 
    

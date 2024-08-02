@@ -49,12 +49,12 @@
                     ],
                 ]);
 
-                if($payment_query->have_posts()){
+                if($payment_query->have_posts()) {
                     $payment = $payment_query->posts[0];
                     $status_payment = carbon_get_post_meta($payment->ID, 'status');
                 }
 
-                if($dispute_query->have_posts()){
+                if($dispute_query->have_posts()) {
                     $dispute = $dispute_query->posts[0];
                     $status_dispute = carbon_get_post_meta($dispute->ID, 'status');
                 }
@@ -150,10 +150,10 @@
                     <td><?php echo esc_html("$" . number_format($total_agent_commission_request, 2, ",", "")); ?></td>
                     <td>
                         <span class="badge <?php echo $status_class; ?>"><?php echo esc_html($status_text); ?></span>
-                        <?php if ($status_dispute){
+                        <?php if ($status_dispute) {
                             echo $dispute_badge;
                         }?>
-                        <?php if ($status_payment){
+                        <?php if ($status_payment) {
                             echo $dispute_payment;
                         }?>
                    
@@ -215,7 +215,7 @@
         <?php endif; ?>
 </table>
 
-<?php 
+<?php
 $template_path = 'templates/dashboard/form-commission-request.php';
 if (locate_template($template_path)) {
     include locate_template($template_path);

@@ -1,5 +1,4 @@
 jQuery(document).ready(function ($) {
-  
   $(".add-new-url").click(function (e) {
     e.preventDefault();
 
@@ -49,7 +48,7 @@ jQuery(document).ready(function ($) {
         if (response.success) {
           Swal.fire({
             title: "Opportunity saved successfully!",
-  
+
             icon: "success",
             showConfirmButton: false,
             timer: 2000,

@@ -1,25 +1,20 @@
-<?php 
+<?php
 use Carbon_Fields\Container\Container;
 use Carbon_Fields\Field;
 
-class ContainerCustomFields{
-    private static $instance = null;
+class ContainerCustomFields
+{
 
-    // Constructor privado para prevenir instanciación directa
-    private function __construct()
+    private static $admin;
+
+    public function __construct($admin)
     {
+        $this->admin = $admin;
     }
 
-    // Método para obtener la instancia única
-    public static function get_instance()
-    {
-        if (self::$instance === null) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
 
-    public function register_fields(){
+    public function register_fields()
+    {
         $this->register_opportunity_fields();
         $this->register_commercial_agent_fields();
         $this->register_company_fields();
@@ -29,6 +24,7 @@ class ContainerCustomFields{
         $this->register_dispute_fields();
         $this->register_commission_request_fields();
         $this->register_payment_fields();
+        $this->register_deposit_fields();
         $this->register_theme_options();
     }
 
@@ -38,7 +34,7 @@ class ContainerCustomFields{
 
             ->add_fields([
                 Field::make('select', 'commercial_agent', __('Commercial Agent'))
-                ->add_options([$this,'get_commercial_agents']),
+                ->add_options([$this->admin,'get_commercial_agents']),
                 Field::make('select', 'score', __('Score'))
                     ->set_options([
                         "1" => 1,
@@ -55,7 +51,7 @@ class ContainerCustomFields{
         Container::make('post_meta', __('Company Info'))
             ->add_fields([
                 Field::make('select', 'user_id', __('User'))
-                ->add_options([$this,'get_company_users']),
+                ->add_options([$this->admin,'get_company_users']),
 
                 Field::make('text', 'company_name', __('Company Name')),
                 Field::make('text', 'company_street', __('Company Street')),
@@ -85,13 +81,14 @@ class ContainerCustomFields{
 
             ->add_fields([
                 Field::make('select', 'user_id', __('User'))
-                ->add_options([$this,'get_agent_users']),
+                ->add_options([$this->admin,'get_agent_users']),
                 
                 Field::make('text', 'years_of_experience', __('Years of experience')),
                 Field::make('text', 'bank_account_name_holder', __('Name of account holder')),
                 Field::make('text', 'bank_account_id_holder', __('Number of ID of account holder')),
                 Field::make('text', 'bank_account_number', __('Bank Account Number')),
                 Field::make('text', 'bak_account_cvu_alias', __('CVU or Alias')),
+                Field::make('text', 'stripe_email', __('Stripe Email')),
                 Field::make('text', 'wallet_balance', __('Wallet Balance', 'your-textdomain'))
                 ->set_default_value('0')
                 ->set_attribute('type', 'number')
@@ -108,15 +105,15 @@ class ContainerCustomFields{
 
             ->add_fields([
                 Field::make('select', 'commercial_agent', __('Commercial Agent'))
-                ->add_options([$this,'get_commercial_agents']),
+                ->add_options([$this->admin,'get_commercial_agents']),
 
                 Field::make('select', 'company', __('Company'))
-                ->add_options([$this,'get_companies']),
+                ->add_options([$this->admin,'get_companies']),
                 Field::make('select', 'initiating_user', __('Initiating User:'))
-                ->add_options([$this,'get_users']),
+                ->add_options([$this->admin,'get_users']),
 
                 Field::make('select', 'opportunity', __('Opportunity'))
-                ->add_options([$this,'get_opportunities']),
+                ->add_options([$this->admin,'get_opportunities']),
 
                 Field::make('text', 'sku', 'Sku'),
             
@@ -127,7 +124,7 @@ class ContainerCustomFields{
                 Field::make('text', 'minimal_price', 'Minimal Price'),
 
                 Field::make('select', 'status', __('Status'))
-                ->set_options([$this,"get_contract_status"]),
+                ->set_options([$this->admin,"get_contract_status"]),
                 
                 Field::make('date_time', 'finalization_date', __('Finalization')),
 
@@ -135,9 +132,9 @@ class ContainerCustomFields{
                 Field::make('complex', 'status_history', 'Contract Status History')
                 ->add_fields([
                     Field::make('select', 'history_status', __('Status'))
-                    ->set_options([$this,"get_contract_status"]),
+                    ->set_options([$this->admin,"get_contract_status"]),
                     Field::make('text', 'date_status', 'Date'),
-                    Field::make('select', 'changed_by', __('Changed by:'))->add_options([$this,'get_users']),
+                    Field::make('select', 'changed_by', __('Changed by:'))->add_options([$this->admin,'get_users']),
 
                    
                 ])
@@ -158,7 +155,7 @@ class ContainerCustomFields{
             ->add_fields([
 
                 Field::make('select', 'contract_id', __('Contract'))
-                ->add_options([$this,'get_contracts']),
+                ->add_options([$this->admin,'get_contracts']),
 
                 Field::make('complex', 'items', __('Cart Items'))
                 ->add_fields([
@@ -171,7 +168,7 @@ class ContainerCustomFields{
                 ]),
              
                 Field::make('select', 'initiating_user', __('Initiating User:'))
-                    ->add_options([$this,'get_users']),
+                    ->add_options([$this->admin,'get_users']),
 
                 Field::make('text', 'total_cart', 'Total'),
 
@@ -181,14 +178,14 @@ class ContainerCustomFields{
         
                 Field::make('rich_text', 'comments', 'Comments'),
                 Field::make('select', 'status', __('Status'))
-                ->set_options([$this,"get_status_commission_request"]),
+                ->set_options([$this->admin,"get_status_commission_request"]),
                 
                 Field::make('complex', 'status_history', 'Contract Status History')
                 ->add_fields([
                     Field::make('select', 'history_status', __('Status'))
-                    ->set_options([$this,"get_status_commission_request"]),
+                    ->set_options([$this->admin,"get_status_commission_request"]),
                     Field::make('text', 'date_status', 'Date'),
-                    Field::make('select', 'changed_by', __('Changed by:'))->add_options([$this,'get_users']),
+                    Field::make('select', 'changed_by', __('Changed by:'))->add_options([$this->admin,'get_users']),
 
                    
                 ])
@@ -205,7 +202,7 @@ class ContainerCustomFields{
         Container::make('post_meta', __('Oportunity Info'))
             ->add_tab(__('Info'), [
                 Field::make('select', 'company', __('Company'))
-                ->add_options([$this,'get_companies']),
+                ->add_options([$this->admin,'get_companies']),
                 
                 Field::make('radio', 'target_audience', __('Target Audience'))->set_options([
                     'companies' => "Companies",
@@ -264,32 +261,32 @@ class ContainerCustomFields{
          
 
                 Field::make('select', 'commission_request_id', __('payment'))
-                ->add_options([$this,'get_commission_requests']),
+                ->add_options([$this->admin,'get_commission_requests']),
 
                 Field::make('text', 'subject', __('Subject:')),
                 Field::Make("media_gallery", "documents", "Documents"),
 
 
                 Field::make('select', 'initiating_user', __('Initiating User:'))
-                    ->add_options([$this,'get_users']),
+                    ->add_options([$this->admin,'get_users']),
               
 
                 Field::make('select', 'user_winnerr_dispute', __('Winner Dispute:'))
-                    ->add_options([$this,'get_users']),
+                    ->add_options([$this->admin,'get_users']),
             
                 
                 Field::make('rich_text', 'admin_decission_comments', __('Admin Comments:')),
                 
 
                 Field::make('select', 'status', __('Status'))
-                ->set_options([$this,"get_statuses_dispute"]),
+                ->set_options([$this->admin,"get_statuses_dispute"]),
 
                 Field::make('complex', 'status_history', 'Dispute Status History')
                 ->add_fields([
                     Field::make('select', 'history_status', __('Status'))
-                    ->set_options([$this,"get_status_commission_request"]),
+                    ->set_options([$this->admin,"get_status_commission_request"]),
                     Field::make('text', 'date_status', 'Date'),
-                    Field::make('select', 'changed_by', __('Changed by:'))->add_options([$this,'get_users']),
+                    Field::make('select', 'changed_by', __('Changed by:'))->add_options([$this->admin,'get_users']),
 
                    
                 ])
@@ -299,20 +296,21 @@ class ContainerCustomFields{
 
           
     }
-    public function register_theme_options(){
-        Container::make( 'theme_options', __( 'Nexfy Options' ) )
-        ->add_fields( array(
-            Field::make( 'textarea', 'stripe_secret_key', __( 'Stripe Secret Key' ) ),
-            Field::make( 'textarea', 'stripe_publishable_key', __( 'Stripe Publishable key' ) ),
-            Field::make( 'text', 'billing_address_street', __( 'Billing Address Street' ) ),
-            Field::make( 'text', 'billing_address_number', __( 'Billing Address Number' ) ),
-            Field::make( 'text', 'billing_address_city', __( 'Billing Address City' ) ),
-            Field::make( 'text', 'billing_address_state', __( 'Billing Address State' ) ),
-            Field::make( 'text', 'billing_address_country', __( 'Billing Address Country' ) ),
-            Field::make( 'text', 'billing_address_postalcode', __( 'Billing Address Postal Code' ) ),
-            Field::make( 'text', 'billing_company_holder', __( 'Billing Company Holder' ) ),
-            Field::make( 'text', 'billing_company_name', __( 'Billing Company Name' ) ),
-        ) );
+    public function register_theme_options()
+    {
+        Container::make('theme_options', __('Nexfy Options'))
+        ->add_fields([
+            Field::make('textarea', 'stripe_secret_key', __('Stripe Secret Key')),
+            Field::make('textarea', 'stripe_publishable_key', __('Stripe Publishable key')),
+            Field::make('text', 'billing_address_street', __('Billing Address Street')),
+            Field::make('text', 'billing_address_number', __('Billing Address Number')),
+            Field::make('text', 'billing_address_city', __('Billing Address City')),
+            Field::make('text', 'billing_address_state', __('Billing Address State')),
+            Field::make('text', 'billing_address_country', __('Billing Address Country')),
+            Field::make('text', 'billing_address_postalcode', __('Billing Address Postal Code')),
+            Field::make('text', 'billing_company_holder', __('Billing Company Holder')),
+            Field::make('text', 'billing_company_name', __('Billing Company Name')),
+        ]);
     }
 
     public function register_payment_fields()
@@ -322,7 +320,7 @@ class ContainerCustomFields{
             ->add_fields([
 
                 Field::make('select', 'commission_request_id', __('Commission Request'))
-                ->add_options([$this,'get_commission_requests']),
+                ->add_options([$this->admin,'get_commission_requests']),
                 Field::make('text', 'total_paid', 'Total Paid'),
                 Field::make('text', 'total_cart', 'Total Cart'),
 
@@ -336,7 +334,7 @@ class ContainerCustomFields{
                     "stripe" => "Stripe"
                 ]),
                 Field::make('select', 'user', __('User:'))
-                ->add_options([$this,'get_users']),
+                ->add_options([$this->admin,'get_users']),
                 Field::make('media_gallery', 'invoice', 'Invoice'),
 
 
@@ -347,7 +345,7 @@ class ContainerCustomFields{
                 Field::make('date_time', 'date', 'payment Date'),
 
                 Field::make('select', 'status', __('Status'))
-                ->set_options([$this,"get_status_payment"]),
+                ->set_options([$this->admin,"get_status_payment"]),
 
                 
     
@@ -357,6 +355,42 @@ class ContainerCustomFields{
 
 
             ])->where('post_type', '=', 'payment');
+
+          
+    }
+
+    public function register_deposit_fields()
+    {
+        Container::make('post_meta', __('Deposit Conditions'))
+
+            ->add_fields([
+
+           
+                Field::make('text', 'total_paid', 'Total Paid'),
+                
+                Field::make('select', 'source', 'Source')->add_options([
+                    "stripe" => "Stripe"
+                ]),
+                Field::make('select', 'user', __('User:'))
+                ->add_options([$this->admin,'get_users'])->set_required(true),
+                
+                Field::make('media_gallery', 'invoice', 'Invoice'),
+
+
+                Field::make('text', 'payment_stripe_id', 'Stripe Payment Id'),
+                
+
+            
+                Field::make('date_time', 'date', 'payment Date'),
+
+                
+    
+
+            
+
+
+
+            ])->where('post_type', '=', 'deposit');
 
           
     }

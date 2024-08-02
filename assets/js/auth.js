@@ -1,7 +1,6 @@
 jQuery(document).ready(function ($) {
   var $customSpinner = $(".custom-spinner");
 
-
   $("#registration_form").on("submit", function (e) {
     e.preventDefault();
     var form = $(this);

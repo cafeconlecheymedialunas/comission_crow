@@ -1,6 +1,5 @@
 jQuery(document).ready(function ($) {
   var $customSpinner = $(".custom-spinner");
-  
 
   function addRow() {
     // Variables
@@ -141,7 +140,7 @@ jQuery(document).ready(function ($) {
       processData: false,
       contentType: false,
       success: function (response) {
-        console.log(response)
+        console.log(response);
         $customSpinner.removeClass("d-flex").hide();
         if (response.success) {
           Swal.fire({

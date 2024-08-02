@@ -15,7 +15,7 @@ if ($session_id) :
         $payment_id = Payment::get_instance()->get_post_id_by_stripe_session($session_id);
         $invoice = carbon_get_post_meta($payment_id, 'invoice');
 
-        if(!$invoice){
+        if(!$invoice) {
             $invoice = Payment::get_instance()->generate_invoice($session_id);
         }
         $payment_post = get_post($payment_id);

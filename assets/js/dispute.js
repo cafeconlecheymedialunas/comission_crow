@@ -1,5 +1,4 @@
 jQuery(document).ready(function ($) {
-  
   var $customSpinner = $(".custom-spinner");
 
   $("#create-dispute").on("submit", function (e) {
@@ -45,11 +44,11 @@ jQuery(document).ready(function ($) {
     });
   });
 
-  $(document).on('click', '.delete-dispute-button', function (e) {
+  $(document).on("click", ".delete-dispute-button", function (e) {
     e.preventDefault();
 
-      var disputeId = $(this).data('dispute-id');
-      var nonce = $(this).data('nonce');
+    var disputeId = $(this).data("dispute-id");
+    var nonce = $(this).data("nonce");
 
     Swal.fire({
       title: "Are you sure?",
@@ -63,16 +62,16 @@ jQuery(document).ready(function ($) {
     }).then((result) => {
       if (result.isConfirmed) {
         $customSpinner.addClass("d-flex");
-        console.log(disputeId)
-        console.log(nonce)
+        console.log(disputeId);
+        console.log(nonce);
         $.ajax({
           type: "POST",
           url: ajax_object.ajax_url,
-          cache:false,
+          cache: false,
           data: {
             action: "delete_dispute",
             security: nonce,
-            dispute_id: disputeId
+            dispute_id: disputeId,
           },
           success: function (response) {
             console.log(response);
@@ -90,7 +89,7 @@ jQuery(document).ready(function ($) {
                 "Error!",
                 response.data.message ||
                   "There was an error deleting the dispute.",
-                "error"
+                "error",
               );
             }
           },
@@ -98,7 +97,7 @@ jQuery(document).ready(function ($) {
             Swal.fire(
               "Error!",
               "There was an error deleting the dispute. Please try again later.",
-              "error"
+              "error",
             );
           },
           complete: function () {
@@ -107,5 +106,5 @@ jQuery(document).ready(function ($) {
         });
       }
     });
-});
+  });
 });

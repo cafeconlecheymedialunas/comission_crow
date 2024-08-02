@@ -40,11 +40,17 @@
         <li>
             <a href="<?php echo esc_url($dasboard->get_role_url_link_dashboard_page('disputes')); ?>"><i class="fa-solid fa-scale-balanced"></i>Disputes</a>
         </li>
+        <?php if (in_array("commercial_agent", $current_user->roles)): ?>
+        <li>
+            <a href="<?php echo esc_url($dasboard->get_role_url_link_dashboard_page('deposit_list')); ?>"><i class="fa-solid fa-money-check-dollar"></i>Payouts</a>
+        </li>
+        <?php endif; ?>
+        <?php if (in_array("company", $current_user->roles)): ?>
         <li>
             <a href="<?php echo esc_url($dasboard->get_role_url_link_dashboard_page('payment_list')); ?>"><i class="fa-solid fa-money-check-dollar"></i>Payments</a>
         </li>
-       
-        <?php if (in_array("commercial_agent", $current_user->roles) ): ?>
+        <?php endif; ?>
+        <?php if (in_array("commercial_agent", $current_user->roles)): ?>
         <li>
             <a href="<?php echo esc_url($dasboard->get_role_url_link_dashboard_page('reviews')); ?>"><i class="fa fa-fw fa-star"></i>Reviews</a>
         </li>

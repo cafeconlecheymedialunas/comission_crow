@@ -43,8 +43,8 @@ $commission_requests = ProfileUser::get_instance()->get_commission_requests_for_
 
     </div>
     <input type="hidden" name="security" value="<?php echo wp_create_nonce(
-    "create_dispute_nonce"
-); ?>"/>
+        "create_dispute_nonce"
+    ); ?>"/>
     <input type="hidden" id="commission_request_id" name="commission_request_id">
      <div class="alert alert-danger general-errors mt-4" role="alert" style="display:none;">
      </div>

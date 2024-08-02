@@ -90,14 +90,14 @@ class ProfileUser
         $user = get_user_by("ID", $updated_user_id);
 
 
-        if(in_array("commercial_agent",$user->roles)){
+        if(in_array("commercial_agent", $user->roles)) {
 
             $post = ProfileUser::get_instance()->get_user_associated_post_type();
 
-            $post_data = array(
+            $post_data = [
                 'ID'         => $post->ID,
                 'post_title' => $first_name . " ".$last_name,
-            );
+            ];
             
             // Realizar la actualización
             wp_update_post($post_data);
@@ -108,6 +108,31 @@ class ProfileUser
     }
 
 
+    public function update_stripe_email()
+    {
+        // Verificar el nonce para seguridad
+        check_ajax_referer('update_stripe_email_nonce', 'security');
+    
+        // Obtener los datos del formulario
+        $stripe_email = sanitize_text_field($_POST['stripe_email']);
+        $commercial_agent_id = intval($_POST['commercial_agent_id']);
+    
+        $post = get_post($commercial_agent_id);
+        if(empty($post)) {
+            wp_send_json_error(['general' => 'Agent not found']);
+        }
+    
+        // Validar los datos
+        if (empty($stripe_email) || !is_email($stripe_email)) {
+            wp_send_json_error(['general' => 'Invalid email address.']);
+        }
+    
+        // Actualizar el email en los metadatos del agente comercial
+        carbon_set_post_meta($post->ID, 'stripe_email', $stripe_email);
+    
+        // Enviar respuesta de éxito
+        wp_send_json_success(['general' => 'Email updated successfully.']);
+    }
 
     public function get_commission_request_for_current_user($commission_request_id)
     {
@@ -246,14 +271,18 @@ class ProfileUser
     {
         $commission_requests = $this->get_commission_requests_for_user();
         
-        if (!$commission_requests) return []; 
+        if (!$commission_requests) {
+            return [];
+        }
 
         $commission_request_ids = [];
         foreach ($commission_requests as $commission_request) {
             $commission_request_ids[] = $commission_request->ID;
         }
 
-        if (empty($commission_request_ids)) return []; 
+        if (empty($commission_request_ids)) {
+            return [];
+        }
         
         $commission_request_query = new WP_Query([
             'post_type' => 'payment',

@@ -56,7 +56,7 @@
                                 
                                 $last_sender_history = $history_status_end["changed_by"];
 
-                                $last_sender_history_user = get_user_by("ID",$last_sender_history);
+                                $last_sender_history_user = get_user_by("ID", $last_sender_history);
 
                                 $status_class = '';
                                 $status_text = '';

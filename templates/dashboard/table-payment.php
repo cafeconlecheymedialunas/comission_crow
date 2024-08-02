@@ -32,7 +32,7 @@
 
                 $status = carbon_get_post_meta($payment->ID, 'status');
                
-                var_dump($status);
+             
 
                 $total_cart_commission_request = carbon_get_post_meta($commission_request->ID, 'total_cart');
                 $total_agent_commission_request = carbon_get_post_meta($commission_request->ID, 'total_agent');
@@ -93,10 +93,10 @@
                     <td><?php echo esc_html("$" . number_format($total_agent_commission_request, 2, ",", "")); ?></td>
                     <td>
                         <span class="badge <?php echo $status_class; ?>"><?php echo esc_html($status_text); ?></span>
-                        <?php if ($status_dispute){
+                        <?php if ($status_dispute) {
                             echo $dispute_badge;
                         }?>
-                        <?php if ($status_payment){
+                        <?php if ($status_payment) {
                             echo $dispute_payment;
                         }?>
                    

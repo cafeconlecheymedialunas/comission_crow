@@ -202,7 +202,8 @@ class Commissionrequest
     }
 
 
-    public function is_paid($commission_request_id){
+    public function is_paid($commission_request_id)
+    {
         $query = new WP_Query([
             'post_type' => 'payment',
             'meta_query' => [
@@ -213,13 +214,16 @@ class Commissionrequest
                 ]
             ]
         ]);
-        if(empty($query->posts)) return;
+        if(empty($query->posts)) {
+            return;
+        }
 
         return $query->posts;
 
     }
 
-    public function has_open_dispute($commission_request_id){
+    public function has_open_dispute($commission_request_id)
+    {
         $query = new WP_Query([
             'post_type' => 'dispute',
             'meta_query' => [
@@ -235,7 +239,9 @@ class Commissionrequest
                 ]
             ]
         ]);
-        if(empty($query->posts)) return;
+        if(empty($query->posts)) {
+            return;
+        }
 
         return $query->posts;
 
