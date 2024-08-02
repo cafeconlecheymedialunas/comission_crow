@@ -107,7 +107,7 @@ class Dispute
         }
     
         // Set post meta
-        $status_history = add_item_to_status_history($post_id);
+        $status_history = Helper::add_item_to_status_history($post_id);
         carbon_set_post_meta($post_id, 'commission_request_id', $commission_request_id);
         carbon_set_post_meta($post_id, 'description', $description);
         carbon_set_post_meta($post_id, 'subject', $subject);
@@ -117,7 +117,7 @@ class Dispute
 
 
         // Updatge Commission Request to in_DISPUTE
-        $status_commision_request_history = add_item_to_status_history($commission_request_id, "in_dispute");
+        $status_commision_request_history = Helper::add_item_to_status_history($commission_request_id, "in_dispute");
         carbon_set_post_meta($commission_request_id, 'status_history', $status_commision_request_history);
         carbon_set_post_meta($commission_request_id, 'status', "in_dispute");
 
@@ -131,45 +131,51 @@ class Dispute
 
 
     public function delete_dispute()
-    {
-      
-    
-        // Verificar el nonce para la seguridad
-        check_ajax_referer('delete_dispute_nonce', 'security');
+{
+    // Verificar el nonce para la seguridad
+    check_ajax_referer('delete_dispute_nonce', 'security');
 
-        $dispute_id = intval($_POST['dispute_id']);
+    $dispute_id = intval($_POST['dispute_id']);
 
-        if (!$dispute_id) {
-            wp_send_json_error(['message' => 'You need a valid ID.']);
-        }
-        
-
-
-        $dispute = get_post($dispute_id);
-
-
-  
-
-        if(!$dispute) {
-            wp_send_json_error(['message' => 'Dispute Not found']);
-        }
-        
-        $initiating_user_id = carbon_get_post_meta($dispute->ID, "initiating_user");
-
-       
-
-
-        if(get_current_user_id() != $initiating_user_id) {
-            wp_send_json_error(['message' => 'This dispute can only be deleted by the user who created it.']);
-        }
-
-        if (wp_delete_post($dispute_id, true)) {
-            wp_send_json_success(['message' => 'Dispute Succesfully Deleted!']);
-        } else {
-            wp_send_json_error(['message' => 'Error deleting the post. Try again later.']);
-        }
-        wp_die();
+    if (!$dispute_id) {
+        wp_send_json_error(['message' => 'You need a valid ID.']);
     }
+
+    // Imprimir el ID para depuración
+    error_log('Dispute ID: ' . $dispute_id);
+
+    // Verificar si la disputa existe usando get_post
+    $dispute = get_post($dispute_id);
+
+    if (!$dispute || $dispute->post_type !== 'dispute') {
+        wp_send_json_error(['message' => 'Dispute not found']);
+    }
+
+    $commission_request_id = carbon_get_post_meta($dispute_id, 'commission_request_id');
+
+    if (!$commission_request_id) {
+        wp_send_json_error(['message' => 'Post not found.']);
+    }
+
+    $initiating_user_id = carbon_get_post_meta($dispute_id, 'initiating_user');
+
+    if (get_current_user_id() != $initiating_user_id) {
+        wp_send_json_error(['message' => 'This dispute can only be deleted by the user who created it.']);
+    }
+
+    // Actualizar el estado de la solicitud de comisión a 'pending'
+    carbon_set_post_meta($commission_request_id, 'status', 'pending');
+
+    if (wp_delete_post($dispute_id, true)) {
+        wp_send_json_success(['message' => 'Dispute successfully deleted!']);
+    } else {
+        wp_send_json_error(['message' => 'Error deleting the post. Try again later.']);
+    }
+
+    wp_die();
+}
+
+    
 
 
 }

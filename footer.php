@@ -67,5 +67,7 @@ if (locate_template($spinner_template)) {
     include locate_template($spinner_template);
 }
 ?>
+
+
 </body>
 </html>

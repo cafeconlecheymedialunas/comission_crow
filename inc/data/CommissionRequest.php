@@ -121,7 +121,7 @@ class Commissionrequest
         }
     
         $total_agent = ($commission * $total) / 100;
-        $status_history = add_item_to_status_history($contract_id);
+        $status_history = Helper::add_item_to_status_history($contract_id);
         $sku = carbon_get_post_meta($contract_id, "sku");
         $contract_title_key = $sku ?? $contract_id;
         
@@ -199,6 +199,46 @@ class Commissionrequest
             wp_send_json_error(['message' => 'Error deleting the post. Try again later.']);
         }
         wp_die();
+    }
+
+
+    public function is_paid($commission_request_id){
+        $query = new WP_Query([
+            'post_type' => 'payment',
+            'meta_query' => [
+                [
+                    'key' => 'commission_request_id',
+                    'value' => $commission_request_id,
+                    'compare' => '=', // Compare exact value
+                ]
+            ]
+        ]);
+        if(empty($query->posts)) return;
+
+        return $query->posts;
+
+    }
+
+    public function has_open_dispute($commission_request_id){
+        $query = new WP_Query([
+            'post_type' => 'dispute',
+            'meta_query' => [
+                [
+                    'key' => 'commission_request_id',
+                    'value' => $commission_request_id,
+                    'compare' => '=', // Compare exact value
+                ],
+                [
+                    'key' => 'status',
+                    'value' => "pending",
+                    'compare' => '=', // Compare exact value
+                ]
+            ]
+        ]);
+        if(empty($query->posts)) return;
+
+        return $query->posts;
+
     }
     
     /* Cron para chequear la finalizacion de un contrato

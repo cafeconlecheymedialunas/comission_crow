@@ -1,14 +1,9 @@
 <?php
 
-$commercial_agent = CommercialAgent::get_instance();
-$company_post = $commercial_agent->get_commercial_agent();
-
-$contracts = $commercial_agent->get_contracts();
+$commission_requests = ProfileUser::get_instance()->get_commission_requests_for_user();
 
 
-
-$current_user = wp_get_current_user();
-
+$contracts = ProfileUser::get_instance()->get_contracts(["accepted","finishing"]);
 ?>
 <div class="card mb-4 flex-row d-flex justify-content-between align-items-center">
     <h2 class="mb-0 d-inline"><?php echo __("Sended commission requests"); ?></h2>

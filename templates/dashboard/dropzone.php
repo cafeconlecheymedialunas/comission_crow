@@ -27,6 +27,7 @@
 }
 
 .preview-container {
+  width:100%;
   margin-top: 10px;
 }
 
@@ -105,7 +106,7 @@
     <div id="wrapper">
         <div class="file_drag_area">
             <span><strong>Add Images</strong> to give more information or reference</span>
-            <div id="preview" class="preview-container row mt-4"></div>
+            <div id="preview" class="preview-container justify-content-start row mt-4"></div>
             <div class="loading-bar" id="loadingBar">
                 <div class="progress-bar" id="progressBar"></div>
             </div>

@@ -1,49 +1,5 @@
 jQuery(document).ready(function ($) {
-  // Initialize components for each file type
-  function displayFormErrors(form, data) {
-    // Clear previous error messages
-    $(form).find(".error-message").remove();
-
-    // Iterate over the errors and display them next to the respective fields
-    $.each(data.fields, function (fieldName, errorMessages) {
-      var field = $(form).find("#" + fieldName);
-      if (field.length) {
-        // Remove existing error messages for the field
-        field.next(".error-message").remove();
-
-        // Display only the first error message
-        if (errorMessages.length > 0) {
-          var errorElement = $(
-            '<div class="error-message text-sm text-danger"></div>',
-          ).text(errorMessages[0]);
-          field.after(errorElement);
-        }
-      }
-    });
-
-    if (data.general && data.general.length > 0) {
-      var generalErrorsElement = $(".general-errors");
-      if (generalErrorsElement.length) {
-        // Clear previous general errors
-        generalErrorsElement.empty();
-
-        // Append all general error messages
-        const errors = [];
-        $.each(data.general, function (index, message) {
-          var errorElement = $(
-            '<div class="error-message text-sm text-danger"></div>',
-          ).text(message);
-          errors.push(errorElement);
-        });
-        generalErrorsElement.html(errors);
-      }
-    }
-  }
-
-  /* let table = new DataTable('#opportunity-table', {
-    responsive: true
-});*/
-
+  
   $(".add-new-url").click(function (e) {
     e.preventDefault();
 
@@ -92,8 +48,8 @@ jQuery(document).ready(function ($) {
         console.log(response);
         if (response.success) {
           Swal.fire({
-            title: "Profile updated successfully!",
-            text: "Redirecting to the profile page.",
+            title: "Opportunity saved successfully!",
+  
             icon: "success",
             showConfirmButton: false,
             timer: 2000,

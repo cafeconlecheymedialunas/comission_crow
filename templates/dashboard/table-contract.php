@@ -7,7 +7,7 @@
                             <th scope="col">Commission</th>
                             <th scope="col">Minimal Price</th>
                             <th scope="col">Status</th>
-                            <th scope="col">Origin</th>
+                            <th scope="col">Last Update</th>
                             <th scope="col">Date</th>
                             <th scope="col"></th>
                             <th scope="col"></th>
@@ -33,7 +33,7 @@
                                 $opportunity = get_post($opportunity);
 
                                 $date = carbon_get_post_meta($contract->ID, 'date');
-                                $human_date = $admin->get_human_time_diff($date);
+                                $human_date = Helper::get_human_time_diff($date);
                                 $commission = carbon_get_post_meta($contract->ID, 'commission');
                                 $minimal_price = carbon_get_post_meta($contract->ID, 'minimal_price');
                                 $status = carbon_get_post_meta($contract->ID, 'status');
@@ -54,7 +54,9 @@
                                 
                                 $history_status_end = end($history_status);
                                 
-                                $last_sender_counterparty = $history_status_end["changed_by"];
+                                $last_sender_history = $history_status_end["changed_by"];
+
+                                $last_sender_history_user = get_user_by("ID",$last_sender_history);
 
                                 $status_class = '';
                                 $status_text = '';
@@ -75,7 +77,7 @@
                                     case 'finishing':
                                         $status_class = 'text-bg-warning';
                                         $finalization_date = carbon_get_post_meta($contract->ID, 'finalization_date');
-                                        $human_finalization_date = $admin->get_human_time_diff($finalization_date);
+                                        $human_finalization_date = Helper::get_human_time_diff($finalization_date);
                                         $status_text = "Finishing in  $human_finalization_date";
                                         break;
                                     case 'finished':
@@ -83,7 +85,7 @@
                                         $status_text = "Finished";
                                         break;
                                 }
-                               
+                                $last_update_text = $last_sender_history_user->first_name ." - ". Helper::get_human_time_diff($history_status_end["date_status"]). " ago";
                             
                                 ?>
                                 
@@ -96,11 +98,10 @@
                                         <td><?php echo esc_html($commission); ?> %</td>
                                         <td><?php echo esc_html("$".$minimal_price); ?></td>
                                         <td><span class="badge <?php echo $status_class; ?>"><?php echo esc_html($status_text); ?></span></td>
-                                        <td><?php echo esc_html($current_user->ID === $last_sender_counterparty ? "Sent" : "Received"); ?></td>
-                                        <td><?php echo esc_html($human_date . " ago"); ?></td>
+                                        <td><?php echo ($last_sender_history_user && $history_status_end["date_status"])?$last_update_text:""; ?></td>
                                         <td>
                                             <ul class="p-0 mb-0 d-flex justify-content-center align-items-center">
-                                                <?php if ($status === "pending" && $last_sender_counterparty !== $current_user->ID) : ?>
+                                                <?php if ($status === "pending" && $last_sender_history !== $current_user->ID) : ?>
                                                 <li class="list-inline-item">
                                                     <form class="update-status-contract-form">
                                                         <input type="hidden" name="security" value="<?php echo wp_create_nonce("update-status-contract-nonce"); ?>"/>

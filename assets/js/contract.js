@@ -1,26 +1,10 @@
 jQuery(document).ready(function ($) {
   var $customSpinner = $(".custom-spinner");
 
-  $("#save-contract").validate({
-    // Specify client-side validation rules
-    rules: {
-      opportunity: {
-        required: true,
-      },
-      commission: {
-        required: true,
-        number: true,
-      },
-      minimal_price: {
-        required: true,
-        number: true,
-      },
-    },
-    // Specify client-side validation error messages
-    messages: {},
-    // Handler to submit the form when valid
-    submitHandler: function (form, event) {
-      event.preventDefault(); // Prevent the default form submission
+  $("#save-contract").on("submit", function (e) {
+   
+      event.preventDefault(); 
+      const form = this
       var formData = new FormData(form);
       formData.append("action", "create_contract");
 
@@ -31,6 +15,7 @@ jQuery(document).ready(function ($) {
         data: formData,
         processData: false,
         contentType: false,
+        cache:false,
         success: function (response) {
           if (response.success) {
             console.log(response);
@@ -50,7 +35,8 @@ jQuery(document).ready(function ($) {
             });
           } else {
             console.log(response);
-            //$("#update-user-data").validate().showErrors();
+            console.log(response)
+            displayFormErrors(form, response.data);
           }
         },
         error: function (error) {
@@ -61,7 +47,7 @@ jQuery(document).ready(function ($) {
           $customSpinner.removeClass("d-flex");
         },
       });
-    },
+    
   });
 
   $(".update-status-contract-form").on("submit", function (e) {

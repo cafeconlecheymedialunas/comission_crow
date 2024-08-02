@@ -89,7 +89,7 @@ class Auth
                     </div>
                 <?php endif; ?>
             </div>
-            <span class="general-errors"></span>
+            <div class="alert alert-danger general-errors" role="alert" style="display:none;"></div>
             <p>
                 <button type="submit"><?php _e('Save'); ?></button>
             </p>
@@ -119,7 +119,7 @@ class Auth
                     <label for="remember_me"><?php _e('Remember me'); ?></label>
                 </p>
                 <p>
-                    <span class="general-errors"></span>
+                    <div class="alert alert-danger general-errors" role="alert" style="display:none;"></div>
                     <input type="hidden" name="security" value="<?php echo wp_create_nonce('login-nonce'); ?>"/>
                     <button id="login_submit" type="submit"><?php _e('Login'); ?></button>
                 </p>
@@ -145,7 +145,7 @@ class Auth
                     <input name="user_email" placeholder="Email" id="user_email" class="form-control" type="email"/>
                 </p>
                 <p>
-                    <span class="general-errors"></span>
+                    <div class="alert alert-danger general-errors" role="alert" style="display:none;"></div>
                     <input type="hidden" name="security" value="<?php echo wp_create_nonce('reset-nonce'); ?>"/>
                     <button type="submit"><?php _e('Save'); ?></button>
                 </p>
@@ -171,7 +171,7 @@ class Auth
                     <input type="hidden" name="reset_key" value="<?php echo esc_attr($_GET['key']); ?>"/>
                     <input type="hidden" name="reset_login" value="<?php echo esc_attr($_GET['login']); ?>"/>
                     <input type="hidden" name="security" value="<?php echo wp_create_nonce('new-password-nonce'); ?>"/>
-                    <span class="general-errors"></span>
+                    <div class="alert alert-danger general-errors" role="alert" style="display:none;"></div>
                     <button type="submit"><?php _e('Save'); ?></button>
                 </p>
             </fieldset>
@@ -273,6 +273,7 @@ class Auth
             'first_name' => $first_name,
             'last_name' => $last_name,
             'role' => $role,
+            "display_name" => $first_name ." ".$last_name
         ]);
     
         if (is_wp_error($user_id)) {

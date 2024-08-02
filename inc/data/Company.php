@@ -112,7 +112,17 @@ class Company extends Crud
         $company_id = sanitize_text_field($_POST["company_id"]);
     
         $company_logo = $_FILES["company_logo"];
+    
+       
+
         $company_name = sanitize_text_field($_POST["company_name"]);
+        
+        $company_street = sanitize_text_field($_POST["company_street"]);
+        $company_number = sanitize_text_field($_POST["company_number"]);
+        $company_city = sanitize_text_field($_POST["company_city"]);
+        $company_postalcode = sanitize_text_field($_POST["company_postalcode"]);
+        $company_state = sanitize_text_field($_POST["company_state"]);
+
         $description = wp_kses_post($_POST['description']);
         $website_url = esc_url_raw($_POST["website_url"]);
         $facebook_url = esc_url_raw($_POST["facebook_url"]);
@@ -156,6 +166,11 @@ class Company extends Crud
             'tiktok_url' => $tiktok_url,
             'youtube_url' => $youtube_url,
             'company_name' => $company_name,
+            'company_street' => $company_street,
+            'company_number' => $company_number,
+            'company_city' => $company_city,
+            'company_state' => $company_state,
+            'company_postalcode' => $company_postalcode,
             'employees_number' => $employees_number
         ];
     
@@ -168,6 +183,12 @@ class Company extends Crud
             'tiktok_url' => 'TikTok URL',
             'youtube_url' => 'YouTube URL',
             'company_name' => 'Company Name',
+          
+            'company_street' => 'Street Address',
+            'company_number' => 'Number Address',
+            'company_city' => 'City',
+            'company_state' => 'State',
+            'company_postalcode' => 'Post code',
             'employees_number' => 'Number of Employees'
         ];
     

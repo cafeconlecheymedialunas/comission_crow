@@ -1,6 +1,6 @@
 <?php
 // Incluye el archivo de Stripe PHP SDK
-\Stripe\Stripe::setApiKey(STRIPE_SECRET_KEY);
+\Stripe\Stripe::setApiKey(carbon_get_theme_option("stripe_secret_key"));
 
 $session_id = isset($_GET['session_id']) ? $_GET['session_id'] : '';
 if ($session_id) {
@@ -18,6 +18,7 @@ if ($session_id) {
 
         // Opcional: Actualizar el estado del pago en tu base de datos
         $payment_id = Payment::get_instance()->get_post_id_by_stripe_session($session_id);
+        
         if ($payment_id) {
             carbon_set_post_meta($payment_id, 'status', 'canceled');
         }

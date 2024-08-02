@@ -126,7 +126,7 @@ class Opportunity extends Crud
             }
         }
 
-        $company = ProfileUser::get_instance()->get_user_associated_post_type();
+        $company = ProfileUser::get_instance()->sget_user_associated_post_type();
 
         
         if(is_wp_error($company) || empty($company->ID)) {

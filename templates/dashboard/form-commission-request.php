@@ -19,11 +19,13 @@
                     </option>
                   <?php endforeach; ?>
                 </select>
+                <div class="error-message"></div>
               </div>
             <?php endif; ?>
             <div class="col-md-6">
               <label for="text-ids" class="form-label">General Invoice:</label>
               <input type="file" id="text-ids" name="general_invoice" class="form-control rounded-2" accept=".pdf, .txt">
+              <div class="error-message"></div>
             </div>
           </div>
 
@@ -66,6 +68,7 @@
                       </tbody>
                     </table>
                   </div>
+                  <div class="error-message"></div>
                 </div>
                 <div class="text-end pt-2">
                   <a class="addRow btn btn-secondary d-inline rounded-2" href="#">Add Another Row</a>

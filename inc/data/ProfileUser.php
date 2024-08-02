@@ -14,14 +14,7 @@ class ProfileUser
         return self::$instance;
     }
 
-    public function is_company()
-    {
 
-    }
-    public function is_commercial_agent()
-    {
-
-    }
 
     public function update_user_data()
     {
@@ -81,6 +74,7 @@ class ProfileUser
             'first_name' => $first_name,
             'last_name' => $last_name,
             'user_email' => $user_email,
+            "display_name" => $first_name . " ".$last_name
         ];
 
         if (!empty($password)) {
@@ -95,15 +89,33 @@ class ProfileUser
 
         $user = get_user_by("ID", $updated_user_id);
 
+
+        if(in_array("commercial_agent",$user->roles)){
+
+            $post = ProfileUser::get_instance()->get_user_associated_post_type();
+
+            $post_data = array(
+                'ID'         => $post->ID,
+                'post_title' => $first_name . " ".$last_name,
+            );
+            
+            // Realizar la actualización
+            wp_update_post($post_data);
+        }
+
         wp_send_json_success($user);
 
     }
+
+
 
     public function get_commission_request_for_current_user($commission_request_id)
     {
 
         // Obtener el tipo de post asociado al usuario actual
         $post_current_user = $this->get_user_associated_post_type();
+
+        
 
         if (!$post_current_user) {
             return false;
@@ -130,11 +142,63 @@ class ProfileUser
         return ($post_user_id != $post_current_user->ID) ? false : $commission_request;
     }
 
+    public function get_contracts($statuses = [], $type = "")
+    {
+        $post_current_user = $this->get_user_associated_post_type();
+        $args = [
+            'post_type' => 'contract',
+            'meta_query' => [
+                [
+                    'key' => $post_current_user->post_type,
+                    'value' => $post_current_user->ID,
+                    'compare' => '='
+                ]
+            ],
+            'posts_per_page' => -1,
+        ];
+
+        // Verificar si $statuses es un array y no está vacío
+        if (is_array($statuses) && !empty($statuses)) {
+            $args['meta_query'][] = [
+                'key' => 'status',
+                'value' => $statuses,
+                'compare' => 'IN' // Esto funcionará como un OR en meta_query
+            ];
+        }
+
+        $query = new WP_Query($args);
+
+        // Si no se especifica el tipo, devolver todos los posts encontrados
+        if (!$type) {
+            return $query->posts;
+        }
+
+        $contracts = [];
+        $current_user = wp_get_current_user();
+
+        foreach ($query->posts as $contract) {
+            $initiating_user = carbon_get_post_meta($contract->ID, 'initiating_user');
+
+            if (empty($initiating_user)) {
+                continue;
+            }
+            
+            if ($type == "requested" && $current_user->ID === $initiating_user) {
+                $contracts[] = $contract;
+            } elseif ($type == "received" && $current_user->ID !== $initiating_user) {
+                $contracts[] = $contract;
+            }
+        }
+
+        return $contracts;
+    }
+
     public function get_commission_requests_for_user()
     {
 
         // Obtener el tipo de post asociado al usuario actual
         $post = $this->get_user_associated_post_type();
+        
         if (!$post) {
             return []; // No hay post asociado al usuario
         }
@@ -177,6 +241,34 @@ class ProfileUser
         return $commission_request_query->posts;
     }
 
+
+    public function get_payment_for_commission_request_user()
+    {
+        $commission_requests = $this->get_commission_requests_for_user();
+        
+        if (!$commission_requests) return []; 
+
+        $commission_request_ids = [];
+        foreach ($commission_requests as $commission_request) {
+            $commission_request_ids[] = $commission_request->ID;
+        }
+
+        if (empty($commission_request_ids)) return []; 
+        
+        $commission_request_query = new WP_Query([
+            'post_type' => 'payment',
+            'meta_query' => [
+                [
+                    'key' => 'commission_request_id',
+                    'value' => $commission_request_ids,
+                    'compare' => 'IN',
+                ],
+            ],
+        ]);
+        return $commission_request_query->posts;
+    }
+    
+
     public function get_disputes_for_user()
     {
         $commission_requests = $this->get_commission_requests_for_user();
@@ -197,7 +289,56 @@ class ProfileUser
             ],
         ]);
 
-        // Devolver los resultados
+        return $dispute_query->posts;
+    }
+
+    public function get_open_disputes_for_user()
+    {
+        $commission_requests = $this->get_commission_requests_for_user();
+        // Consulta para obtener las disputas asociadas a los contratos
+
+        $commission_request_ids = [];
+        foreach ($commission_requests as $commission_request) {
+            $commission_request_ids[] = $commission_request->ID;
+        }
+        $dispute_query = new WP_Query([
+            'post_type' => 'dispute',
+            'meta_query' => [
+                [
+                    'key' => 'commission_request_id', // Asegúrate de que el meta_key sea correcto
+                    'value' => $commission_request_ids,
+                    'compare' => 'IN',
+                ],
+                [
+                    'key' => 'status', // Asegúrate de que el meta_key sea correcto
+                    'value' => "pending",
+                    'compare' => '=',
+                ],
+            ],
+        ]);
+
+        return $dispute_query->posts;
+    }
+
+    public function has_open_dispute($commission_request_id)
+    {
+       
+        $dispute_query = new WP_Query([
+            'post_type' => 'dispute',
+            'meta_query' => [
+                [
+                    'key' => 'commission_request_id', // Asegúrate de que el meta_key sea correcto
+                    'value' => $commission_request_id,
+                    'compare' => '=',
+                ],
+                [
+                    'key' => 'status', // Asegúrate de que el meta_key sea correcto
+                    'value' => "pending",
+                    'compare' => '=',
+                ],
+            ],
+        ]);
+
         return $dispute_query->posts;
     }
 
@@ -217,6 +358,11 @@ class ProfileUser
                     'key' => 'commission_request_id', // Asegúrate de que el meta_key sea correcto
                     'value' => $commission_request_ids,
                     'compare' => 'IN',
+                ],
+                [
+                    'key' => 'user', // Asegúrate de que el meta_key sea correcto
+                    'value' => get_current_user_id(),
+                    'compare' => '=',
                 ],
             ],
         ]);

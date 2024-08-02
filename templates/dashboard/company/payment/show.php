@@ -6,14 +6,6 @@ $session_id = isset($_GET['session_id']) ? $_GET['session_id'] : '';
 if ($session_id) {
     try {
         $session = \Stripe\Checkout\Session::retrieve($session_id);
-
-     
-       
-        $invoice_id = $session->invoice;
-        if ($invoice_id) {
-            $invoice = \Stripe\Invoice::retrieve($invoice_id);
-            var_dump($invoice);
-        }
         
         // Recuperar los detalles del pago
         $payment_id = Payment::get_instance()->get_post_id_by_stripe_session($session_id);

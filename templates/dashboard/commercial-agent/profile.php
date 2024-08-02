@@ -57,11 +57,13 @@ $selected_seller_type = wp_get_post_terms($commercial_agent_post->ID, 'seller_ty
                     <div class="col-md-12">
                         <label for="profile_image" class="form-label">Profile Image</label>
                         <input type="file" id="profile_image" class="form-control" name="profile_image">
+                        <div class="error-message"></div>
                     </div>
                     <div class="col-md-12">
                         <label for="description" class="form-label">Description</label>
                         <div class="editor-container" data-target="description"></div>
                         <input type="hidden" id="description" name="description" value="<?php echo isset($commercial_agent_post) ? $commercial_agent_post->post_content: ""; ?>">
+                        <div class="error-message"></div>
                     </div>
                     
                     <?php if($language_terms):?>
@@ -77,6 +79,7 @@ $selected_seller_type = wp_get_post_terms($commercial_agent_post->ID, 'seller_ty
                                 </option>
                             <?php endforeach;?>
                         </select>
+                        <div class="error-message"></div>
                     </div>
                     <?php endif;?>
                     <?php if($country_terms):?>
@@ -92,6 +95,7 @@ $selected_seller_type = wp_get_post_terms($commercial_agent_post->ID, 'seller_ty
                                     </option>
                                 <?php endforeach;?>
                             </select>
+                            <div class="error-message"></div>
                         </div>
                     <?php endif;?>
                     <?php if($skill_terms):?>
@@ -107,6 +111,7 @@ $selected_seller_type = wp_get_post_terms($commercial_agent_post->ID, 'seller_ty
                                 </option>
                             <?php endforeach;?>
                         </select>
+                        <div class="error-message"></div>
                     </div>
                     <?php endif;?>
                     <?php if($industry_terms):?>
@@ -122,6 +127,7 @@ $selected_seller_type = wp_get_post_terms($commercial_agent_post->ID, 'seller_ty
                                     </option>
                                 <?php endforeach;?>
                             </select>
+                            <div class="error-message"></div>
                         </div>
                     <?php endif;?>
                     <?php if($seller_type_terms):?>
@@ -137,6 +143,7 @@ $selected_seller_type = wp_get_post_terms($commercial_agent_post->ID, 'seller_ty
                                     </option>
                                 <?php endforeach;?>
                             </select>
+                            <div class="error-message"></div>
                         </div>
                     <?php endif;?>
                     <?php if($selling_method_terms):?>
@@ -152,22 +159,24 @@ $selected_seller_type = wp_get_post_terms($commercial_agent_post->ID, 'seller_ty
                                     </option>
                                 <?php endforeach;?>
                             </select>
+                            <div class="error-message"></div>
                         </div>
                     <?php endif;?>
                     <div class="col-md-6">
                         <label for="years_of_experience">Years of Experience</label>
                         <input type="text" name="years_of_experience" class="form-control" value="<?php echo esc_attr($selected_years_of_experience); ?>" placeholder="Years of Experience">
+                        <div class="error-message"></div>
                     </div>
                 </div>
                 <input type="hidden" name="security" value="<?php echo wp_create_nonce('update-profile-nonce'); ?>"/>
                 <input type="hidden" name="commercial_agent_id" value="<?php echo $commercial_agent_post->ID;?>">
-                <span class="general-errors"></span>
+                <div class="alert alert-danger general-errors" role="alert" style="display:none;"></div>
                 <div class="col-md-12">
                     <button type="submit" class="btn btn-primary">Update Profile</button>
                 </div>
             </form>
             <div id="profile-update-message"></div>
-            </div>
+        </div>
     </div>
     
     <div class="col-md-4">

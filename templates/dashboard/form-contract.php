@@ -45,7 +45,7 @@ $opportunities = $opportunities_query->posts;
            <?php if(!$company_post &&  $companies): ?>
                <div class="col-md-6">
                    <label for="company" class="form-label">Company:</label>
-                   <select name="company[]" class="form-select">
+                   <select name="company[]" id="company" class="form-select">
                        <option value="">Select a Company</option>
                        <?php foreach ($companies as $company): ?>
                            <option value="<?php echo esc_attr($company->ID); ?>">
@@ -53,13 +53,14 @@ $opportunities = $opportunities_query->posts;
                            </option>
                        <?php endforeach; ?>
                    </select>
+                   <div class="error-message"></div>
                </div>
            <?php endif; ?>
    
            <?php if($company_post && $commercial_agents): ?>
                <div class="col-md-6">
                    <label for="commercial_agent" class="form-label">Commercial Agent:</label>
-                   <select name="commercial_agent[]" class="form-select">
+                   <select name="commercial_agent[]" id="commercial_agent" class="form-select">
                        <option value="">Select a Commercial Agent</option>
                        <?php foreach ($commercial_agents as $agent): ?>
                            <option value="<?php echo esc_attr($agent->ID); ?>">
@@ -67,13 +68,14 @@ $opportunities = $opportunities_query->posts;
                            </option>
                        <?php endforeach; ?>
                    </select>
+                   <div class="error-message"></div>
                </div>
            <?php endif; ?>
    
            <?php if($opportunities): ?>
                <div class="col-md-6">
                    <label for="opportunity" class="form-label">Opportunity:</label>
-                   <select name="opportunity[]" class="form-select">
+                   <select name="opportunity[]" id="opportunity" class="form-select">
                        <option value="">Select an Opportunity</option>
                        <?php foreach ($opportunities as $opportunity): ?>
                            <option value="<?php echo esc_attr($opportunity->ID); ?>">
@@ -81,21 +83,25 @@ $opportunities = $opportunities_query->posts;
                            </option>
                        <?php endforeach; ?>
                    </select>
+                   <div class="error-message"></div>
                </div>
            <?php endif; ?>
            <div class="col-md-12">
                <label for="content" class="form-label">Explains the details of the proposal</label>
-               <div class="editor-container" data-target="content"></div>
+               <div class="editor-container" id="content" data-target="content"></div>
                <input type="hidden" id="content" name="content">
+               <div class="error-message"></div>
            </div>
            <div class="col-md-6">
                <label for="minimal_price" class="form-label">Minimal Price:</label>
-               <input type="text" name="minimal_price" class="form-control" placeholder="Minimal Price">
+               <input type="text" name="minimal_price" id="minimal_price" class="form-control" placeholder="Minimal Price">
+               <div class="error-message"></div>
            </div>
    
            <div class="col-md-6">
                <label for="commission" class="form-label">Commission:</label>
-               <input type="text" name="commission" class="form-control" placeholder="Commission">
+               <input type="text" name="commission" id="commission" class="form-control" placeholder="Commission">
+               <div class="error-message"></div>
            </div>
        </div>
    

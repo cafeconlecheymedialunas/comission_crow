@@ -22,26 +22,26 @@ get_header("login");
 <div class="auth-page">
     <div class="container">
         <div class="row align-items-center justify-content-center">
-            <div class="col-md-8">
+            <div class="col-lg-8">
                 <h2 class="auth-title">Welcome to <?php echo get_bloginfo("name"); ?></h2>
                 <h3 class="auth-description"><?php echo get_bloginfo("description"); ?></h3>
             </div>
-            <div class="col-md-4">
+            <div class="col-lg-4">
                 <div class="form-wrap shadow-sm bg-white min-vh-100">
                     
                     <?php
                     the_custom_logo();
-// Mostrar formularios según el parámetro 'action' en la URL
-if (isset($_GET['action']) && $_GET['action'] == 'register') {
-    echo do_shortcode('[register_form]');
-} elseif (isset($_GET['action']) && $_GET['action'] == 'password_reset') {
-    echo do_shortcode('[password_reset_form]');
-} elseif (isset($_GET['action']) && $_GET['action'] == 'new_password') {
-    echo do_shortcode('[new_password_form]');
-} else {
-    echo do_shortcode('[login_form]');
-}
-?>
+
+                    if (isset($_GET['action']) && $_GET['action'] == 'register') {
+                        echo do_shortcode('[register_form]');
+                    } elseif (isset($_GET['action']) && $_GET['action'] == 'password_reset') {
+                        echo do_shortcode('[password_reset_form]');
+                    } elseif (isset($_GET['action']) && $_GET['action'] == 'new_password') {
+                        echo do_shortcode('[new_password_form]');
+                    } else {
+                        echo do_shortcode('[login_form]');
+                    }
+                    ?>
                 </div>
             </div>
         </div>

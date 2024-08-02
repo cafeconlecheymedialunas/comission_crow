@@ -14,16 +14,8 @@ class Admin
 
         add_action('init', [$this, 'create_role_company']);
         add_action('init', [$this, 'create_role_commercial_agent']);
-
-        add_action('carbon_fields_register_fields', [$this, 'register_opportunity_fields']);
-        add_action('carbon_fields_register_fields', [$this, 'register_commercial_agent_fields']);
-        add_action('carbon_fields_register_fields', [$this, 'register_company_fields']);
-        add_action('carbon_fields_register_fields', [$this, 'register_contract_fields']);
-        add_action('carbon_fields_register_fields', [$this, 'register_review_fields']);
-        add_action('carbon_fields_register_fields', [$this, 'register_payment_fields']);
-        add_action('carbon_fields_register_fields', [$this, 'register_dispute_fields']);
-        add_action('carbon_fields_register_fields', [$this, 'register_commission_request_fields']);
-        add_action('carbon_fields_register_fields', [$this, 'register_payment_fields']);
+        $containerCustomFields = ContainerCustomFields::get_instance();
+        add_action( 'carbon_fields_register_fields', [$containerCustomFields,'register_fields'] );
         add_filter('use_block_editor_for_post_type', [$this,'disable_block_editor_for_post_type'], 10, 2);
     
     }
@@ -33,6 +25,7 @@ class Admin
     {
         $CustomPostTypes = CustomPostType::get_instance();
         $CustomTaxonomy = CustomTaxonomy::get_instance();
+        
        
         //Cpt
         $CustomPostTypes->register('opportunity', 'Opportunity', 'Opportunities', ['menu_icon' => 'dashicons-search']);
@@ -43,7 +36,7 @@ class Admin
         $CustomPostTypes->register('payment', 'Payment', 'Payments', ['menu_icon' => 'dashicons-money-alt']);
         $CustomPostTypes->register('commission_request', 'Commission Request', 'Commission Requests', ['menu_icon' => 'dashicons-bank']);
         $CustomPostTypes->register('dispute', 'Dispute', 'Disputes', ['menu_icon' => 'dashicons-warning']);
-
+        $CustomPostTypes->register('deposit', 'Deposit', 'Deposits', ['menu_icon' => 'dashicons-money-alt']);
         //Taxonomies
         $CustomTaxonomy->register('skill', ['commercial_agent'], 'Skill', 'Skills');
         $CustomTaxonomy->register('selling_method', ['commercial_agent'], 'Selling Method', 'Selling Methods');
@@ -55,6 +48,10 @@ class Admin
         $CustomTaxonomy->register('country', ['company',"commercial_agent","opportunity"], 'Country', 'Countries');
         $CustomTaxonomy->register('language', ["commercial_agent","opportunity"], 'Language', 'Languages');
         $CustomTaxonomy->register('currency', ["opportunity"], 'Currency', 'Currencies');
+
+
+
+
     }
 
     public function create_role_company()
@@ -96,291 +93,9 @@ class Admin
         }
     }
 
-    public function register_opportunity_fields()
-    {
 
-        Container::make('post_meta', __('Oportunity Info'))
-            ->add_tab(__('Info'), [
-                Field::make('select', 'company', __('Company'))
-                ->add_options([$this,'get_companies']),
-                
-                Field::make('radio', 'target_audience', __('Target Audience'))->set_options([
-                    'companies' => "Companies",
-                    'individuals' => "Individuals",
-                ]),
-               
-        
-                Field::make('select', 'age', __('Age'))
-                ->set_options([
-                    'over_18' => 'Over 18',
-                    'over_30' => 'Over 30',
-                    'over_60' => 'Over 60',
-                    'any_age' => 'Any age',
-                ]),
-                Field::make('select', 'gender', __('Gender'))
-                ->set_options([
-                    'male' => 'Male',
-                    'female' => 'Female',
-                    'any_gender' => 'Any gender',
-                ]),
 
-            ])
-            ->add_tab(__('Pricing'), [
-                Field::make('text', 'price', __('Price')),
-                Field::make('text', 'commission', __('Commission')),
-                Field::make('checkbox', 'deliver_leads', 'Deliver Leads?')
-                    ->set_option_value('yes'),
-                Field::make('text', 'sales_cycle_estimation', __('Sales cycle estimation')),
-            ])->add_tab(__('Materials'), [
-            Field::make('media_gallery', 'images', __('Images')),//->set_attribute( 'readOnly', true),
-            Field::make('media_gallery', 'supporting_materials', __('Supporting materials')),
-            Field::make('complex', 'videos', __('Videos urls'))
-                ->add_fields([
-                    Field::make('oembed', 'video', __('Url Video')),
-                ]),
-            Field::make('textarea', 'tips', __('Tips')),
 
-        ])->add_tab(__('Questions'), [
-
-            Field::make('textarea', 'question_1', __('1) What is your company’s elevator pitch?')),
-            Field::make('textarea', 'question_2', __('2) Please complete the below value statement: Example: "We help (XXX) in the (XXX) industry (XXX) WITHOUT (XXX) & WITHOUT (XXX).')),
-            Field::make('textarea', 'question_3', __('3) How do you currently pitch your company to a prospect?')),
-            Field::make('textarea', 'question_4', __('4) What are the most common objections you face within your current sales cycle?')),
-            Field::make('textarea', 'question_5', __('5) What strategies do you employ to overcome the objections specified?')),
-            Field::make('textarea', 'question_6', __('6) Please give an overview of what company challenges you help your clients overcome?')),
-
-        ])->where('post_type', '=', 'opportunity');
-
-    }
-
-
-
-    public function register_company_fields()
-    {
-
-        Container::make('post_meta', __('Company Info'))
-            ->add_fields([
-                Field::make('select', 'user_id', __('User'))
-                ->add_options([$this,'get_company_users']),
-
-                Field::make('text', 'company_name', __('Company Name')),
-          
-                Field::make('text', 'employees_number', __('Number of Employees')),
-                Field::make('text', 'website_url', __('website Profile')),
-                Field::make('text', 'facebook_url', __('Facebook Profile')),
-                Field::make('text', 'instagram_url', __('Instagram Profile')),
-                Field::make('text', 'twitter_url', __('Twitter Profile')),
-                Field::make('text', 'linkedin_url', __('Linkedin Profile')),
-                Field::make('text', 'tiktok_url', __('TikTok Profile')),
-                Field::make('text', 'youtube_url', __('Youtube Profile')),
-                Field::make('text', 'bank_name', __('Bank Name')),
-               
-
-            ])->where('post_type', '=', 'company');
-    }
-
-    public function register_commercial_agent_fields()
-    {
-
-        Container::make('post_meta', __('Commercial Agent Info'))
-
-            ->add_fields([
-                Field::make('select', 'user_id', __('User'))
-                ->add_options([$this,'get_agent_users']),
-                
-                Field::make('text', 'years_of_experience', __('Years of experience')),
-                Field::make('text', 'bank_account_name_holder', __('Name of account holder')),
-                Field::make('text', 'bank_account_id_holder', __('Number of ID of account holder')),
-                Field::make('text', 'bank_account_number', __('Bank Account Number')),
-                Field::make('text', 'bak_account_cvu_alias', __('CVU or Alias')),
-
-            ])->where('post_type', '=', 'commercial_agent');
-    }
-
-    public function register_contract_fields()
-    {
-        Container::make('post_meta', __('Contract Conditions'))
-
-            ->add_fields([
-                Field::make('select', 'commercial_agent', __('Commercial Agent'))
-                ->add_options([$this,'get_commercial_agents']),
-
-                Field::make('select', 'company', __('Company'))
-                ->add_options([$this,'get_companies']),
-
-
-                Field::make('select', 'opportunity', __('Opportunity'))
-                ->add_options([$this,'get_opportunities']),
-
-                Field::make('text', 'sku', 'Sku'),
-            
-                Field::make('date_time', 'date', 'Contract Date'),
-
-                Field::make('text', 'commission', 'Commission'),
-
-                Field::make('text', 'minimal_price', 'Minimal Price'),
-
-                Field::make('select', 'status', __('Status'))
-                ->set_options([$this,"get_contract_status"]),
-                
-                Field::make('date_time', 'finalization_date', __('Finalization')),
-
-
-                Field::make('complex', 'status_history', 'Contract Status History')
-                ->add_fields([
-                    Field::make('select', 'history_status', __('Status'))
-                    ->set_options([$this,"get_contract_status"]),
-                    Field::make('text', 'date_status', 'Date'),
-                    Field::make('select', 'changed_by', __('Changed by:'))->add_options([$this,'get_users']),
-
-                   
-                ])
-                ->set_layout('tabbed-horizontal')
-
-            ])->where('post_type', '=', 'contract');
-
-          
-    }
-
-  
-
-    
-    public function register_commission_request_fields()
-    {
-        Container::make('post_meta', __('Commission Request Conditions'))
-
-            ->add_fields([
-
-                Field::make('select', 'contract_id', __('Contract'))
-                ->add_options([$this,'get_contracts']),
-
-                Field::make('complex', 'items', __('Cart Items'))
-                ->add_fields([
-             
-                    Field::make('text', 'price_paid', 'Price paid'),
-                    Field::make('text', 'quantity', 'Quantity'),
-                    Field::make('text', 'subtotal', 'Subtotal'),
-                    Field::make('media_gallery', 'invoice', 'Invoice'),
-                    Field::make('text', 'detail', 'Detail'),
-                ]),
-             
-                Field::make('select', 'initiating_user', __('Initiating User:'))
-                    ->add_options([$this,'get_users']),
-
-                Field::make('text', 'total_cart', 'Total'),
-
-                Field::make('text', 'total_agent', 'Total Agent'),
-            
-                Field::make('date_time', 'date', 'Commission Request Date'),
-        
-                Field::make('rich_text', 'comments', 'Comments'),
-                Field::make('select', 'status', __('Status'))
-                ->set_options([$this,"get_status_commission_request"]),
-                
-                Field::make('complex', 'status_history', 'Contract Status History')
-                ->add_fields([
-                    Field::make('select', 'history_status', __('Status'))
-                    ->set_options([$this,"get_status_commission_request"]),
-                    Field::make('text', 'date_status', 'Date'),
-                    Field::make('select', 'changed_by', __('Changed by:'))->add_options([$this,'get_users']),
-
-                   
-                ])
-                ->set_layout('tabbed-horizontal')
-                
-            ])->where('post_type', '=', 'commission_request');
-
-          
-    }
-
-    public function register_dispute_fields()
-    {
-        Container::make('post_meta', __('Dispute Conditions'))
-
-            ->add_fields([
-         
-
-                Field::make('select', 'commission_request_id', __('payment'))
-                ->add_options([$this,'get_commission_requests']),
-
-                Field::make('text', 'subject', __('Subject:')),
-                Field::Make("media_gallery", "documents", "Documents"),
-
-
-                Field::make('select', 'initiating_user', __('Initiating User:'))
-                    ->add_options([$this,'get_users']),
-              
-
-                Field::make('select', 'user_winnerr_dispute', __('Winner Dispute:'))
-                    ->add_options([$this,'get_users']),
-            
-                
-                Field::make('rich_text', 'admin_decission_comments', __('Admin Comments:')),
-                
-
-                Field::make('select', 'status', __('Status'))
-                ->set_options([$this,"get_statuses_dispute"]),
-
-                Field::make('complex', 'status_history', 'Dispute Status History')
-                ->add_fields([
-                    Field::make('select', 'history_status', __('Status'))
-                    ->set_options([$this,"get_status_commission_request"]),
-                    Field::make('text', 'date_status', 'Date'),
-                    Field::make('select', 'changed_by', __('Changed by:'))->add_options([$this,'get_users']),
-
-                   
-                ])
-                ->set_layout('tabbed-horizontal')
-
-            ])->where('post_type', '=', 'dispute');
-
-          
-    }
-
-    public function register_payment_fields()
-    {
-        Container::make('post_meta', __('payment Conditions'))
-
-            ->add_fields([
-
-                Field::make('select', 'commission_request_id', __('Contract'))
-                ->add_options([$this,'get_commission_requests']),
-                Field::make('text', 'total_paid', 'Total Paid'),
-                Field::make('text', 'total_cart', 'Total Cart'),
-
-                Field::make('text', 'total_agent', 'Total Agent'),
-
-                Field::make('text', 'total_platform', 'Total Platform'),
-
-                Field::make('text', 'total_tax_service', 'Total Tax Serves'),
-                
-                Field::make('select', 'source', 'Source')->add_options([
-                    "stripe" => "Stripe"
-                ]),
-
-                Field::make('media_gallery', 'invoice', 'Invoice'),
-
-
-                Field::make('text', 'payment_stripe_id', 'Stripe Payment Id'),
-                
-
-            
-                Field::make('date_time', 'date', 'payment Date'),
-
-                Field::make('select', 'status', __('Status'))
-                ->set_options([$this,"get_status_payment"]),
-
-                
-    
-
-            
-
-
-
-            ])->where('post_type', '=', 'payment');
-
-          
-    }
 
    
 
@@ -460,7 +175,7 @@ class Admin
         if (!empty($users)) {
             
             foreach ($users as $user) {
-                $options[$user->ID] = $user->display_name;
+                $options[$user->ID] =  $user->first_name . " " .$user->last_name;
             }
         }
     
@@ -477,7 +192,7 @@ class Admin
         if (!empty($users)) {
             
             foreach ($users as $user) {
-                $options[$user->ID] = $user->display_name;
+                $options[$user->ID] = $user->first_name . " " .$user->last_name;
             }
         }
     
@@ -494,7 +209,7 @@ class Admin
         if (!empty($users)) {
             
             foreach ($users as $user) {
-                $options[$user->ID] = $user->display_name;
+                $options[$user->ID] = $user->first_name . " " .$user->last_name;
             }
         }
     
@@ -644,23 +359,7 @@ class Admin
         return $options;
     }
 
-    public function register_review_fields()
-    {
-        Container::make('post_meta', __('Review'))
-
-            ->add_fields([
-                Field::make('select', 'commercial_agent', __('Commercial Agent'))
-                ->add_options([$this,'get_commercial_agents']),
-                Field::make('select', 'score', __('Score'))
-                    ->set_options([
-                        "1" => 1,
-                        "2" => 2,
-                        "3" => 3,
-                        "4" => 4,
-                        "5" => 5,
-                    ]),
-            ])->where('post_type', '=', 'review');
-    }
+   
 
     public function custom_admin_css_for_post_types()
     {
@@ -698,27 +397,7 @@ class Admin
     
         return $use_block_editor; // Usa el editor de bloques para todos los demás post types
     }
-    public function get_human_time_diff($date)
-    {
-        // Check if the date is valid
-        if (!$date || !strtotime($date)) {
-            return 'Invalid date';
-        }
-    
-        // Convert the stored date to a timestamp
-        $timestamp_commission_request = strtotime($date);
-    
-        // Get the current timestamp
-        $current_timestamp = current_time('timestamp');
-    
-        // Calculate the human-readable time difference
-        $time_diff = human_time_diff($timestamp_commission_request, $current_timestamp);
-    
-        // Display the time elapsed in a readable format
-        $human_date =  $time_diff;
-    
-        return $human_date;
-    }
+  
 
     
 

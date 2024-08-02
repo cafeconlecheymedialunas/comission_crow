@@ -1,121 +1,160 @@
+
+<?php
+
+
+
+
+?>
+
 <table class="table custom-table">
     <thead>
         <tr>
-            <th scope="col">#</th>
-            <th scope="col">#Contract Sku</th>
-            <th scope="col">Another Part</th>
-            <th scope="col">Subject</th>
+            <th scope="col">#ID</th>
+            <th scope="col">#Contract SKU</th>
+            <th scope="col"><?php echo in_array("commercial_agent", $current_user->roles) ? "Company" : "Agent"; ?></th>
+            <th scope="col">Opportunity</th>
+            <th scope="col">Total</th>
+            <th scope="col">Commissions</th>
+            <th scope="col">Total Agent</th>
             <th scope="col">Status</th>
-            <th scope="col">Date</th>
+            <th scope="col">Last Update</th>
             <th scope="col"></th>
         </tr>
     </thead>
     <tbody>
-        <?php if (!empty($disputes)) :
-            foreach ($disputes as $dispute) :
+        <?php if (!empty($commission_requests)):
+            foreach ($commission_requests as $commission_request):
 
-                $commission_request_id = carbon_get_post_meta($dispute->ID, "commission_request_id");
-                $initiating_user_id = carbon_get_post_meta($dispute->ID, "initiating_user");
-                $commission_request = get_post($commission_request_id);
-                $contract_id = carbon_get_post_meta($commission_request_id, "contract_id");
-                $contract_sku = carbon_get_post_meta($contract_id, "sku");
+                $contract_id = carbon_get_post_meta($commission_request->ID, 'contract_id');
                 $another_part = ProfileUser::get_instance()->get_another_part_of_contract($contract_id);
-                $another_part_user = ProfileUser::get_instance()->get_user_another_part_of_contract($contract_id);
-                $subject = carbon_get_post_meta($dispute->ID, "subject");
-                $status = carbon_get_post_meta($dispute->ID, "status_history");
-                $status_end = end($status);
-                $last_update = $status_end["date_status"];
-                $last_status = $status_end["history_status"];
-                $date_string = $last_update ? "Last update: " . $admin->get_human_time_diff($last_update) : "";
+                $opportunity_id = carbon_get_post_meta($contract_id, 'opportunity');
+
+
+                $status = carbon_get_post_meta($payment->ID, 'status');
+               
+                var_dump($status);
+
+                $total_cart_commission_request = carbon_get_post_meta($commission_request->ID, 'total_cart');
+                $total_agent_commission_request = carbon_get_post_meta($commission_request->ID, 'total_agent');
+                $date_commission_request = carbon_get_post_meta($commission_request->ID, 'date');
+                $human_date = Helper::get_human_time_diff($date_commission_request);
+
+                $initiating_user_id = carbon_get_post_meta($commission_request->ID, "initiating_user");
+                
+                
+
+
+                $last_update_text = Helper::get_last_update_by_and_date($commission_request->ID);
 
                 $status_class = '';
                 $status_text = '';
 
-                switch ($last_status) {
-                    case 'pending':
-                        $status_class = 'text-bg-primary';
-                        $status_text = "Pending";
+              
+
+                switch ($status) {
+                    case 'succeeded':
+                        $payment_badge = '<span class="badge bg-success">Payment Success</span>';
                         break;
-                    case 'resolved':
-                        $status_class = 'text-bg-success';
-                        $status_text = "Accepted";
+                    case 'pending':
+                        $payment_badge = '<span class="badge bg-warning">Pending Payment</span>';
+                        break;
+                    case 'failed':
+                        $payment_badge = '<span class="badge bg-danger">Failed Payment</span>';
+                        break;
+                    case 'canceled':
+                        $payment_badge = '<span class="badge bg-secondary">Canceled Payment</span>';
+                        break;
+                    case 'requires_payment_method':
+                        $payment_badge = '<span class="badge bg-info">Payment Requires Payment Method</span>';
+                        break;
+                    case 'requires_confirmation':
+                        $payment_badge = '<span class="badge bg-info">Payment Requires Confirmation</span>';
+                        break;
+                    case 'requires_action':
+                        $payment_badge = '<span class="badge bg-info">Payment Requires Action</span>';
+                        break;
+                    case 'in_process':
+                        $payment_badge = '<span class="badge bg-info">Payment In Process</span>';
+                        break;
+                    case 'authorized':
+                        $payment_badge = '<span class="badge bg-info">Authorized</span>';
                         break;
                 }
+             
+                ?>
 
-                if ($dispute) :
-                    // Obtener los usuarios administradores
-                    $users = get_users(['role' => 'administrator']);
-                    $admin_id = $users[0]->ID; // Usar el ID del primer administrador como ejemplo
+                <tr>
+                    <td><?php echo $commission_request->ID;?></td>
+                    <td><span class="txt-sm"><?php echo carbon_get_post_meta($contract_id, "sku"); ?></span></td>
+                    <td><a href=""><?php echo $another_part->post_title; ?></a></td>
+                    <td><a href=""><?php echo get_the_title($opportunity_id); ?></a></td>
+                    <td><?php echo esc_html("$" . number_format($total_cart_commission_request, 2, ',', '')); ?></td>
+                    <td><?php echo esc_html(carbon_get_post_meta($contract_id, "commission") . "%"); ?></td>
+                    <td><?php echo esc_html("$" . number_format($total_agent_commission_request, 2, ",", "")); ?></td>
+                    <td>
+                        <span class="badge <?php echo $status_class; ?>"><?php echo esc_html($status_text); ?></span>
+                        <?php if ($status_dispute){
+                            echo $dispute_badge;
+                        }?>
+                        <?php if ($status_payment){
+                            echo $dispute_payment;
+                        }?>
+                   
+                    </td>
+                    <td><?php echo esc_html($last_update_text); ?></td>
+                    <td>
+                        <ul class="p-0 mb-0 d-flex justify-content-center align-items-center">
+                            <li class="list-inline-item">
+                                <a class="operation" data-bs-toggle="modal" data-bs-target="#chat-modal-<?php echo $user_counterparty_id; ?>" data-user-id="<?php echo esc_attr($user_counterparty_id); ?>">
+                                    <i class="chat text-secondary fa-solid fa-comments"></i>
+                                </a>
+                            </li>
 
-                    ?>
-                    <tr>
-                        <th scope="row"><?php echo $dispute->ID; ?></th>
-                        <td><?php echo esc_html($contract_sku); ?></td>
-                        <td><?php echo esc_html($another_part->post_title); ?></td>
-                        <td><?php echo esc_html($subject); ?></td>
-                        <td><span class="badge <?php echo $status_class; ?>"><?php echo esc_html($status_text); ?></span></td>
-                        <td><?php echo esc_html($date_string); ?></td>
-                        <td>
-                            <ul class="list-inline mb-0">
-                               
-                              
-                                <?php
-                                
-                                $user_ids   = [$admin_id, $current_user->ID];
-                    $unique_key = $contract_sku;
-                    // Subject will be used only if conversation not exists yet
-                    $subject    = 'Questions about your Dispute about contract: '.$contract_sku;
-
-                    $thread_id = Better_Messages()->functions->get_unique_conversation_id($user_ids, $unique_key, $subject);
-                               
-                               
-                                
-                    ?>
-                                <li class="list-inline-item">
-                                    <a class="operation" data-bs-toggle="modal" data-bs-target="#dispute-messages<?php echo $thread_id;?>">
-                                        <i class="fa-solid fa-headset"></i>
-                                    </a>
-                                </li>
-
-                                
-
-
-                                <?php if (in_array("company", $current_user->roles) && $commission_request) : ?>
-                                    <?php if($current_user->ID === $initiating_user_id):?>
-                                                 
-                                                 <form class="delete-dispute-form d-inline">
-                                                     <input type="hidden" name="security" value="<?php echo wp_create_nonce("delete_dispute_nonce"); ?>"/>
-                                                     <input type="hidden" name="dispute_id" value="<?php echo $dispute->ID;?>">
-                                                     <button type="submit" class="operation"><i class="fa-solid text-danger fa-trash"></i></button>
-                                                 </form>
-                                                 
-                                    <?php endif;?>
-                              
-                                    
+                            <?php if (in_array("company", $current_user->roles) && $commission_request):
+                                if (!$has_open_dispute && !$is_paid): ?>
+                                    <li class="list-inline-item">
+                                        <a class="operation" data-bs-toggle="modal" data-bs-target="#modal-dispute" data-commission-request="<?php echo $commission_request->ID; ?>">
+                                            <i class="text-warning fa-solid fa-scale-balanced"></i>
+                                        </a>
+                                    </li>
                                 <?php endif; ?>
-                                <div class="modal fade" id="dispute-messages<?php echo  $thread_id;?>" tabindex="-1" aria-labelledby="chatModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="chatModalLabel">Chat</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                          
-                                            <?php echo Better_Messages()->functions->get_conversation_layout($thread_id);?>
+                                <?php if (!$has_open_dispute && !$is_paid):?>
+                                  
+                                    <li class="list-inline-item">
+                                        <a class="operation" href="<?php echo $dasboard->get_role_url_link_dashboard_page("payment_create"); ?>?commission_request_id=<?php echo $commission_request->ID; ?>">
+                                            <i class="text-success fa-solid fa-money-check-dollar"></i>
+                                        </a>
+                                    </li>
+                                <?php endif; ?>
+                            <?php endif; ?>
 
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                            </div>
+                            <?php if (in_array("commercial_agent", $current_user->roles) && $commission_request && $current_user->ID === $initiating_user_id): ?>
+                                <form class="operation delete-commission-request-form d-inline">
+                                    <input type="hidden" name="security" value="<?php echo wp_create_nonce("delete_commission_request_nonce"); ?>"/>
+                                    <input type="hidden" name="commission_request_id" value="<?php echo $commission_request->ID; ?>">
+                                    <button type="submit" class="operation"><i class="fa-solid text-danger fa-trash"></i></button>
+                                </form>
+                            <?php endif; ?>
+
+                            <div class="modal fade" id="chat-modal-<?php echo $user_counterparty_id; ?>" tabindex="-1" aria-labelledby="chatModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="chatModalLabel">Chat</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <?php echo do_shortcode('[better_messages_user_conversation user_id="' . $user_counterparty_id . '"]'); ?>
                                         </div>
                                     </div>
                                 </div>
-                            </ul>
-                        </td>
-                    </tr>
-                <?php endif; ?>
+                            </div>
+                        </ul>
+                    </td>
+                </tr>
+
             <?php endforeach; ?>
+
         <?php endif; ?>
-    </tbody>
 </table>
+

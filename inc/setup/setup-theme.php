@@ -462,7 +462,7 @@ if (! function_exists('comission_crow_comment')) {
 
         $commenter     = wp_get_current_commenter();
         $user          = wp_get_current_user();
-        $user_identity = $user->exists() ? $user->display_name : '';
+        $user_identity = $user->exists() ? $user->first_name . " " .$user->last_name : '';
 
         $args = wp_parse_args($args);
 
@@ -494,7 +494,7 @@ if (! function_exists('comission_crow_comment')) {
             /** This filter is documented in wp-includes/link-template.php */
             'must_log_in'          => '<p class="must-log-in">' . sprintf(wp_kses_post(__('You must be <a href="%s">logged in</a> to post a comment.', 'comission_crow')), wp_login_url(esc_url(get_the_permalink(get_the_ID())))) . '</p>',
             /** This filter is documented in wp-includes/link-template.php */
-            'logged_in_as'         => '<p class="logged-in-as">' . sprintf(wp_kses_post(__('Logged in as <a href="%1$s">%2$s</a>. <a href="%3$s" title="Log out of this account">Log out?</a>', 'comission_crow')), get_edit_user_link(), $user->display_name, wp_logout_url(apply_filters('the_permalink', esc_url(get_the_permalink(get_the_ID()))))) . '</p>',
+            'logged_in_as'         => '<p class="logged-in-as">' . sprintf(wp_kses_post(__('Logged in as <a href="%1$s">%2$s</a>. <a href="%3$s" title="Log out of this account">Log out?</a>', 'comission_crow')), get_edit_user_link(), $user->first_name . " " .$user->last_name, wp_logout_url(apply_filters('the_permalink', esc_url(get_the_permalink(get_the_ID()))))) . '</p>',
             'comment_notes_before' => '<p class="small comment-notes">' . esc_html__('Your Email address will not be published.', 'comission_crow') . '</p>',
             'comment_notes_after'  => '',
             'id_form'              => 'commentform',

@@ -4,8 +4,8 @@ class Dashboard
 
     public function __construct()
     {
-        add_filter('query_vars', [$this,'add_query_vars']);
-        add_action('init', [$this,'custom_rewrite_rules']);
+        add_filter('query_vars', [$this, 'add_query_vars']);
+        add_action('init', [$this, 'custom_rewrite_rules']);
         $this->register_ajax_managers();
     }
 
@@ -13,7 +13,6 @@ class Dashboard
     {
         add_rewrite_rule('^dashboard/([^/]+)(/.*)?/?$', 'index.php?pagename=dashboard&role=$matches[1]&subpages=$matches[2]', 'top');
     }
-
 
     public function add_query_vars($vars)
     {
@@ -24,7 +23,7 @@ class Dashboard
 
     public function register_ajax_managers()
     {
-        
+
         $company = Company::get_instance();
         $commercial_agent = CommercialAgent::get_instance();
         $profileUser = ProfileUser::get_instance();
@@ -34,48 +33,46 @@ class Dashboard
         $opportunity = Opportunity::get_instance();
         $payment = Payment::get_instance();
 
-        add_action('wp_ajax_create_opportunity', [$opportunity,'save_opportunity']);
-        add_action('wp_ajax_nopriv_create_opportunity', [$opportunity,'save_opportunity']);
+        add_action('wp_ajax_create_opportunity', [$opportunity, 'save_opportunity']);
+        add_action('wp_ajax_nopriv_create_opportunity', [$opportunity, 'save_opportunity']);
 
-        
+        add_action('wp_ajax_delete_opportunity', [$opportunity, 'delete_opportunity']);
+        add_action('wp_ajax_nopriv_delete_opportunity', [$opportunity, 'delete_opportunity']);
+        add_action('wp_ajax_save_agent_profile', [$commercial_agent, 'save_agent_profile']);
+        add_action('wp_ajax_nopriv_save_agent_profile', [$commercial_agent, 'save_agent_profile']);
 
-        add_action('wp_ajax_save_agent_profile', [$commercial_agent,'save_agent_profile']);
-        add_action('wp_ajax_nopriv_save_agent_profile', [$commercial_agent,'save_agent_profile']);
+        add_action('wp_ajax_save_company_profile', [$company, 'save_company_profile']);
+        add_action('wp_ajax_nopriv_save_company_profile', [$company, 'save_company_profile']);
 
-        add_action('wp_ajax_save_company_profile', [$company,'save_company_profile']);
-        add_action('wp_ajax_nopriv_save_company_profile', [$company,'save_company_profile']);
-
-        add_action('wp_ajax_update_user_data', [$profileUser,'update_user_data']);
+        add_action('wp_ajax_update_user_data', [$profileUser, 'update_user_data']);
         add_action('wp_ajax_nopriv_update_user_data', [$profileUser, 'update_user_data']);
 
-        add_action('wp_ajax_create_contract', [$contract,'create_contract']);
-        add_action('wp_ajax_nopriv_create_contract', [$contract,'create_contract']);
+        add_action('wp_ajax_create_contract', [$contract, 'create_contract']);
+        add_action('wp_ajax_nopriv_create_contract', [$contract, 'create_contract']);
 
-        add_action('wp_ajax_update_contract_status', [$contract,'update_contract_status']);
-        add_action('wp_ajax_nopriv_update_contract_status', [$contract,'update_contract_status']);
+        add_action('wp_ajax_update_contract_status', [$contract, 'update_contract_status']);
+        add_action('wp_ajax_nopriv_update_contract_status', [$contract, 'update_contract_status']);
 
-        add_action('wp_ajax_create_commission_request', [$commission_request,'create_commission_request']);
-        add_action('wp_ajax_nopriv_create_commission_request', [$commission_request,'create_commission_request']);
+        add_action('wp_ajax_create_commission_request', [$commission_request, 'create_commission_request']);
+        add_action('wp_ajax_nopriv_create_commission_request', [$commission_request, 'create_commission_request']);
 
-        add_action('wp_ajax_delete_commission_request', [$commission_request,'delete_commission_request']);
-        add_action('wp_ajax_nopriv_delete_commission_request', [$commission_request,'delete_commission_request']);
+        add_action('wp_ajax_delete_commission_request', [$commission_request, 'delete_commission_request']);
+        add_action('wp_ajax_nopriv_delete_commission_request', [$commission_request, 'delete_commission_request']);
 
         //TO DO
+
+        add_action('wp_ajax_create_dispute', [$dispute, 'handle_create_dispute']);
+        add_action('wp_ajax_nopriv_create_dispute', [$dispute, 'handle_create_dispute']);
+        add_action('wp_ajax_delete_dispute', [$dispute, 'delete_dispute']);
+        add_action('wp_ajax_nopriv_delete_dispute', [$dispute, 'delete_dispute']);
         
-
-        add_action('wp_ajax_create_dispute', [$dispute,'handle_create_dispute']);
-        add_action('wp_ajax_delete_dispute', [$dispute,'delete_dispute']);
-        add_action('wp_ajax_nopriv_delete_dispute', [$dispute,'delete_dispute']);
-        add_action('init', [$payment,"create_payment"]);
-
+        add_action('admin_post_nopriv_create_payment',[$payment , 'create_payment']);
+        add_action('admin_post_create_payment', [$payment ,'create_payment']);
+       
         // add_action('fullstripe_after_payment_charge', [$payment,'after_checkout_payment_charge'], 10, 1);
         //add_action('fullstripe_after_checkout_payment_charge', [$payment,'after_checkout_payment_charge'], 10, 1);
-        
-        
-        
-     
-    }
 
+    }
 
     public function get_role_url_link_dashboard_page($route_key)
     {
@@ -85,59 +82,59 @@ class Dashboard
         $routes = [
             "profile" => [
                 "company" => "dashboard/company/profile/",
-                "commercial_agent" => "dashboard/commercial-agent/profile/"
+                "commercial_agent" => "dashboard/commercial-agent/profile/",
             ],
             "opportunity_create" => [
                 "company" => "dashboard/company/opportunity/create",
-                "commercial_agent" => ""
+                "commercial_agent" => "",
             ],
             "opportunity_list" => [
                 "company" => "dashboard/company/opportunity/all",
-                "commercial_agent" => ""
+                "commercial_agent" => "",
             ],
             "chat" => [
                 "company" => "dashboard/company/chat/",
-                "commercial_agent" => "dashboard/commercial-agent/chat/"
+                "commercial_agent" => "dashboard/commercial-agent/chat/",
             ],
             "contract_all" => [
                 "company" => "dashboard/company/contract/all",
-                "commercial_agent" => "dashboard/commercial-agent/contract/all"
+                "commercial_agent" => "dashboard/commercial-agent/contract/all",
             ],
             "contract_ongoing" => [
                 "company" => "dashboard/company/contract/ongoing",
-                "commercial_agent" => "dashboard/commercial-agent/contract/ongoing"
+                "commercial_agent" => "dashboard/commercial-agent/contract/ongoing",
             ],
             "contract_received" => [
                 "company" => "dashboard/company/contract/received",
-                "commercial_agent" => "dashboard/commercial-agent/contract/received"
+                "commercial_agent" => "dashboard/commercial-agent/contract/received",
             ],
             "contract_requested" => [
                 "company" => "dashboard/company/contract/requested",
-                "commercial_agent" => "dashboard/commercial-agent/contract/requested"
+                "commercial_agent" => "dashboard/commercial-agent/contract/requested",
             ],
             "payment_list" => [
                 "company" => "dashboard/company/payment/all",
-                "commercial_agent" => "dashboard/commercial-agent/payment/all"
+                "commercial_agent" => "dashboard/commercial-agent/payment/all",
             ],
             "payment_create" => [
                 "company" => "dashboard/company/payment/create",
-                "commercial_agent" => "dashboard/commercial-agent/payment/create"
+                "commercial_agent" => "dashboard/commercial-agent/payment/create",
             ],
             "payment_show" => [
                 "company" => "dashboard/company/payment/show",
-                "commercial_agent" => "dashboard/commercial-agent/payment/show"
+                "commercial_agent" => "dashboard/commercial-agent/payment/show",
             ],
             "disputes" => [
                 "company" => "dashboard/company/dispute/",
-                "commercial_agent" => "dashboard/commercial-agent/dispute/"
+                "commercial_agent" => "dashboard/commercial-agent/dispute/",
             ],
             "commission" => [
                 "company" => "dashboard/company/commission",
-                "commercial_agent" => "dashboard/commercial-agent/commission"
+                "commercial_agent" => "dashboard/commercial-agent/commission",
             ],
             "reviews" => [
                 "company" => "dashboard/company/review/",
-                "commercial_agent" => "dashboard/commercial-agent/review/"
+                "commercial_agent" => "dashboard/commercial-agent/review/",
             ],
         ];
 
@@ -147,4 +144,7 @@ class Dashboard
 
         return '';
     }
+
 }
+
+

@@ -1,9 +1,6 @@
 <?php
 
-$commercial_agent = CommercialAgent::get_instance();
-$company_post = $commercial_agent->get_commercial_agent();
-
-$contracts = $commercial_agent->get_contracts([], "received");
+$contracts = ProfileUser::get_instance()->get_contracts([], "received");
 
 $current_user = wp_get_current_user();
 

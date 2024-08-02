@@ -31,6 +31,7 @@ $files_to_require = [
      __DIR__ . '/inc/data/Payment.php',
      __DIR__ . '/inc/core/CustomPostType.php',
      __DIR__ . '/inc/core/CustomTaxonomy.php',
+     __DIR__ . '/inc/core/ContainerCustomFields.php',
      __DIR__ . '/inc/core/Admin.php',
      __DIR__ . '/inc/core/Public.php',
      __DIR__ . '/inc/core/Auth.php',
@@ -59,39 +60,8 @@ $dasboard = new Dashboard();
 
 
 
-add_action('wp_ajax_nopriv_calculate_total', 'calculate_total_ajax');
-add_action('wp_ajax_calculate_total', 'calculate_total_ajax');
-function calculate_total_ajax() {
-    $commission_request_id = intval($_POST['commission_request_id']);
-
-    $total = calculate_total($commission_request_id);
-    
-    if ($total) {
-        wp_send_json_success(array('total' => $total));
-    } else {
-        wp_send_json_error(array('message' => 'Error calculating total'));
-    }
-}
 
 
-
-
-
-function add_item_to_status_history($contract_id, $status = "pending")
-{
-    $status_history = get_post_meta($contract_id, 'status_history', true);
-    
-    if (!is_array($status_history)) {
-        $status_history = [];
-    }
-
-    $status_history[] = [
-        'history_status' => $status,
-        'date_status' => current_time('mysql'),
-        'changed_by' => get_current_user_id(),
-    ];
-    return $status_history;
-}
 
 function calculate_agent_price($commission_request_id) {
     $post = get_post($commission_request_id);
@@ -150,21 +120,8 @@ function calculate_total($commission_request_id) {
 }
 
 
-add_action('updated_post_meta', function($meta_id, $post_id, $meta_key, $meta_value) {
-    // Verifica si el campo actualizado es el campo 'status' y el tipo de post es 'payment'
-    if ($meta_key === 'status' && get_post_type($post_id) === 'payment') {
-        // Obtén el session_id del post meta si es necesario
-        $session_id = get_post_meta($post_id, 'session_id', true);
 
-        if ($session_id) {
-            // Llama a la función para generar la factura
-            Payment::get_instance()->generate_invoice($session_id);
-        } else {
-            // En producción, evita usar echo en hooks; puedes usar logging si es necesario
-            error_log('Session ID not found for post ID ' . $post_id);
-        }
-    }
-}, 10, 4);
+
 
 
 
@@ -231,37 +188,92 @@ function handle_multiple_file_upload($files)
     return $uploads;
 }
 
-/*function afterInlinePaymentCharge($params)
-{
-    $paymentIntent = $params[ 'stripePaymentIntent' ];
+function afterInlinePaymentCharge($params) {
+    $paymentIntent = $params['stripePaymentIntent'];
     $stripeCustomer = MM_WPFS_API_v1::getStripeCustomer($paymentIntent->customer);
 
-    $customerEmail   = $stripeCustomer->email;
+    $customerEmail = $stripeCustomer->email;
     $paymentCurrency = $paymentIntent->currency;
-    $paymentAmount   = $paymentIntent->amount_received;
+    $paymentAmount = $paymentIntent->amount_received;
     $paymentMetadata = $paymentIntent->metadata;
     $paymentFormName = $params['formName'];
 
-    // Registro de un nuevo post de tipo 'payment'
-    $payment_post = [
-        'post_title'   => 'Payment from ' . $customerEmail . ' - ' . date('Y-m-d H:i:s'),
-        'post_content' => 'Amount: ' . $paymentAmount / 100 . ' ' . strtoupper($paymentCurrency) . '<br>Form: ' . $paymentFormName . '<br>Metadata: ' . json_encode($paymentMetadata),
-        'post_status'  => 'publish',
-        'post_type'    => 'payment',
-    ];
-    
-    $post_id = wp_insert_post($payment_post);
+    // Obtener los datos necesarios del metadata
+    $paymentMetadata = json_decode(json_encode($paymentIntent->metadata), true); // Decodificar metadatos JSON
+    $paymentFormName = $params['formName'];
 
-    if (is_wp_error($post_id)) {
-        error_log(__FUNCTION__ . "(): Error creating payment post: " . $post_id->get_error_message());
-    } else {
-        error_log(__FUNCTION__ . "(): Successfully created payment post with ID " . $post_id);
+    // Obtener los datos necesarios del metadata
+    $commission_request_id = isset($paymentMetadata['Commission Request']) ? $paymentMetadata['Commission Request'] : null;
+
+    if (!$commission_request_id) {
+        error_log(__FUNCTION__ . "(): Commission request ID not found in metadata.");
+        return;
     }
-}
-    */
-    define("STRIPE_SECRET_KEY","sk_test_51OuK5YKEo9Rkz0Yaxf4YwQlbrNesUsoxhAz3GKOv1ZQWzp6AtuwHpJ6zQxGNBcfeJQjHHQPW9AgauNpta6w4JHFY00BBjGB9U8");
 
-   
+
+    // Calcular los totales
+    $total_cart = carbon_get_post_meta($commission_request_id, 'total_cart');
+    $total_agent = calculate_agent_price($commission_request_id);
+    $total_platform = calculate_platform_price($commission_request_id);
+    $total_tax_service = calculate_tax_stripe_price($commission_request_id);
+    $total_paid = calculate_total($commission_request_id);
+
+    // Registrar un nuevo post de tipo 'payment'
+    $payment_post = [
+        'post_title' => 'Payment from ' . $customerEmail . ' - ' . date('Y-m-d H:i:s'),
+        'post_content' => 'Amount: ' . $paymentAmount / 100 . ' ' . strtoupper($paymentCurrency) . '<br>Form: ' . $paymentFormName . '<br>Metadata: ' . json_encode($paymentMetadata),
+        'post_status' => 'publish',
+        'post_type' => 'payment',
+    ];
+
+    $payment_id = wp_insert_post($payment_post);
+
+    if (is_wp_error($payment_id)) {
+        error_log(__FUNCTION__ . "(): Error creating payment post: " . $payment_id->get_error_message());
+        return;
+    }
+
+    // Guardar los metadatos del pago
+    carbon_set_post_meta($payment_id, 'commission_request_id', $commission_request_id);
+    carbon_set_post_meta($payment_id, 'total_cart', $total_cart);
+    carbon_set_post_meta($payment_id, 'total_agent', $total_agent);
+    carbon_set_post_meta($payment_id, 'total_platform', $total_platform);
+    carbon_set_post_meta($payment_id, 'total_tax_service', $total_tax_service);
+    carbon_set_post_meta($payment_id, 'total_paid', $total_paid);
+    carbon_set_post_meta($payment_id, 'source', 'stripe');
+    carbon_set_post_meta($payment_id, 'payment_stripe_id', $paymentIntent->id);
+    carbon_set_post_meta($payment_id, 'date', current_time('mysql'));
+    carbon_set_post_meta($payment_id, 'status', 'pending');
+
+    // Generar la factura
+    Payment::get_instance()->generate_invoice($payment_id);
+
+    error_log(__FUNCTION__ . "(): Successfully created payment post with ID " . $payment_id);
+}
+
+add_action('fullstripe_after_checkout_payment_charge', 'afterInlinePaymentCharge', 10, 1);
+
+
+function set_custom_amount($customAmount, $formName, $customAmountParamValue) {
+    return $customAmountParamValue;
+}
+
+add_action('fullstripe_set_custom_amount', 'set_custom_amount', 10, 3);
     
-   
+
     
+ // En functions.php o en un archivo PHP del plugin
+
+// En functions.php o en un archivo PHP del plugin
+// En functions.php o en un archivo PHP del plugin
+
+// En functions.php o en un archivo PHP del plugin
+
+// En functions.php o en un archivo PHP del plugin
+
+//add_action('admin_post_nopriv_stripe_checkout', 'handle_stripe_checkout');
+//add_action('admin_post_stripe_checkout', 'handle_stripe_checkout');
+
+
+
+

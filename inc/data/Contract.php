@@ -148,7 +148,7 @@ class Contract
             ]);
         }
     
-        $status_history = $this->add_item_to_status_history($contract_id);
+        $status_history = Helper::add_item_to_status_history($contract_id);
     
         carbon_set_post_meta($contract_id, 'company', $company_post->ID);
         carbon_set_post_meta($contract_id, 'commercial_agent', $commercial_agent_post->ID);
@@ -158,6 +158,7 @@ class Contract
         carbon_set_post_meta($contract_id, 'date', current_time("mysql"));
         carbon_set_post_meta($contract_id, "status_history", $status_history);
         carbon_set_post_meta($contract_id, "sku", $sku);
+        carbon_set_post_meta($contract_id, "initiating_user", get_current_user_id());
         wp_send_json_success(wp_get_current_user());
     }
     
@@ -187,28 +188,11 @@ class Contract
             
             }
         }
-        $status_history = $this->add_item_to_status_history($contract_id, $new_status);
+        $status_history = Helper::add_item_to_status_history($contract_id, $new_status);
         carbon_set_post_meta($contract_id, 'status', $new_status);
         carbon_set_post_meta($contract_id, 'status_history', $status_history);
 
         wp_send_json_success('Contract status updated successfully.');
-    }
-
-    private function add_item_to_status_history($contract_id, $status = "pending")
-    {
-        $status_history = get_post_meta($contract_id, 'status_history', true);
-        
-        if (!is_array($status_history)) {
-            $status_history = [];
-        }
-
-        // Agregar el nuevo estado al historial
-        $status_history[] = [
-            'history_status' => $status,
-            'date_status' => current_time('mysql'),
-            'changed_by' => get_current_user_id(),
-        ];
-        return $status_history;
     }
 
 

@@ -64,7 +64,7 @@ $associated_post = ProfileUser::get_instance()->get_user_associated_post_type();
             <div class="col-xl-3 col-lg-4">
                 <div class="user-profile card mb-4 d-flex justify-content-center align-items-center">
               
-							<?php $post_thumbnail  = get_the_post_thumbnail($associated_post->ID, "full", [ 'class' => 'img-fluid' ]);
+							<?php if ($associated_post) { $post_thumbnail  = get_the_post_thumbnail($associated_post->ID, "full", [ 'class' => 'img-fluid' ]);
 
 $default = get_template_directory_uri() . "/assets/img/placeholder.png";
 if ($post_thumbnail) {
@@ -72,8 +72,9 @@ if ($post_thumbnail) {
 } else {
     echo '<img class="img-fluid" src="' . $default . '"/>';
 }
+}
 ?>
-                    <h5><?php echo esc_html($current_user->display_name); ?></h5>
+                    <h5><?php echo esc_html($current_user->first_name. " ".$current_user->last_name); ?></h5>
                     <p><?php echo esc_html($current_user->user_email); ?></p>
                     <a class="view-profile">View Profile</a>
                 </div>

@@ -72,6 +72,7 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
                 </option>
             <?php endforeach;?>
         </select>
+        <div class="error-message"></div>
     </div>
     <?php endif;?>
     <?php if($language_terms):?>
@@ -87,6 +88,7 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
                 </option>
             <?php endforeach;?>
         </select>
+        <div class="error-message"></div>
     </div>
     <?php endif;?>
     <?php if($country_terms):?>
@@ -103,6 +105,7 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
                 </option>
             <?php endforeach;?>
         </select>
+        <div class="error-message"></div>
     </div>
     <?php endif;?>
     <?php if($currency_terms):?>
@@ -119,6 +122,7 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
                 </option>
             <?php endforeach;?>
         </select>
+        <div class="error-message"></div>
     </div>
     <?php endif;?>
     <div class="col-md-6">
@@ -135,6 +139,7 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
                 </option>
             <?php endforeach;?>
         </select>
+        <div class="error-message"></div>
     </div>
     <?php if($type_of_company_terms):?>
     <div class="col-md-6">
@@ -149,12 +154,14 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
                 </option>
             <?php endforeach;?>
         </select>
+        <div class="error-message"></div>
     </div>
     <?php endif;?>
     <div class="col-md-12">
             <label for="content" class="form-label">Content:</label>
             <div class="editor-container"></div>
             <input type="hidden" id="content" name="content" value="<?php echo isset($opportunity_post) ? esc_attr($opportunity_post->post_content):"";?>">
+            <div class="error-message"></div>
     </div>
 
    
@@ -169,6 +176,7 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
                 <option value="<?php echo esc_attr($key); ?>" <?php selected($age, $key); ?>><?php echo esc_html($value); ?></option>
             <?php endforeach;?>
         </select>
+        <div class="error-message"></div>
     </div>
 
     <div class="col-md-6">
@@ -179,17 +187,20 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
                 <option value="<?php echo esc_attr($key); ?>" <?php selected($gender, $key); ?>><?php echo esc_html($value); ?></option>
             <?php endforeach;?>
         </select>
+        <div class="error-message"></div>
     </div>
 
 
     <div class="col-md-6">
         <label for="price" class="form-label">Price:</label>
         <input type="text"   id="price" name="price" class="form-control" value="<?php echo isset($opportunity_post) ? esc_attr(carbon_get_post_meta($opportunity_post->ID, "price")):"";?>">
+        <div class="error-message"></div>
     </div>
 
     <div class="col-md-6">
         <label for="commission" class="form-label">Commission:</label>
         <input type="text" id="commission" name="commission" class="form-control" value="<?php echo isset($opportunity_post) ? esc_attr(carbon_get_post_meta($opportunity_post->ID, "commission")) : ""; ?>" />
+        <div class="error-message"></div>
     </div>
 
 
@@ -198,11 +209,13 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
             <input type="checkbox" name="deliver_leads" class="form-check-input" value="<?php echo isset($opportunity_post) ? esc_attr(carbon_get_post_meta($opportunity_post->ID, "deliver_leads")):"";?>">
             Deliver Leads?
         </label>
+        <div class="error-message"></div>
     </div>
 
     <div class="col-md-6">
         <label for="sales_cycle_estimation" class="form-label">Sales Cycle Estimation:</label>
         <input type="text" id="sales_cycle_estimation" name="sales_cycle_estimation" class="form-control" value="<?php echo isset($opportunity_post) ? esc_attr(carbon_get_post_meta($opportunity_post->ID, "sales_cycle_estimation")):"";?>">
+        <div class="error-message"></div>
     </div>
     <?php if(isset($_GET["opportunity_id"])) {?>
     <div class="col-md-6">
@@ -217,12 +230,12 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
         }
   
     } ?> 
-   
+     <div class="error-message"></div>
 
     <div class="col-md-6">
         <label for="supporting_materials" class="form-label">Supporting Materials</label>
         <input class="form-control" type="file" name="supporting_materials[]" id="supporting_materials" multiple accept=".pdf, .txt">
-
+        <div class="error-message"></div>
     </div>
   
 
@@ -246,49 +259,56 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
                     <?php endforeach;?>
                     <?php endif;?>
                 </div>
-                
+                <div class="error-message"></div>
             </div>
     
             <div class="col-md-12">
                 <label for="tips" class="form-label">Tips</label>
                 <div class="editor-container" data-target="tips"></div>
                 <input type="hidden" id="tips" name="tips" value="<?php echo isset($opportunity_post) ? esc_attr(carbon_get_post_meta($opportunity_post->ID, "tips")) : ""; ?>">
+                <div class="error-message"></div>
             </div>
 
 <div class="col-md-12">
     <label for="question_1" class="form-label">What is your company’s elevator pitch?</label>
     <div class="editor-container" data-target="question_1"></div>
     <input type="hidden" id="question_1" name="question_1" value="<?php echo isset($opportunity_post) ? esc_attr(carbon_get_post_meta($opportunity_post->ID, "question_1")) : ""; ?>">
+    <div class="error-message"></div>
 </div>
 
 <div class="col-md-12">
     <label for="question_2" class="form-label">Please complete the below value statement:</label>
     <div class="editor-container" data-target="question_2"></div>
     <input type="hidden" id="question_2" name="question_2" value="<?php echo isset($opportunity_post) ? esc_attr(carbon_get_post_meta($opportunity_post->ID, "question_2")) : ""; ?>">
+    <div class="error-message"></div>
 </div>
 
 <div class="col-md-12">
     <label for="question_3" class="form-label">How do you currently pitch your business to a prospect?</label>
     <div class="editor-container" data-target="question_3"></div>
     <input type="hidden" id="question_3" name="question_3" value="<?php echo isset($opportunity_post) ? esc_attr(carbon_get_post_meta($opportunity_post->ID, "question_3")) : ""; ?>">
+    <div class="error-message"></div>
 </div>
 
 <div class="col-md-12">
     <label for="question_4" class="form-label">What are the most common objections you face within your current sales cycle?</label>
     <div class="editor-container" data-target="question_4"></div>
     <input type="hidden" id="question_4" name="question_4" value="<?php echo isset($opportunity_post) ? esc_attr(carbon_get_post_meta($opportunity_post->ID, "question_4")) : ""; ?>">
+    <div class="error-message"></div>
 </div>
 
 <div class="col-md-12">
     <label for="question_5" class="form-label">What strategies do you employ to overcome the objections specified?</label>
     <div class="editor-container" data-target="question_5"></div>
     <input type="hidden" id="question_5" name="question_5" value="<?php echo isset($opportunity_post) ? esc_attr(carbon_get_post_meta($opportunity_post->ID, "question_5")) : ""; ?>">
+    <div class="error-message"></div>
 </div>
 
 <div class="col-md-12">
     <label for="question_6" class="form-label">Please give an overview of what business challenges you help your clients overcome?</label>
     <div class="editor-container" data-target="question_6"></div>
     <input type="hidden" id="question_6" name="question_6" value="<?php echo isset($opportunity_post) ? esc_attr(carbon_get_post_meta($opportunity_post->ID, "question_6")) : ""; ?>">
+    <div class="error-message"></div>
 </div>
 
     <input type="hidden" name="security" value="<?php echo wp_create_nonce(
@@ -301,7 +321,7 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
     <?php if(isset($_GET["opportunity_id"]) && !empty($_GET["opportunity_id"])):?>
      <input type="hidden" name="opportunity_id" value="<?php echo  $_GET["opportunity_id"];?>"/>
      <?php endif;?>
-     <div class="alert alert-danger general-errors" role="alert" style="display:none;">
+     <div class="alert alert-danger general-errors" role="alert" style="display:none;"></div>
      </div>
     <div class="col-12">
         <button type="submit" class="btn btn-primary">Submit</button>

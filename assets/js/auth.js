@@ -1,45 +1,6 @@
 jQuery(document).ready(function ($) {
   var $customSpinner = $(".custom-spinner");
 
-  function displayFormErrors(form, data) {
-    // Clear previous error messages
-    $(form).find(".error-message").remove();
-
-    // Iterate over the errors and display them next to the respective fields
-    $.each(data.fields, function (fieldName, errorMessages) {
-      var field = $(form).find('[name="' + fieldName + '"]');
-      if (field.length) {
-        // Remove existing error messages for the field
-        field.next(".error-message").remove();
-
-        // Create and append error messages
-        $.each(errorMessages, function (index, message) {
-          var errorElement = $(
-            '<div class="error-message text-sm text-danger"></div>',
-          ).text(message);
-          field.after(errorElement);
-        });
-      }
-    });
-
-    if (data.general && data.general.length > 0) {
-      var generalErrorsElement = $(".general-errors");
-      if (generalErrorsElement.length) {
-        // Clear previous general errors
-        generalErrorsElement.empty();
-
-        // Append all general error messages
-        const errors = [];
-        $.each(data.general, function (index, message) {
-          var errorElement = $(
-            '<div class="error-message text-sm text-danger"></div>',
-          ).text(message);
-          errors.push(errorElement);
-        });
-        generalErrorsElement.html(errors);
-      }
-    }
-  }
 
   $("#registration_form").on("submit", function (e) {
     e.preventDefault();

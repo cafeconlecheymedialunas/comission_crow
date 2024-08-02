@@ -22,7 +22,7 @@ if (is_user_logged_in()):
 							                <div class="col-md-3">
 							                    <div class="user-profile card mb-4">
 							                        <img src="" alt="">
-							                        <h2><?php echo $current_user->display_name;?></h2>
+							                        <h2><?php echo $current_user->first_name . " " .$current_user->last_name;?></h2>
 							                        <h3><?php echo $current_user->email;?></h3>
 							                    </div>
 							                    <?php include get_template_directory() . '/templates/dashboard/menu.php';?>

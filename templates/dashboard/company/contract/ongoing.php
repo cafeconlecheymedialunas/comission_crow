@@ -1,9 +1,6 @@
 <?php
 
-$company = Company::get_instance();
-$company_post = $company->get_company();
-
-$contracts = $company->get_contracts(["accepted","finishing"]);
+$contracts = ProfileUser::get_instance()->get_contracts(["accepted","finishing"]);
 
 $current_user = wp_get_current_user();
 

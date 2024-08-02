@@ -1,11 +1,6 @@
 <?php
 
-$company = Company::get_instance();
-$company_post = $company->get_company();
-
-$contracts = $company->get_contracts();
-
-$current_user = wp_get_current_user();
+$commission_requests = ProfileUser::get_instance()->get_commission_requests_for_user();
 
 ?>
 <div class="card mb-4">
@@ -29,7 +24,7 @@ if (locate_template($template_path)) {
 
 
 
-<?php $template_path = 'templates/dashboard/form-contract.php';
+<?php $template_path = 'templates/dashboard/form-dispute.php';
 if (locate_template($template_path)) {
     include locate_template($template_path);
 }
