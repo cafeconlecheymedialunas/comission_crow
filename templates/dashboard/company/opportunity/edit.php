@@ -4,6 +4,7 @@ $opportunity_id = $_GET['opportunity_id'];
 if (isset($opportunity_id) && !empty($opportunity_id)) {
     
     $opportunity_post = get_post($opportunity_id);
+
     ?>
     <div class="card mb-4">
         <h2 class="mb-0"><?php echo __("Edit Opportunity"); ?></h2>

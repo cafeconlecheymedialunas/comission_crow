@@ -5,7 +5,7 @@ use Carbon_Fields\Field;
 class ContainerCustomFields
 {
 
-    private static $admin;
+    private $admin;
 
     public function __construct($admin)
     {
@@ -274,7 +274,7 @@ class ContainerCustomFields
                 Field::make('select', 'user_winnerr_dispute', __('Winner Dispute:'))
                     ->add_options([$this->admin,'get_users']),
             
-                
+                    Field::make('date_time', 'date', __('Date')),
                 Field::make('rich_text', 'admin_decission_comments', __('Admin Comments:')),
                 
 
@@ -284,8 +284,8 @@ class ContainerCustomFields
                 Field::make('complex', 'status_history', 'Dispute Status History')
                 ->add_fields([
                     Field::make('select', 'history_status', __('Status'))
-                    ->set_options([$this->admin,"get_status_commission_request"]),
-                    Field::make('text', 'date_status', 'Date'),
+                    ->set_options([$this->admin,"get_statuses_dispute"]),
+                    Field::make('date_time', 'date_status', 'Date'),
                     Field::make('select', 'changed_by', __('Changed by:'))->add_options([$this->admin,'get_users']),
 
                    

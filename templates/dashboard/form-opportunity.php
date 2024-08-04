@@ -35,20 +35,21 @@ $company_post = ProfileUser::get_instance()->get_user_associated_post_type();
 
 
 
+
+
 $target_audience = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'target_audience') : '';
 $age = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'age') : '';
 $gender = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'gender') : '';
 $images = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'images') : [];
 $supporting_materials = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'supporting_materials') : [];
-$videos = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'videos') : '';
+$videos = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'videos') : [];
 $tips = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'tips') : '';
-
+$deliver_leads = isset($opportunity_post)? carbon_get_post_meta($opportunity_post->ID, 'deliver_leads') : 'no';
 $industry = isset($opportunity_post) ?  wp_get_post_terms($opportunity_post->ID, 'industry', ['fields' => 'ids']): [];
 $language = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 'language', ['fields' => 'ids']):[];
 $country =isset($opportunity_post) ?  wp_get_post_terms($opportunity_post->ID, 'country', ['fields' => 'ids']):[];
 $type_of_company = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 'type_of_company', ['fields' => 'ids']):[];
 $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 'currency', ['fields' => 'ids']):[];
-
 ?>
 <form id="opportunity-form" enctype="multipart/form-data" class="row g-3">
     <div class="col-md-6">
@@ -158,9 +159,9 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
     </div>
     <?php endif;?>
     <div class="col-md-12">
-            <label for="content" class="form-label">Content:</label>
-            <div class="editor-container"></div>
-            <input type="hidden" id="content" name="content" value="<?php echo isset($opportunity_post) ? esc_attr($opportunity_post->post_content):"";?>">
+            <label for="post_content" class="form-label">Content:</label>
+            <div class="editor-container" data-target="post_content"></div>
+            <input type="hidden" id="post_content" name="post_content" value="<?php echo isset($opportunity_post) ? esc_attr($opportunity_post->post_content):"";?>">
             <div class="error-message"></div>
     </div>
 
@@ -205,12 +206,12 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
 
 
     <div class="col-md-6">
-        <label class="form-check-label">
-            <input type="checkbox" name="deliver_leads" class="form-check-input" value="<?php echo isset($opportunity_post) ? esc_attr(carbon_get_post_meta($opportunity_post->ID, "deliver_leads")):"";?>">
-            Deliver Leads?
-        </label>
-        <div class="error-message"></div>
-    </div>
+    <label class="form-check-label">
+        <input type="checkbox" name="deliver_leads" class="form-check-input" value="yes" <?php checked($deliver_leads, true); ?>>
+        Deliver Leads?
+    </label>
+    <div class="error-message"></div>
+</div>
 
     <div class="col-md-6">
         <label for="sales_cycle_estimation" class="form-label">Sales Cycle Estimation:</label>
@@ -322,7 +323,7 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
      <input type="hidden" name="opportunity_id" value="<?php echo  $_GET["opportunity_id"];?>"/>
      <?php endif;?>
      <div class="alert alert-danger general-errors" role="alert" style="display:none;"></div>
-     </div>
+     
     <div class="col-12">
         <button type="submit" class="btn btn-primary">Submit</button>
     </div>

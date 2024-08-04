@@ -8,8 +8,6 @@
                             <th scope="col">Minimal Price</th>
                             <th scope="col">Status</th>
                             <th scope="col">Last Update</th>
-                            <th scope="col">Date</th>
-                            <th scope="col"></th>
                             <th scope="col"></th>
                         </tr>
                     </thead>
@@ -17,17 +15,11 @@
                         <?php if (!empty($contracts)) :
                             foreach ($contracts as $contract) :
                                 
-                                $counterparter_key = in_array("company", $current_user->roles)?"commercial_agent":"company";
-                                
-                                $counterparty = carbon_get_post_meta($contract->ID, $counterparter_key);
+                                $another_part = ProfileUser::get_instance()->get_another_part_of_contract($contract->ID);
+                                $another_part_user = ProfileUser::get_instance()->get_user_another_part_of_contract($contract->ID);
 
                                 
 
-                                $counterparty = get_post($counterparty);
-
-                                $user_counterparty_id = carbon_get_post_meta($counterparty->ID, 'user_id');
-
-                                
                                 
                                 $opportunity = carbon_get_post_meta($contract->ID, 'opportunity');
                                 $opportunity = get_post($opportunity);
@@ -93,10 +85,10 @@
                                         <th scope="row"><a class="text-sm" href=""><?php echo carbon_get_post_meta($contract->ID, "sku"); ?></a></th>
                                         <td><a href=""><?php echo esc_html($opportunity->post_title); ?></a></td>
                                         
-                                        <td><?php echo esc_html($counterparty->post_title); ?></td>
+                                        <td><?php echo esc_html($another_part->post_title); ?></td>
                                     
                                         <td><?php echo esc_html($commission); ?> %</td>
-                                        <td><?php echo esc_html("$".$minimal_price); ?></td>
+                                        <td><?php echo esc_html(Helper::format_price($minimal_price)); ?></td>
                                         <td><span class="badge <?php echo $status_class; ?>"><?php echo esc_html($status_text); ?></span></td>
                                         <td><?php echo ($last_sender_history_user && $history_status_end["date_status"])?$last_update_text:""; ?></td>
                                         <td>
@@ -130,7 +122,7 @@
                                                 </li>
                                                 <?php endif; ?>
                                                 <li class="list-inline-item">
-                                                    <button class="operation" data-bs-toggle="modal" data-bs-target="#chat-modal-<?php echo $user_counterparty_id;?>" data-user-id="<?php echo esc_attr($user_counterparty_id); ?>">
+                                                    <button class="operation" data-bs-toggle="modal" data-bs-target="#chat-modal-<?php echo $another_part_user->ID;?>" data-user-id="<?php echo esc_attr($another_part_user->ID); ?>">
                                                         <i class="chat text-secondary fa-solid fa-comments"></i>
                                                     </button>
                                                 </li>
@@ -146,7 +138,7 @@
                                                     <?php endif;?>
                                                 <?php endif;?>
                                                 
-                                                <div class="modal fade" id="chat-modal-<?php echo $user_counterparty_id;?>" tabindex="-1" aria-labelledby="chatModalLabel" aria-hidden="true">
+                                                <div class="modal fade" id="chat-modal-<?php echo $another_part_user->ID;?>" tabindex="-1" aria-labelledby="chatModalLabel" aria-hidden="true">
                                                     <div class="modal-dialog">
                                                         <div class="modal-content">
                                                             <div class="modal-header">
@@ -154,7 +146,7 @@
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                             </div>
                                                             <div class="modal-body">
-                                                                <?php echo do_shortcode('[better_messages_user_conversation user_id="'.$user_counterparty_id.'"]');?>
+                                                                <?php echo do_shortcode('[better_messages_user_conversation user_id="'.$another_part_user->ID.'"]');?>
                                                             </div>
                                                         </div>
                                                     </div>

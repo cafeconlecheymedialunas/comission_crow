@@ -22,17 +22,17 @@ class Opportunity extends Crud
 
         $general_errors = [];
         $errors = [];
-             
+    
         // Sanitización de datos
         $data = [
             'post_title' => sanitize_text_field($_POST['title']), // Asegurarse de usar 'post_title'
-            'post_content' => wp_kses_post($_POST['content']), // Asegurarse de usar 'post_content'
+            'post_content' => wp_kses_post($_POST['post_content']), // Asegurarse de usar 'post_content'
             'target_audience' => sanitize_text_field($_POST['target_audience']),
             'age' => sanitize_text_field($_POST['age']),
             'gender' => sanitize_text_field($_POST['gender']),
             'price' => sanitize_text_field($_POST['price']),
             'commission' => sanitize_text_field($_POST['commission']),
-            'deliver_leads' => isset($_POST['deliver_leads']) ? sanitize_text_field($_POST['deliver_leads']) : 'no',
+            'deliver_leads' => isset($_POST['deliver_leads']) && $_POST['deliver_leads'] === 'yes' ? true : false,
             'sales_cycle_estimation' => sanitize_text_field($_POST['sales_cycle_estimation']),
             'tips' => sanitize_textarea_field($_POST['tips']),
             'question_1' => sanitize_textarea_field($_POST['question_1']),
@@ -52,8 +52,10 @@ class Opportunity extends Crud
             'opportunity_id' => isset($_POST['opportunity_id']) ? (int) $_POST['opportunity_id'] : null,
         ];
 
+
+   
         // Validación
-       
+
 
         if (empty($data['post_title'])) {
             $errors["title"][] = __("Title field is required.");
@@ -74,12 +76,17 @@ class Opportunity extends Crud
         }
 
         $error_videos = [];
+        $videos = [];
         foreach ($data['videos'] as $video_url) {
             if (empty($video_url)) {
                 $error_videos[] = true;
                 break;
             }
+            $videos[]["video"] = $video_url;
+
         }
+
+        $data["videos"] = $videos;
         if (!empty($error_videos)) {
             $errors["videos"][] = __("One or more video URLs are not valid.");
         }
@@ -87,46 +94,25 @@ class Opportunity extends Crud
         $allowed_image_types = ['image/jpeg', 'image/png', 'image/gif'];
         $max_image_size = 5 * 1024 * 1024; // 5 MB
 
+    
         if (isset($_FILES['images']) && !empty($_FILES['images']['name'][0])) {
-            foreach ($_FILES['images']['name'] as $key => $image_name) {
-                $image_type = $_FILES['images']['type'][$key];
-                $image_size = $_FILES['images']['size'][$key];
-
-                if (!in_array($image_type, $allowed_image_types)) {
-                    $errors['images'][] = __("Invalid file type for image: ") . $image_name;
-                }
-
-                if ($image_size > $max_image_size) {
-                    $errors['images'][] = __("Image size exceeds the limit of 5MB: ") . $image_name;
-                }
+            $validation_result = validate_files($_FILES['images'],$allowed_image_types,$max_image_size);
+            if (isset($validation_result['error'])) {
+                $errors['images'][] = $validation_result['error'];
             }
         }
 
         $allowed_supporting_types = ['application/pdf', 'text/plain'];
         $max_supporting_size = 10 * 1024 * 1024; // 10 MB
 
+        
         if (isset($_FILES['supporting_materials']) && !empty($_FILES['supporting_materials']['name'][0])) {
-            foreach ($_FILES['supporting_materials']['name'] as $key => $file_name) {
-                // Verifica el error del archivo
-                if ($_FILES['supporting_materials']['error'][$key] !== 0) {
-                    $errors['supporting_materials'][] = __("Error in file upload: ") . $file_name;
-                    continue; // Salta al siguiente archivo
-                }
-
-                $file_type = $_FILES['supporting_materials']['type'][$key];
-                $file_size = $_FILES['supporting_materials']['size'][$key];
-
-                if (!in_array($file_type, $allowed_supporting_types)) {
-                    $errors['supporting_materials'][] = __("Invalid file type for supporting material: ") . $file_name;
-                }
-
-                if ($file_size > $max_supporting_size) {
-                    $errors['supporting_materials'][] = __("Supporting material size exceeds the limit of 10MB: ") . $file_name;
-                }
+            $validation_result = validate_files($_FILES['supporting_materials'],$allowed_supporting_types,$max_supporting_size);
+            if (isset($validation_result['error'])) {
+                $errors['supporting_materials'][] = $validation_result['error'];
             }
         }
-
-        $company = ProfileUser::get_instance()->sget_user_associated_post_type();
+        $company = ProfileUser::get_instance()->get_user_associated_post_type();
 
         
         if(is_wp_error($company) || empty($company->ID)) {
@@ -151,59 +137,11 @@ class Opportunity extends Crud
         }
 
       
-        $uploaded_image_ids = [];
-        $uploaded_supporting_material_ids = [];
+        $uploaded_image_ids = handle_multiple_file_upload($_FILES['images']);
+        $uploaded_supporting_material_ids = handle_multiple_file_upload($_FILES['supporting_materials']);
 
-        if (isset($_FILES['images']) && !empty($_FILES['images']['name'][0])) {
-            require_once(ABSPATH . 'wp-admin/includes/image.php');
-            require_once(ABSPATH . 'wp-admin/includes/file.php');
-            require_once(ABSPATH . 'wp-admin/includes/media.php');
-        
-            foreach ($_FILES['images']['name'] as $key => $image_name) {
-                if ($_FILES['images']['error'][$key] === 0) {
-                    $file = [
-                        'name'     => $_FILES['images']['name'][$key],
-                        'type'     => $_FILES['images']['type'][$key],
-                        'tmp_name' => $_FILES['images']['tmp_name'][$key],
-                        'error'    => $_FILES['images']['error'][$key],
-                        'size'     => $_FILES['images']['size'][$key]
-                    ];
-        
-                    $attachment_id = media_handle_sideload($file, 0);
-                    
-                    if (is_wp_error($attachment_id)) {
-                        $errors['images'][] = __("Error when saving Images") ;
-                    } else {
-                        $uploaded_image_ids[] = $attachment_id;
-                    }
-                }
-            }
-        }
-
-        if (isset($_FILES['supporting_materials']) && !empty($_FILES['supporting_materials']['name'][0])) {
-            require_once(ABSPATH . 'wp-admin/includes/file.php');
-            require_once(ABSPATH . 'wp-admin/includes/media.php');
-    
-            foreach ($_FILES['supporting_materials']['name'] as $key => $file_name) {
-                if ($_FILES['supporting_materials']['error'][$key] === 0) {
-                    $file = [
-                        'name'     => $_FILES['supporting_materials']['name'][$key],
-                        'type'     => $_FILES['supporting_materials']['type'][$key],
-                        'tmp_name' => $_FILES['supporting_materials']['tmp_name'][$key],
-                        'error'    => $_FILES['supporting_materials']['error'][$key],
-                        'size'     => $_FILES['supporting_materials']['size'][$key]
-                    ];
-    
-                    $attachment_id = media_handle_sideload($file, 0);
-    
-                    if (is_wp_error($attachment_id)) {
-                        $errors['supporting_materials'][] = __("Error when saving Supporting Materials Files");
-                    } else {
-                        $uploaded_supporting_material_ids[] = $attachment_id;
-                    }
-                }
-            }
-        }
+        $data["images"] = $uploaded_image_ids;
+        $data["supporting_materials"] = $uploaded_supporting_material_ids;
 
   
 

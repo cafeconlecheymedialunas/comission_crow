@@ -101,8 +101,10 @@ $current_user = wp_get_current_user();
 				
 				<div class="menu-account">
 					<div class="d-flex jus">
-						<?php if(in_array("company", $current_user->roles)):?>
-						<span class="balance">123 $</span>
+						<?php
+            $wallet_balance = ProfileUser::get_instance()->calculate_wallet_balance();
+if(in_array("commercial_agent", $current_user->roles) && $wallet_balance):?>
+						<span class="balance"><?php  echo Helper::format_price($wallet_balance);?></span>
 						<?php endif;?>
 						
 						
@@ -117,7 +119,7 @@ $current_user = wp_get_current_user();
 							<div class="dropdown">
 								<span class="dropdown-toggle" type="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
 								<?php
-                                $default = get_template_directory_uri() . "/assets/img/placeholder.png";
+                    $default = get_template_directory_uri() . "/assets/img/placeholder.png";
 						    if ($post_thumbnail) {
 						        echo $post_thumbnail;
 						    } else {
@@ -133,7 +135,8 @@ $current_user = wp_get_current_user();
 							</div>
 						<?php else : ?>
 							<a class="btn btn-primary" href="<?php echo esc_url(home_url("/auth?action=login")); ?>">Login</a>
-							<a class="btn btn-secondary" href="<?php echo esc_url(home_url("/auth?action=register")); ?>">Register</a>
+							<a class="btn btn-secondary" href="<?php echo esc_url(home_url("/auth?action=register&role=commercial_agent")); ?>">Register as a Agent</a>
+              <a class="btn btn-secondary" href="<?php echo esc_url(home_url("/auth?action=register&role=company")); ?>">Register your Company</a>
 						<?php endif; ?>
 	                    </div>
                     </div>

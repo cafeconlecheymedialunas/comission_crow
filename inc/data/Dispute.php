@@ -114,7 +114,7 @@ class Dispute
         carbon_set_post_meta($post_id, 'status', "pending");
         carbon_set_post_meta($post_id, 'initiating_user', get_current_user_id());
         carbon_set_post_meta($post_id, 'status_history', $status_history);
-
+        carbon_set_post_meta($post_id, 'date', current_time("mysql"));
 
         // Updatge Commission Request to in_DISPUTE
         $status_commision_request_history = Helper::add_item_to_status_history($commission_request_id, "in_dispute");

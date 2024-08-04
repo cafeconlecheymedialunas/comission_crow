@@ -14,6 +14,7 @@ jQuery(document).ready(function ($) {
       data: formData,
       processData: false,
       contentType: false,
+      cache: false,
       success: function (response) {
         $customSpinner.removeClass("d-flex").hide();
 
@@ -55,6 +56,7 @@ jQuery(document).ready(function ($) {
       data: formData,
       processData: false,
       contentType: false,
+      cache: false,
       success: function (response) {
         $customSpinner.removeClass("d-flex").hide();
         console.log(response);
@@ -93,6 +95,7 @@ jQuery(document).ready(function ($) {
       data: formData,
       processData: false,
       contentType: false,
+      cache: false,
       success: function (response) {
         $customSpinner.removeClass("d-flex").hide();
 
@@ -139,6 +142,7 @@ jQuery(document).ready(function ($) {
       data: formData,
       processData: false,
       contentType: false,
+      cache: false,
       success: function (response) {
         $customSpinner.removeClass("d-flex").hide();
         console.log(response);

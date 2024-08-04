@@ -89,6 +89,7 @@ jQuery(document).ready(function ($) {
           data: formData,
           processData: false,
           contentType: false,
+          cache: false,
           success: function (response) {
             if (response.success) {
               Swal.fire({

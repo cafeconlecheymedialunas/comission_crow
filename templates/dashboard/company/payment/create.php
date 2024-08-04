@@ -92,7 +92,7 @@ $location = get_user_meta($user->ID, 'location', true); // Ejemplo para obtener 
                                     <h6><?php echo esc_html(get_the_title($opportunity_id)); ?></h6>
                                 <?php endif; ?>
                                 <?php if ($has_minimal_price): ?>
-                                    <p>Minimum price: $<?php echo esc_html($minimal_price); ?></p>
+                                    <p>Minimum price: <?php echo esc_html(Helper::format_price($minimal_price)); ?></p>
                                 <?php endif; ?>
                                 <?php if ($has_commission): ?>
                                     <p>Commission: <?php echo esc_html($commission); ?>%</p>
@@ -132,31 +132,31 @@ $location = get_user_meta($user->ID, 'location', true); // Ejemplo para obtener 
                             <?php foreach ($items as $item): ?>
                                 <li class="list-group-item d-flex justify-content-between lh-condensed">
                                     <div>
-                                        <span class="text-muted">$<?php echo esc_html($item["price_paid"]); ?></span>
+                                        <span class="text-muted"><?php echo esc_html(Helper::format_price($item["price_paid"])); ?></span>
                                         <small class="text-muted">X <?php echo esc_html($item["quantity"]); ?></small>
                                     </div>
-                                    <h6 class="my-0 text-muted">$<?php echo esc_html($item["subtotal"]); ?></h6>
+                                    <h6 class="my-0 text-muted"><?php echo esc_html(Helper::format_price($item["subtotal"])); ?></h6>
                                 </li>
                             <?php endforeach; ?>
                             <li class="list-group-item d-flex justify-content-between">
                                 <span>Total Sales (USD)</span>
-                                <strong>$<?php echo esc_html($total_cart); ?></strong>
+                                <strong><?php echo esc_html(Helper::format_price($total_cart)); ?></strong>
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
                                 <span>Commission of Agent </span>
-                                <strong>$<?php echo esc_html(calculate_agent_price($commission_request_id)); ?></strong>
+                                <strong><?php echo esc_html(Helper::format_price(calculate_agent_price($commission_request_id))); ?></strong>
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
                                 <span>Commission of Nexfy</span>
-                                <strong>$<?php echo esc_html(calculate_platform_price($commission_request_id)); ?></strong>
+                                <strong><?php echo esc_html(Helper::format_price(calculate_platform_price($commission_request_id))); ?></strong>
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
                                 <span>Stripe service fee</span>
-                                <strong>$<?php echo esc_html(calculate_tax_stripe_price($commission_request_id)); ?></strong>
+                                <strong><?php echo esc_html(Helper::format_price(calculate_tax_stripe_price($commission_request_id))); ?></strong>
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
                                 <span class="fw-bold">Total:</span>
-                                <span class="fw-bold">$<?php echo esc_html(calculate_total($commission_request_id)); ?></span>
+                                <span class="fw-bold"><?php echo esc_html(Helper::format_price(calculate_total($commission_request_id))); ?></span>
                             </li>
                         </ul>
                     </div>

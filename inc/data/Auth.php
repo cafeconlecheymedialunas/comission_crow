@@ -21,9 +21,15 @@ class Auth
 
             $registration_enabled = get_option('users_can_register');
             if ($registration_enabled) {
-                $role = isset($_GET['role']) && !empty($_GET['role']) ? sanitize_text_field($_GET['role']) : "commercial_agent";
+               
+               
+                ob_start();
+                $role = isset($_GET['role']) && !empty($_GET['role']) ? sanitize_text_field($_GET['role']):"";
                 
-                $output = $this->registration_form_fields($role);
+                $template_path = 'templates/dashboard/form-register.php';
+              
+                require locate_template($template_path);
+                return ob_get_clean();
             } else {
                 $output = __('User registration is not enabled');
             }
@@ -62,121 +68,35 @@ class Auth
 
     public function registration_form_fields($role)
     {
-        $title = $role === 'company' ? __('Register as a Company') : __('Register as a Commercial Agent');
-        ob_start(); ?>
-        <h1 class="site-title"><?php echo $title; ?></h1>
-        <div id="registration_errors"></div>
-        <form id="registration_form">
-            <div class="row gx-1">
-                <div class="col-md-6">
-                    <input name="first_name" placeholder="First Name" id="first_name" class="form-control" type="text" />
-                </div>
-                <div class="col-md-6">
-                    <input name="last_name" placeholder="Last Name" id="last_name" class="form-control" type="text" />
-                </div>
-                <div class="col-md-6">
-                    <input name="user_email" placeholder="Email" id="user_email" class="form-control" type="email" />
-                </div>
-                <div class="col-md-6">
-                    <input name="user_pass" placeholder="Password" id="password" class="form-control" type="password" />
-                </div>
-                <div class="col-md-6">
-                    <input name="user_pass_confirm" placeholder="Repeat Password" id="password_again" class="form-control" type="password" />
-                </div>
-                <?php if ($role === "company") : ?>
-                    <div class="col-md-6">
-                        <input name="company_name" placeholder="Company Name" id="company_name" class="form-control" type="text" />
-                    </div>
-                <?php endif; ?>
-            </div>
-            <div class="alert alert-danger general-errors" role="alert" style="display:none;"></div>
-            <p>
-                <button type="submit"><?php _e('Save'); ?></button>
-            </p>
-            
-            <input type="hidden" name="role" value="<?php echo $role; ?>" />
-            <input type="hidden" name="security" value="<?php echo wp_create_nonce('register-nonce'); ?>" />
-            <p class="another-pages">Already have an account? <a href="<?php echo esc_url(home_url("/auth?action=login")); ?>">Login</a></p>
-        </form>
-    <?php
-        return ob_get_clean();
+       
     }
     public function login_form_fields()
     {
-        ob_start(); ?>
-        <h1 class="site-title"><?php _e('Login'); ?></h1>
-        <div id="login_errors"></div>
-        <form id="login_form" class="form">
-            <fieldset>
-                <p>
-                    <input name="user_login" placeholder="Email" id="user_login" class="form-control" type="text"/>
-                </p>
-                <p>
-                    <input name="user_pass" placeholder="Password" id="user_pass" class="form-control" type="password"/>
-                </p>
-                <p>
-                    <input type="checkbox" name="remember_me" id="remember_me" value="true"/>
-                    <label for="remember_me"><?php _e('Remember me'); ?></label>
-                </p>
-                <p>
-                    <div class="alert alert-danger general-errors" role="alert" style="display:none;"></div>
-                    <input type="hidden" name="security" value="<?php echo wp_create_nonce('login-nonce'); ?>"/>
-                    <button id="login_submit" type="submit"><?php _e('Login'); ?></button>
-                </p>
-                <p class="another-pages">
-                    <a href="<?php echo esc_url(home_url("/auth?action=register")); ?>"><?php _e('Register'); ?></a> | 
-                    <a href="<?php echo esc_url(home_url("/auth?action=password_reset")); ?>"><?php _e('Lost your password?'); ?></a> | 
-                    <a href="<?php echo esc_url(home_url("/auth?action=register&role=company")); ?>"><?php _e('Register your company'); ?></a>
-                </p>
-            </fieldset>
-        </form>
-        <?php
+        ob_start();
+        $template_path = 'templates/dashboard/form-login.php';
+        
+        require locate_template($template_path);
+        
         return ob_get_clean();
     }
     
     public function password_reset_form_fields()
     {
-        ob_start(); ?>
-        <h1 class="site-title"><?php _e('Reset Password'); ?></h1>
-        <div id="reset_errors"></div>
-        <form id="reset_form" class="form">
-            <fieldset>
-                <p>
-                    <input name="user_email" placeholder="Email" id="user_email" class="form-control" type="email"/>
-                </p>
-                <p>
-                    <div class="alert alert-danger general-errors" role="alert" style="display:none;"></div>
-                    <input type="hidden" name="security" value="<?php echo wp_create_nonce('reset-nonce'); ?>"/>
-                    <button type="submit"><?php _e('Save'); ?></button>
-                </p>
-            </fieldset>
-        </form>
-        <?php
+        ob_start();
+        $template_path = 'templates/dashboard/form-reset-password.php';
+     
+        require locate_template($template_path);
+        
+        
         return ob_get_clean();
     }
     public function new_password_form_fields()
     {
-        ob_start(); ?>
-        <h1 class="site-title"><?php _e('Set a New Password'); ?></h1>
-        <div id="new_password_errors"></div>
-        <form id="new_password_form" class="form">
-            <fieldset>
-                <p>
-                    <input name="new_password" placeholder="Password" id="new_password" class="form-control" type="password"/>
-                </p>
-                <p>
-                    <input name="confirm_password" placeholder="Confirm Password" id="confirm_password" class="form-control" type="password"/>
-                </p>
-                <p>
-                    <input type="hidden" name="reset_key" value="<?php echo esc_attr($_GET['key']); ?>"/>
-                    <input type="hidden" name="reset_login" value="<?php echo esc_attr($_GET['login']); ?>"/>
-                    <input type="hidden" name="security" value="<?php echo wp_create_nonce('new-password-nonce'); ?>"/>
-                    <div class="alert alert-danger general-errors" role="alert" style="display:none;"></div>
-                    <button type="submit"><?php _e('Save'); ?></button>
-                </p>
-            </fieldset>
-        </form>
-        <?php
+        ob_start();
+        $template_path = 'templates/dashboard/form-new-password.php';
+     
+        require locate_template($template_path);
+        
         return ob_get_clean();
     }
     public function register_user()
@@ -192,7 +112,7 @@ class Auth
         $email = sanitize_email($_POST['user_email']);
         $password = sanitize_text_field($_POST['user_pass']);
         $password_confirm = sanitize_text_field($_POST['user_pass_confirm']);
-        $company_name = isset($_POST['company_name']) ? sanitize_text_field($_POST['company_name']) : '';
+        $company_name = sanitize_text_field($_POST['company_name']);
         $role = sanitize_text_field($_POST['role']);
     
         // Validate first name
@@ -215,49 +135,46 @@ class Auth
         }
     
         // Validate password
-     
-      
         if (empty($password)) {
             $field_errors['user_pass'][] = __('Please enter a password.');
         }
         if (strlen($password) < 8) {
-            $field_errors['user_pass'][] ='Password must be at least 8 characters long.';
+            $field_errors['user_pass'][] = __('Password must be at least 8 characters long.');
         }
         if (!preg_match('/[A-Z]/', $password)) {
-            $field_errors['user_pass'][] ='Password must contain at least one uppercase letter.';
+            $field_errors['user_pass'][] = __('Password must contain at least one uppercase letter.');
         }
         if (!preg_match('/[a-z]/', $password)) {
-            $field_errors['user_pass'][] ='Password must contain at least one lowercase letter.';
+            $field_errors['user_pass'][] = __('Password must contain at least one lowercase letter.');
         }
         if (!preg_match('/[0-9]/', $password)) {
-            $field_errors['user_pass'][] ='Password must contain at least one number.';
+            $field_errors['user_pass'][] = __('Password must contain at least one number.');
         }
         if (!preg_match('/[\W_]/', $password)) {
-            $field_errors['user_pass'][] ='Password must contain at least one special character.';
+            $field_errors['user_pass'][] = __('Password must contain at least one special character.');
         }
-     
+    
         if (!empty($password_confirm) && $password !== $password_confirm) {
             $field_errors['user_pass_confirm'][] = __('Passwords do not match.');
         }
-
+    
+        // Validate company name if role is 'company'
         if ($role === 'company') {
             if (empty($company_name)) {
                 $field_errors['company_name'][] = __('Please enter your company name.');
             } else {
                 // Check if a company with the same name already exists
                 $company = new WP_Query([
-                    'post_type'  => 'company',
-                    'post_title' => $company_name,
-                    'posts_per_page' => 1, // Get only one result
-                    'post_status' => 'any', // Consider all post statuses
+                    'post_type' => 'company',
+                    'title' => $company_name,
+                    'posts_per_page' => 1,
                 ]);
     
-                if (!empty($company->posts)) {
-                    $field_errors['company_name'][] = __('There is already a company with that name.');
+                if ($company->have_posts()) {
+                    $field_errors['company_name'][] = __('A company with this name already exists.');
                 }
             }
         }
-       
     
         // Check if there are any field-specific errors
         if (!empty($field_errors)) {
@@ -273,7 +190,7 @@ class Auth
             'first_name' => $first_name,
             'last_name' => $last_name,
             'role' => $role,
-            "display_name" => $first_name ." ".$last_name
+            "display_name" => $first_name . " " . $last_name
         ]);
     
         if (is_wp_error($user_id)) {
@@ -283,23 +200,27 @@ class Auth
     
         // Create post type based on role
         $post_id = 0;
-        if ($role === 'company' && !empty($company_name)) {
-
-            $post_id = wp_insert_post([
-                'post_title' => $company_name,
-                'post_type' => 'company',
-                'post_status' => 'publish',
-                'post_author' => $user_id,
-            ]);
+        if ($role === 'company') {
+            if (!empty($company_name)) {
+                $post_id = wp_insert_post([
+                    'post_title' => $company_name,
+                    'post_type' => 'company',
+                    'post_status' => 'publish',
+                    'post_author' => $user_id,
+                ]);
     
-            // Verify the post creation
-            if (is_wp_error($post_id)) {
-                wp_send_json_error(['general' => ['There was an error creating the company post.']]);
+                // Verify the post creation
+                if (is_wp_error($post_id)) {
+                    wp_send_json_error(['general' => ['There was an error creating the company post.']]);
+                    die();
+                }
+    
+                carbon_set_post_meta($post_id, 'user_id', $user_id);
+                carbon_set_post_meta($post_id, 'company_name', $company_name);
+            } else {
+                wp_send_json_error(['general' => ['Company name cannot be empty.']]);
                 die();
             }
-    
-            carbon_set_post_meta($post_id, 'user_id', $user_id);
-            carbon_set_post_meta($post_id, 'company_name', $company_name);
         } elseif ($role === 'commercial_agent') {
             $post_id = wp_insert_post([
                 'post_title' => $first_name . ' ' . $last_name,
@@ -317,9 +238,15 @@ class Auth
             carbon_set_post_meta($post_id, 'user_id', $user_id);
         }
     
-        wp_send_json_success(__('Registration successful.'));
+        // Return the user information as JSON response
+        $user = get_user_by('id', $user_id);
+    
+        wp_send_json_success($user);
         die();
     }
+    
+    
+
 
     public function login_user()
     {

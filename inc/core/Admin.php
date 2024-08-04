@@ -118,32 +118,34 @@ class Admin
     {
         return [
             'pending' => 'Pending',
-            "in_dispute" => "In Dispute",
-            "accepted" => "Accepted"
+            "dispute_pending" => "Dispute Pending",
+            "dispute_refused" => "Dispute Refused",
+            "dispute_cancelled" => "Dispute Cancelled",
+            "dispute_accepted" => "Dispute Accepted",
+            "payment_pending" => "Pending Payment",
+            "payment_cancelled" => "Payment Cancelled",
+            "payment_failed" => "Payment Fail",
+            "payment_completed" => "Payment Completed",
         ];
     }
 
     public function get_statuses_dispute()
     {
         return [
-            'pending' => 'Pending',
-            "decline" => "Decline",
-            "resolve" => "Resolve"
+            'dispute_pending' => 'Dispute Pending',
+            "dispute_cancelled" => "Dispute Cancelled",
+            "dispute_refused" => "Dispute Refused",
+            "dispute_approved" => "Dispute Approved"
         ];
     }
 
     public function get_status_payment()
     {
         return [
-            'succeeded' => 'El pago se completó exitosamente.',
-            'pending' => 'El pago está pendiente de completarse.',
-            'failed' => 'El pago falló.',
-            'canceled' => 'El pago fue cancelado.',
-            'requires_payment_method' => 'El pago requiere un método de pago.',
-            'requires_confirmation' => 'El pago requiere confirmación.',
-            'requires_action' => 'El pago requiere acción adicional.',
-            'in_process' => 'El pago está en proceso.',
-            'authorized' => 'El pago ha sido autorizado pero aún no capturado.',
+            'payment_completed' => 'El pago se completó exitosamente.',
+            'payment_pending' => 'El pago está pendiente de completarse.',
+            'payment_failed' => 'El pago falló.',
+            'payment_canceled' => 'El pago fue cancelado.'
         ];
     }
     public function get_target_audiences()

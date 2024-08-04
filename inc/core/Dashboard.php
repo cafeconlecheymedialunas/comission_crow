@@ -83,6 +83,9 @@ class Dashboard
         $key = in_array("commercial_agent", $current_user->roles) ? "commercial_agent" : "company";
 
         $routes = [
+            "dashboard" => [
+                "commercial_agent" => "dashboard/commercial-agent/dashboard/",
+            ],
             "profile" => [
                 "company" => "dashboard/company/profile/",
                 "commercial_agent" => "dashboard/commercial-agent/profile/",
@@ -124,8 +127,8 @@ class Dashboard
             "payment_show" => [
                 "company" => "dashboard/company/payment/show",
             ],
-            "deposit_list" => [
-                "company" => "dashboard/company/deposit/all",
+            "deposit_list" =>[
+                "commercial_agent" => "dashboard/commercial-agent/deposit/all",
             ],
             "disputes" => [
                 "company" => "dashboard/company/dispute/",

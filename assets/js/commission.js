@@ -195,6 +195,7 @@ jQuery(document).ready(function ($) {
           success: function (response) {
             console.log(response);
             if (response.success) {
+              $customSpinner.removeClass("d-flex").hide();
               Swal.fire({
                 title: "The commission request has been deleted.",
                 icon: "success",

@@ -14,6 +14,19 @@ class Helper
         return self::$instance;
     }
 
+
+    public static function format_price($amount, $currency = '$', $decimals = 2)
+    {
+        // Asegurarse de que $amount sea un número flotante
+        $amount = floatval($amount);
+    
+        // Formatear el precio con el número de decimales especificado
+        $formatted_amount = number_format($amount, $decimals, '.', ',');
+    
+        // Devolver el precio con el símbolo de la moneda
+        return $currency . $formatted_amount;
+    }
+
     public static function get_human_time_diff($date)
     {
         // Check if the date is valid

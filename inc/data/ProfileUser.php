@@ -14,7 +14,102 @@ class ProfileUser
         return self::$instance;
     }
 
+    public function calculate_total_income_by_month()
+    {
+        $commission_requests = ProfileUser::get_instance()->get_commission_requests_for_user();
 
+        // Extraer los IDs de los commission requests
+        $commission_request_ids = array_map(function ($post) {
+            return $post->ID;
+        }, $commission_requests);
+
+        $payments = get_posts([
+            'post_type' => 'payment',
+            'posts_per_page' => -1,
+        ]);
+
+        // Array para almacenar el ingreso total por mes
+        $total_income_by_month = array_fill(1, 12, 0);
+
+        foreach ($payments as $payment) {
+            $commission_request_id = carbon_get_post_meta($payment->ID, 'commission_request_id');
+
+            // Verifica si el commission_request_id está en la lista de IDs de commission_requests del usuario
+            if (in_array($commission_request_id, $commission_request_ids)) {
+                $total_paid = carbon_get_post_meta($payment->ID, 'total_paid');
+                $payment_date = get_post_meta($payment->ID, 'date', true);
+
+                if ($payment_date) {
+                    $timestamp = strtotime($payment_date);
+                    $month = (int) date('n', $timestamp);
+                    $total_income_by_month[$month] += floatval($total_paid);
+                }
+            }
+        }
+
+        return $total_income_by_month;
+    }
+
+    public function calculate_total_income()
+    {
+        $commission_requests = ProfileUser::get_instance()->get_commission_requests_for_user();
+
+        // Extraer los IDs de los commission requests
+        $commission_request_ids = array_map(function ($post) {
+            return $post->ID;
+        }, $commission_requests);
+
+        $payments = get_posts([
+            'post_type' => 'payment',
+            'posts_per_page' => -1,
+        ]);
+
+        $total_income = 0;
+
+        foreach ($payments as $payment) {
+            $commission_request_id = carbon_get_post_meta($payment->ID, 'commission_request_id');
+
+            // Verifica si el commission_request_id está en la lista de IDs de commission_requests del usuario
+            if (in_array($commission_request_id, $commission_request_ids)) {
+                $total_paid = carbon_get_post_meta($payment->ID, 'total_paid');
+                $total_income += floatval($total_paid);
+            }
+        }
+
+        return $total_income;
+    }
+
+    public function calculate_total_expenses()
+    {
+
+        $deposits = get_posts([
+            'post_type' => 'deposit',
+            'posts_per_page' => -1,
+            'meta_query' => [
+                [
+                    'key' => 'user',
+                    'value' => get_current_user_id(),
+                    'compare' => '=',
+                ],
+            ],
+        ]);
+
+        $total_expenses = 0;
+
+        foreach ($deposits as $deposit) {
+            $total_paid = carbon_get_post_meta($deposit->ID, 'total_paid');
+            $total_expenses += floatval($total_paid);
+        }
+
+        return $total_expenses;
+    }
+    public function calculate_wallet_balance()
+    {
+        $total_income = $this->calculate_total_income();
+        $total_expenses = $this->calculate_total_expenses();
+        $wallet_balance = $total_income - $total_expenses;
+        return $wallet_balance;
+    }
 
     public function update_user_data()
     {
@@ -74,7 +169,7 @@ class ProfileUser
             'first_name' => $first_name,
             'last_name' => $last_name,
             'user_email' => $user_email,
-            "display_name" => $first_name . " ".$last_name
+            "display_name" => $first_name . " " . $last_name,
         ];
 
         if (!empty($password)) {
@@ -89,16 +184,15 @@ class ProfileUser
 
         $user = get_user_by("ID", $updated_user_id);
 
-
-        if(in_array("commercial_agent", $user->roles)) {
+        if (in_array("commercial_agent", $user->roles)) {
 
             $post = ProfileUser::get_instance()->get_user_associated_post_type();
 
             $post_data = [
-                'ID'         => $post->ID,
-                'post_title' => $first_name . " ".$last_name,
+                'ID' => $post->ID,
+                'post_title' => $first_name . " " . $last_name,
             ];
-            
+
             // Realizar la actualización
             wp_update_post($post_data);
         }
@@ -107,29 +201,28 @@ class ProfileUser
 
     }
 
-
     public function update_stripe_email()
     {
         // Verificar el nonce para seguridad
         check_ajax_referer('update_stripe_email_nonce', 'security');
-    
+
         // Obtener los datos del formulario
         $stripe_email = sanitize_text_field($_POST['stripe_email']);
         $commercial_agent_id = intval($_POST['commercial_agent_id']);
-    
+
         $post = get_post($commercial_agent_id);
-        if(empty($post)) {
+        if (empty($post)) {
             wp_send_json_error(['general' => 'Agent not found']);
         }
-    
+
         // Validar los datos
         if (empty($stripe_email) || !is_email($stripe_email)) {
             wp_send_json_error(['general' => 'Invalid email address.']);
         }
-    
+
         // Actualizar el email en los metadatos del agente comercial
         carbon_set_post_meta($post->ID, 'stripe_email', $stripe_email);
-    
+
         // Enviar respuesta de éxito
         wp_send_json_success(['general' => 'Email updated successfully.']);
     }
@@ -139,8 +232,6 @@ class ProfileUser
 
         // Obtener el tipo de post asociado al usuario actual
         $post_current_user = $this->get_user_associated_post_type();
-
-        
 
         if (!$post_current_user) {
             return false;
@@ -176,8 +267,8 @@ class ProfileUser
                 [
                     'key' => $post_current_user->post_type,
                     'value' => $post_current_user->ID,
-                    'compare' => '='
-                ]
+                    'compare' => '=',
+                ],
             ],
             'posts_per_page' => -1,
         ];
@@ -187,7 +278,7 @@ class ProfileUser
             $args['meta_query'][] = [
                 'key' => 'status',
                 'value' => $statuses,
-                'compare' => 'IN' // Esto funcionará como un OR en meta_query
+                'compare' => 'IN', // Esto funcionará como un OR en meta_query
             ];
         }
 
@@ -207,7 +298,7 @@ class ProfileUser
             if (empty($initiating_user)) {
                 continue;
             }
-            
+
             if ($type == "requested" && $current_user->ID === $initiating_user) {
                 $contracts[] = $contract;
             } elseif ($type == "received" && $current_user->ID !== $initiating_user) {
@@ -223,7 +314,7 @@ class ProfileUser
 
         // Obtener el tipo de post asociado al usuario actual
         $post = $this->get_user_associated_post_type();
-        
+
         if (!$post) {
             return []; // No hay post asociado al usuario
         }
@@ -266,11 +357,10 @@ class ProfileUser
         return $commission_request_query->posts;
     }
 
-
     public function get_payment_for_commission_request_user()
     {
         $commission_requests = $this->get_commission_requests_for_user();
-        
+
         if (!$commission_requests) {
             return [];
         }
@@ -283,7 +373,7 @@ class ProfileUser
         if (empty($commission_request_ids)) {
             return [];
         }
-        
+
         $commission_request_query = new WP_Query([
             'post_type' => 'payment',
             'meta_query' => [
@@ -296,7 +386,6 @@ class ProfileUser
         ]);
         return $commission_request_query->posts;
     }
-    
 
     public function get_disputes_for_user()
     {
@@ -351,7 +440,7 @@ class ProfileUser
 
     public function has_open_dispute($commission_request_id)
     {
-       
+
         $dispute_query = new WP_Query([
             'post_type' => 'dispute',
             'meta_query' => [
@@ -438,6 +527,10 @@ class ProfileUser
         $counterparter_key = in_array("company", $current_user->roles) ? "commercial_agent" : "company";
 
         $counterparty_id = carbon_get_post_meta($post_id, $counterparter_key);
+
+        
+
+       
 
         $user_id = carbon_get_post_meta($counterparty_id, 'user_id');
 

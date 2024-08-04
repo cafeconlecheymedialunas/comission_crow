@@ -71,8 +71,8 @@ $youtube_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'y
 
                     <div class="col-md-12">
                         <label for="description" class="form-label">Description</label>
-                        <div class="editor-container" data-target="description"></div>
-                        <input type="hidden" id="description" name="description" value="<?php echo isset($company_post) ? $company_post->post_content : ""; ?>">
+                        <div class="editor-container" data-target="post_content"></div>
+                        <input type="hidden" id="post_content" name="post_content" value="<?php echo isset($company_post) ? $company_post->post_content : ""; ?>">
                         <div class="error-message"></div>
                     </div>
 

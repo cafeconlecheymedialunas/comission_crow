@@ -88,9 +88,9 @@
                     <td><span class="txt-sm"><?php echo carbon_get_post_meta($contract_id, "sku"); ?></span></td>
                     <td><a href=""><?php echo $another_part->post_title; ?></a></td>
                     <td><a href=""><?php echo get_the_title($opportunity_id); ?></a></td>
-                    <td><?php echo esc_html("$" . number_format($total_cart_commission_request, 2, ',', '')); ?></td>
+                    <td><?php echo esc_html(Helper::format_price($total_cart_commission_request)); ?></td>
                     <td><?php echo esc_html(carbon_get_post_meta($contract_id, "commission") . "%"); ?></td>
-                    <td><?php echo esc_html("$" . number_format($total_agent_commission_request, 2, ",", "")); ?></td>
+                    <td><?php echo esc_html(Helper::format_price($total_agent_commission_request)); ?></td>
                     <td>
                         <span class="badge <?php echo $status_class; ?>"><?php echo esc_html($status_text); ?></span>
                         <?php if ($status_dispute) {

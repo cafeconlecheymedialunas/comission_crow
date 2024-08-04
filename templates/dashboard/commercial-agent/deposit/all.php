@@ -1,66 +1,16 @@
 <?php
-function calculate_total_income($commission_request_ids)
-{
-    $payments = get_posts([
-        'post_type' => 'payment',
-        'posts_per_page' => -1,
-    ]);
 
-    $total_income = 0;
 
-    foreach ($payments as $payment) {
-        $commission_request_id = carbon_get_post_meta($payment->ID, 'commission_request_id');
 
-        // Verifica si el commission_request_id está en la lista de IDs de commission_requests del usuario
-        if (in_array($commission_request_id, $commission_request_ids)) {
-            $total_paid = carbon_get_post_meta($payment->ID, 'total_paid');
-            $total_income += floatval($total_paid);
-        }
-    }
-
-    return $total_income;
-}
-
-function calculate_total_expenses($commercial_agent_id)
-{
-    $deposits = get_posts([
-        'post_type' => 'deposit',
-        'posts_per_page' => -1,
-        'meta_query' => [
-            [
-                'key' => 'user',
-                'value' => get_current_user_id(),
-                'compare' => '=',
-            ],
-        ],
-    ]);
-
-    $total_expenses = 0;
-
-    foreach ($deposits as $deposit) {
-        $total_paid = carbon_get_post_meta($deposit->ID, 'total_paid');
-        $total_expenses += floatval($total_paid);
-    }
-
-    return $total_expenses;
-}
-
-// Supongamos que $commission_requests ya contiene todos los commission requests del usuario
-$commission_requests = ProfileUser::get_instance()->get_commission_requests_for_user();
-$post_associated_user = ProfileUser::get_instance()->get_user_associated_post_type();
-
-// Extraer los IDs de los commission requests
-$commission_request_ids = array_map(function ($post) {
-    return $post->ID;
-}, $commission_requests);
-
-$total_income = calculate_total_income($commission_request_ids);
-$total_expenses = calculate_total_expenses($post_associated_user->ID);
 
 // Calcular el balance de la wallet
-$wallet_balance = $total_income - $total_expenses;
+
 $current_user_id = get_current_user_id();
 
+
+
+
+$wallet_balance = ProfileUser::get_instance()->calculate_wallet_balance();
 $deposits = get_posts([
     'post_type' => 'deposit',
     'posts_per_page' => -1,
@@ -83,7 +33,7 @@ $deposits = get_posts([
 
             <h1 class="d-inline">Balance</h1>
 
-            <span>$<?php echo $wallet_balance; ?></span>
+            <span><?php echo Helper::format_price($wallet_balance); ?></span>
 
         </div>
     </div>
@@ -133,22 +83,22 @@ $deposits = get_posts([
     </thead>
     <tbody>
         <?php if (!empty($deposits)):
-    foreach ($deposits as $deposit):
+            foreach ($deposits as $deposit):
 
-        $total_paid = carbon_get_post_meta($deposit->ID, 'total_paid');
+                $total_paid = carbon_get_post_meta($deposit->ID, 'total_paid');
 
-        $date = carbon_get_post_meta($deposit->ID, 'date');
+                $date = carbon_get_post_meta($deposit->ID, 'date');
 
-        $source = carbon_get_post_meta($deposit->ID, 'source');
+                $source = carbon_get_post_meta($deposit->ID, 'source');
 
-        $invoice = carbon_get_post_meta($deposit->ID, 'invoice');
+                $invoice = carbon_get_post_meta($deposit->ID, 'invoice');
 
-        ?>
+                ?>
 
 								                <tr>
 						                            <td><?php echo $deposit->ID; ?></td>
 
-						                            <td><?php echo esc_html("$" . $total_paid); ?></td>
+						                            <td><?php echo esc_html(Helper::format_price($total_paid)); ?></td>
 								                    <td><i class="fa-brands fa-cc-stripe"></i></td>
 
 

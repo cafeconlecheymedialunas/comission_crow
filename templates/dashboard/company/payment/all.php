@@ -77,7 +77,7 @@ $payments = ProfileUser::get_instance()->get_payments_for_user();
 				                <tr>
 		                            <td><?php echo $payment->ID; ?></td>
 				                    <td><span class="txt-sm"><?php echo $commission_request_id; ?></span></td>
-		                            <td><?php echo esc_html("$" . number_format($total_paid, 2, ',', '')); ?></td>
+		                            <td><?php echo esc_html(Helper::format_price($total_paid)); ?></td>
 				                    <td><a href=""><?php echo $source; ?></a></td>
 
 				                    <td>

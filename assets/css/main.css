@@ -15,9 +15,10 @@
   line-height: 1.2rem;
 }
 .error-message {
-  font-size: 12px;
+  font-size: 13px;
   line-height: 14px;
-  padding: 0 15px;
+  padding: 10px 15px 0 15px;
+  color: red;
 }
 
 .box input {

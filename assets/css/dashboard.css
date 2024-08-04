@@ -171,3 +171,12 @@ a.operation,
 i.operation {
   cursor: pointer;
 }
+
+/*Stats */
+.dashboard-stats-item {
+  display: block;
+  text-align: center;
+  background: #fff;
+  padding: 30px 15px;
+  border-radius: 20px;
+}

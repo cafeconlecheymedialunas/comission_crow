@@ -1,7 +1,7 @@
 <div class="user-menu card">
     <ul class="list-unstyled">
         <li>
-            <a href="<?php echo esc_url(home_url()); ?>"><i class="fa fa-fw fa-home"></i>Dashboard</a>
+            <a href="<?php echo esc_url($dasboard->get_role_url_link_dashboard_page('dashboard')); ?>"><i class="fa fa-fw fa-home"></i>Dashboard</a>
         </li>
         <li>
             <a href="<?php echo esc_url($dasboard->get_role_url_link_dashboard_page('profile')); ?>"><i class="fa fa-fw fa-user"></i>Profile</a>

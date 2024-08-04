@@ -21,6 +21,7 @@ $files_to_require = [
     __DIR__ . '/inc/core/Crud.php',
 
     __DIR__ . '/inc/core/Helper.php',
+    __DIR__ . '/inc/data/Auth.php',
      __DIR__ . '/inc/data/Company.php',
      __DIR__ . '/inc/data/CommercialAgent.php',
      __DIR__ . '/inc/data/ProfileUser.php',
@@ -34,7 +35,7 @@ $files_to_require = [
      __DIR__ . '/inc/core/ContainerCustomFields.php',
      __DIR__ . '/inc/core/Admin.php',
      __DIR__ . '/inc/core/Public.php',
-     __DIR__ . '/inc/core/Auth.php',
+
      __DIR__ . '/inc/core/Dashboard.php',
    
   
@@ -230,3 +231,42 @@ function send_email_on_deposit_creation($post_id, $post, $update)
 
 // Añade el hook para ejecutar la función cuando se guarda un post
 add_action('save_post', 'send_email_on_deposit_creation', 10, 3);
+
+
+function update_commission_request_on_dispute_save($post_id)
+{
+
+    // Verifica que el post type sea 'dispute'
+    if (get_post_type($post_id) !== 'dispute' || get_post_type($post_id) !== 'payment') {
+        return;
+    }
+
+    // Obtén el nuevo estado del post dispute
+    $dispute_status = carbon_get_post_meta($post_id, 'status');
+
+    // Encuentra el commission_request relacionado (aquí asumo que tienes una forma de vincularlos)
+    $commission_request_id = carbon_get_post_meta($post_id, 'commission_request_id');
+
+    if ($commission_request_id) {
+        // Actualiza el estado del commission_request
+        carbon_set_post_meta($commission_request_id, "status",$dispute_status);
+    }
+}
+add_action('save_post', 'update_commission_request_on_dispute_save');
+
+function custom_login_redirect($redirect_to, $request, $user) {
+    // Verifica que el usuario esté autenticado y que no sea un objeto WP_Error
+    if (!is_wp_error($user) && isset($user->roles) && is_array($user->roles)) {
+        // Verifica que el usuario tenga uno de los roles especificados
+        if (in_array('company', $user->roles) || in_array('commercial_agent', $user->roles)) {
+            // Redirige a la página de inicio personalizada
+            return home_url('/auth/');
+        }
+    }
+
+    // Permite el comportamiento de redirección predeterminado para otros usuarios
+    return $redirect_to;
+}
+add_filter('login_redirect', 'custom_login_redirect', 10, 3);
+
+

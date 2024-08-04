@@ -46,6 +46,17 @@ class Contract
         if (empty($commission)) {
             $errors['commission'][] = 'Commission is required.';
         }
+
+        
+        if(!is_numeric($minimal_price)) {
+            $errors["price"][] = __("Price must be a number.");
+        }
+
+        if (!is_numeric($commission)) {
+            $errors["commission"][] = __("Commission must be a number.");
+        } elseif ($commission <= 0 || $commission > 100) {
+            $errors["commission"][] = __("Commission must be between 1 and 100.");
+        }
     
         // Check if there are any validation errors
         if (!empty($errors)) {

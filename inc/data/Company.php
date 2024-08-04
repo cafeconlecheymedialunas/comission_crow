@@ -123,7 +123,7 @@ class Company extends Crud
         $company_postalcode = sanitize_text_field($_POST["company_postalcode"]);
         $company_state = sanitize_text_field($_POST["company_state"]);
 
-        $description = wp_kses_post($_POST['description']);
+        $post_content = wp_kses_post($_POST['post_content']);
         $website_url = esc_url_raw($_POST["website_url"]);
         $facebook_url = esc_url_raw($_POST["facebook_url"]);
         $instagram_url = esc_url_raw($_POST["instagram_url"]);
@@ -156,8 +156,8 @@ class Company extends Crud
         }
     
         $data = [
-            'title' => $company_name,
-            'content' => $description,
+            'post_title' => $company_name,
+            'post_content' => $post_content,
             'website_url' => $website_url,
             'facebook_url' => $facebook_url,
             'instagram_url' => $instagram_url,

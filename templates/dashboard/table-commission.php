@@ -23,10 +23,18 @@
     </thead>
     <tbody>
         <?php if (!empty($commission_requests)):
+            $current_user = wp_get_current_user();
             foreach ($commission_requests as $commission_request):
 
                 $contract_id = carbon_get_post_meta($commission_request->ID, 'contract_id');
+             
                 $another_part = ProfileUser::get_instance()->get_another_part_of_contract($contract_id);
+                $another_part_user_id = get_post_meta($another_part->ID,"_user_id")[0];
+                $another_user = get_user_by("ID",$another_part_user_id);
+               
+
+              
+             
                 $opportunity_id = carbon_get_post_meta($contract_id, 'opportunity');
 
                 $dispute_query = new WP_Query([
@@ -58,6 +66,8 @@
                     $dispute = $dispute_query->posts[0];
                     $status_dispute = carbon_get_post_meta($dispute->ID, 'status');
                 }
+
+    
 
                 $is_paid = isset($status_payment) && $status_payment === "succeeded"? true: false;
                 $has_open_dispute = isset($status_dispute) &&  $status_dispute === "pending"?true:false;
@@ -143,11 +153,11 @@
                 <tr>
                     <td><?php echo $commission_request->ID;?></td>
                     <td><span class="txt-sm"><?php echo carbon_get_post_meta($contract_id, "sku"); ?></span></td>
-                    <td><a href=""><?php echo $another_part->post_title; ?></a></td>
+                    <td><a href=""><?php echo esc_html($another_user->data->display_name); ?></a></td>
                     <td><a href=""><?php echo get_the_title($opportunity_id); ?></a></td>
-                    <td><?php echo esc_html("$" . number_format($total_cart_commission_request, 2, ',', '')); ?></td>
+                    <td><?php echo esc_html(Helper::format_price($total_cart_commission_request)); ?></td>
                     <td><?php echo esc_html(carbon_get_post_meta($contract_id, "commission") . "%"); ?></td>
-                    <td><?php echo esc_html("$" . number_format($total_agent_commission_request, 2, ",", "")); ?></td>
+                    <td><?php echo esc_html(Helper::format_price($total_agent_commission_request)); ?></td>
                     <td>
                         <span class="badge <?php echo $status_class; ?>"><?php echo esc_html($status_text); ?></span>
                         <?php if ($status_dispute) {
@@ -162,7 +172,7 @@
                     <td>
                         <ul class="p-0 mb-0 d-flex justify-content-center align-items-center">
                             <li class="list-inline-item">
-                                <a class="operation" data-bs-toggle="modal" data-bs-target="#chat-modal-<?php echo $user_counterparty_id; ?>" data-user-id="<?php echo esc_attr($user_counterparty_id); ?>">
+                                <a class="operation" data-bs-toggle="modal" data-bs-target="#chat-modal-<?php echo  $another_user->data->ID; ?>" data-user-id="<?php echo esc_attr(  $another_user->data->ID); ?>">
                                     <i class="chat text-secondary fa-solid fa-comments"></i>
                                 </a>
                             </li>
@@ -193,7 +203,7 @@
                                 </form>
                             <?php endif; ?>
 
-                            <div class="modal fade" id="chat-modal-<?php echo $user_counterparty_id; ?>" tabindex="-1" aria-labelledby="chatModalLabel" aria-hidden="true">
+                            <div class="modal fade" id="chat-modal-<?php echo   $another_user->data->ID; ?>" tabindex="-1" aria-labelledby="chatModalLabel" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
@@ -201,7 +211,7 @@
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <?php echo do_shortcode('[better_messages_user_conversation user_id="' . $user_counterparty_id . '"]'); ?>
+                                            <?php echo do_shortcode('[better_messages_user_conversation user_id="' .   $another_user->data->ID . '"]'); ?>
                                         </div>
                                     </div>
                                 </div>

@@ -9,9 +9,10 @@ jQuery(document).ready(function ($) {
       type: "POST",
       url: ajax_object.ajax_url,
       data: form.serialize() + "&action=register_user",
+      cache: false,
       success: function (response) {
         $customSpinner.removeClass("d-flex").hide();
-
+        console.log(response);
         if (response.success) {
           Swal.fire({
             title: "You have successfully registered!",
@@ -20,7 +21,11 @@ jQuery(document).ready(function ($) {
             showConfirmButton: false,
             timer: 2000, // 2 segundos
           }).then(function () {
-            window.location.href = "/auth/?action=login";
+            let key =
+            response.data.roles[0] === "commercial_agent"
+              ? "commercial-agent"
+              : "company";
+          window.location.href = `/dashboard/${key}/profile`;
           });
         } else {
           displayFormErrors(form, response.data);
@@ -37,6 +42,7 @@ jQuery(document).ready(function ($) {
       type: "POST",
       url: ajax_object.ajax_url,
       data: form.serialize() + "&action=login_user",
+      cache: false,
       success: function (response) {
         $customSpinner.removeClass("d-flex").hide();
         if (response.success) {
@@ -70,6 +76,7 @@ jQuery(document).ready(function ($) {
       type: "POST",
       url: ajax_object.ajax_url,
       data: form.serialize() + "&action=reset_password",
+      cache: false,
       success: function (response) {
         $customSpinner.removeClass("d-flex").hide();
         if (response.success) {
