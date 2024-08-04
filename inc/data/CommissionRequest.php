@@ -22,7 +22,7 @@ class Commissionrequest
         
         
         $general_errors = []; // Array for general errors
-        $item_errors = []; // Array for item-specific errors
+        $errors = []; // Array for item-specific errors
         
         // Sanitize and validate form data
         $contract_id = sanitize_text_field($_POST['contract_id']);
@@ -33,7 +33,7 @@ class Commissionrequest
         
         // Validate contract_id
         if (empty($contract_id)) {
-            $general_errors[] = 'Contract ID is required.';
+            $general_errors[]= 'Contract ID is required.';
         }
     
 
@@ -46,14 +46,14 @@ class Commissionrequest
         // Validate current user
         $current_user = wp_get_current_user();
         if (!in_array("commercial_agent", $current_user->roles)) {
-            $general_errors[] = 'You must be a commercial agent to create a commission request.';
+            $general_errors[]  = 'You must be a commercial agent to create a commission request.';
         }
        
         
         // Verify the status of the contract
         $status = carbon_get_post_meta($contract_id, "status");
         if ($status === "pending" || $status === "refused") {
-            $general_errors[] = 'The contract is either pending or refused.';
+            $general_errors[]  = 'The contract is either pending or refused.';
         }
         
         // Check if a commission request already exists for this contract
@@ -70,11 +70,27 @@ class Commissionrequest
         $commission_requests = $query->posts;
         
         if (!empty($commission_requests)) {
-            $general_errors[] = 'A commission request already exists for this contract.';
+            $general_errors[]  = 'A commission request already exists for this contract.';
+        }
+
+        if (!empty($general_errors)) {
+            wp_send_json_error(['general' => $general_errors]);
+            wp_die();
         }
     
         // Check if there are any general errors and send them in response
        
+
+        $allowed_supporting_types = ['application/pdf', 'text/plain'];
+        $max_supporting_size = 10 * 1024 * 1024; // 10 MB
+
+        
+        if (isset($_FILES['general_invoices']) && !empty($_FILES['general_invoices']['name'][0])) {
+            $validation_result = validate_files($_FILES['supporting_materials'],$allowed_supporting_types,$max_supporting_size);
+            if (isset($validation_result['error'])) {
+                $errors['general_invoice'][] = $validation_result['error'];
+            }
+        }
     
         // Prepare and update Carbon Fields
         $items = [];
@@ -92,10 +108,19 @@ class Commissionrequest
     
                 // Validate item data
                 if ($price_paid <= 0) {
-                    $general_errors[] = 'There is a row without price.';
+                    $errors["detail"][] = 'There is a row without price.';
                 }
                 if ($quantity <= 0) {
-                    $general_errors[] = 'There is a row without quntity.';
+                    $errors["detail"][] = 'There is a row without quntity.';
+                }
+             
+        
+            
+                if (isset($_FILES['invoice']) && !empty($_FILES['invoice']['name'][0])) {
+                    $validation_result = validate_files($_FILES['invoice']);
+                    if (isset($validation_result['error'])) {
+                        $errors['detail'][] = $validation_result['error'];
+                    }
                 }
                
     
@@ -115,13 +140,13 @@ class Commissionrequest
         }
     
         // Check if there are any item-specific errors and send them in response
-        if (!empty($item_errors)) {
-            wp_send_json_error(['items' => $item_errors]);
+        if (!empty($errors)) {
+            wp_send_json_error(['fields' => $errors]);
             wp_die();
         }
     
         $total_agent = ($commission * $total) / 100;
-        $status_history = Helper::add_item_to_status_history($contract_id);
+        $status_history = Helper::add_item_to_status_history($contract_id,"pending");
         $sku = carbon_get_post_meta($contract_id, "sku");
         $contract_title_key = $sku ?? $contract_id;
         

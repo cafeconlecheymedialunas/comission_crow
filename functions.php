@@ -252,7 +252,7 @@ function update_commission_request_on_dispute_save($post_id)
         carbon_set_post_meta($commission_request_id, "status",$dispute_status);
     }
 }
-add_action('save_post', 'update_commission_request_on_dispute_save');
+//add_action('save_post', 'update_commission_request_on_dispute_save');
 
 function custom_login_redirect($redirect_to, $request, $user) {
     // Verifica que el usuario esté autenticado y que no sea un objeto WP_Error

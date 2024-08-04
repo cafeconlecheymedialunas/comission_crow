@@ -24,7 +24,7 @@
             <?php endif; ?>
             <div class="col-md-6">
               <label for="text-ids" class="form-label">General Invoice:</label>
-              <input type="file" id="text-ids" name="general_invoice" class="form-control rounded-2" accept=".pdf, .txt">
+              <input type="file" id="text-ids" name="general_invoice" class="form-control rounded-2" multiple accept=".pdf, .txt">
               <div class="error-message"></div>
             </div>
           </div>
@@ -56,7 +56,7 @@
                             <input type="number" name="quantity[]" class="txt quantity form-control rounded-2" placeholder="Quantity" autocomplete='off' />
                           </td>
                           <td>
-                            <input type="file" name="invoice[]" class="invoice form-control rounded-2" />
+                            <input type="file" name="invoice[]" class="invoice form-control rounded-2"  multiple accept=".pdf, .txt"/>
                           </td>
                           <td>
                             <textarea rows="2" name="detail[]" class="detail form-control rounded-2" style="height:100px;" placeholder="Detail"></textarea>

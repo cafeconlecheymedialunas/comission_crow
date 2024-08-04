@@ -30,6 +30,7 @@ $activity = wp_get_post_terms($company_post->ID, 'activity', ['fields' => 'ids']
 $type_of_company = wp_get_post_terms($company_post->ID, 'type_of_company', ['fields' => 'ids']) ?? [];
 $country = wp_get_post_terms($company_post->ID, 'country', ['fields' => 'ids']) ?? [];
 
+
 $company_name = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'company_name') : '';
 $company_street = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'company_street') : '';
 $company_number = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'company_number') : '';
@@ -134,7 +135,8 @@ $youtube_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'y
                                 <?php foreach ($country_terms as $term): ?>
                                     <option
                                         value="<?php echo esc_attr($term->term_id); ?>"
-                                        <?php (is_array($country) && !empty($country)) ?? selected($country[0], $term->term_id);?>>
+                                        <?php echo in_array($term->term_id, $country) ? 'selected' : ''; ?>
+                                        >
                                         <?php echo esc_html($term->name); ?>
                                     </option>
                                 <?php endforeach;?>

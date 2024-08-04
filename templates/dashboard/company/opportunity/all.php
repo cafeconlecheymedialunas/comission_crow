@@ -20,7 +20,7 @@ $opportunities = $company->get_opportunities();
                     <thead>
                         <tr>
                             <th scope="col">#</th>
-                            <th scope="col">Opportunity</th>
+                            <th scope="col">Title</th>
                             <th scope="col">Industry</th>
                             <th scope="col">Price</th>
                             <th scope="col">Commission</th>
@@ -44,8 +44,8 @@ $opportunities = $company->get_opportunities();
                                         <th scope="row"><?php echo $opportunity->ID; ?></th>
                                         <td><?php echo get_the_title($opportunity->ID); ?></td>
                                         <td><?php echo esc_html($industry[0]); ?></td>
-                                        <td><?php echo esc_html($price); ?></td>
-                                        <td><?php echo esc_html($commission); ?></td>
+                                        <td><?php echo esc_html(Helper::get_human_time_diff($price). " ago"); ?></td>
+                                        <td><?php echo esc_html($commission); ?>%</td>
                                         <td><?php echo esc_html($country[0]); ?></td>
                                         
                                         <td>

@@ -116,6 +116,8 @@
             </div>
         </div>
         <input type="file" id="images" name="images[]" accept="image/*" multiple style="display:none;">
+        <div class="error-message"></div>
+
     </div>
 
     </div>

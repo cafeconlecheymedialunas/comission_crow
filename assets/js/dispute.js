@@ -7,8 +7,7 @@ jQuery(document).ready(function ($) {
     var formData = new FormData(form);
     formData.append("action", "create_dispute");
 
-    //formData.append("commission_request_ids", "create_dispute");
-
+    $customSpinner.addClass("d-flex");
     $.ajax({
       url: ajax_object.ajax_url,
       type: "POST",
@@ -17,9 +16,7 @@ jQuery(document).ready(function ($) {
       cache: false,
       processData: false,
       contentType: false,
-      beforeSend: function () {
-        $customSpinner.addClass("d-flex");
-      },
+
       success: function (response) {
         console.log(response);
         if (response.success) {
@@ -75,6 +72,7 @@ jQuery(document).ready(function ($) {
           },
           success: function (response) {
             console.log(response);
+            $customSpinner.removeClass("d-flex").hide();
             if (response.success) {
               Swal.fire({
                 title: "The dispute has been deleted.",
@@ -85,12 +83,7 @@ jQuery(document).ready(function ($) {
                 location.reload(); // Puedes eliminar esta línea si no quieres recargar la página
               });
             } else {
-              Swal.fire(
-                "Error!",
-                response.data.message ||
-                  "There was an error deleting the dispute.",
-                "error",
-              );
+             displayFormErrors(form,response.data)
             }
           },
           error: function (error) {

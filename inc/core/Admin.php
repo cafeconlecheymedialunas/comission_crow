@@ -48,7 +48,7 @@ class Admin
         $CustomTaxonomy->register('seller_type', ['commercial_agent'], 'Seller Type', 'Seller Types');
 
         $CustomTaxonomy->register('activity', ['company'], 'Activity', 'Activities');
-        $CustomTaxonomy->register('type_of_company', ["opportunity"], 'Company Type', 'Company Types');
+        $CustomTaxonomy->register('type_of_company', ["opportunity","company"], 'Company Type', 'Company Types');
         $CustomTaxonomy->register('country', ['company',"commercial_agent","opportunity"], 'Country', 'Countries');
         $CustomTaxonomy->register('language', ["commercial_agent","opportunity"], 'Language', 'Languages');
         $CustomTaxonomy->register('currency', ["opportunity"], 'Currency', 'Currencies');
