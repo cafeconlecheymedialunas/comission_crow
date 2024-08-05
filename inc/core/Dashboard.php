@@ -32,6 +32,7 @@ class Dashboard
         $dispute = Dispute::get_instance();
         $opportunity = Opportunity::get_instance();
         $payment = Payment::get_instance();
+        $deposit = Deposit::get_instance();
 
         add_action('wp_ajax_create_opportunity', [$opportunity, 'save_opportunity']);
         add_action('wp_ajax_nopriv_create_opportunity', [$opportunity, 'save_opportunity']);
@@ -62,6 +63,9 @@ class Dashboard
 
         add_action('wp_ajax_delete_commission_request', [$commission_request, 'delete_commission_request']);
         add_action('wp_ajax_nopriv_delete_commission_request', [$commission_request, 'delete_commission_request']);
+
+
+        add_action('wp_ajax_withdraw_founds', [$deposit,'withdraw_founds']);
 
         //TO DO
 

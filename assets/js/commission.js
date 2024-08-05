@@ -152,9 +152,7 @@ jQuery(document).ready(function ($) {
             location.reload();
           });
         } else {
-          if (response.errors) {
-            displayFormErrors(form, response.data);
-          }
+          displayFormErrors(form, response.data);
         }
       },
       error: function (xhr, status, error) {
@@ -196,7 +194,6 @@ jQuery(document).ready(function ($) {
             console.log(response);
             $customSpinner.removeClass("d-flex").hide();
             if (response.success) {
-            
               Swal.fire({
                 title: "The commission request has been deleted.",
                 icon: "success",

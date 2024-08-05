@@ -118,14 +118,14 @@ class Admin
     {
         return [
             'pending' => 'Pending',
-            "dispute_pending" => "Dispute Pending",
-            "dispute_refused" => "Dispute Refused",
-            "dispute_cancelled" => "Dispute Cancelled",
-            "dispute_accepted" => "Dispute Accepted",
-            "payment_pending" => "Pending Payment",
-            "payment_cancelled" => "Payment Cancelled",
-            "payment_failed" => "Payment Fail",
-            "payment_completed" => "Payment Completed",
+            'dispute_pending' => 'Dispute Pending',
+            'dispute_accepted' => 'Dispute Accepted',
+            'dispute_refused' => 'Dispute Refused',
+            'dispute_cancelled' => 'Dispute Cancelled',
+            'payment_pending' => 'Pending Payment',
+            'payment_completed' => 'Payment Completed',
+            'payment_failed' => 'Payment Failed',
+            'payment_canceled' => 'Payment Canceled',
         ];
     }
 
@@ -133,19 +133,19 @@ class Admin
     {
         return [
             'dispute_pending' => 'Dispute Pending',
-            "dispute_cancelled" => "Dispute Cancelled",
-            "dispute_refused" => "Dispute Refused",
-            "dispute_approved" => "Dispute Approved"
+            'dispute_accepted' => 'Dispute Accepted',
+            'dispute_refused' => 'Dispute Refused',
+            'dispute_cancelled' => 'Dispute Cancelled'
         ];
     }
 
     public function get_status_payment()
     {
         return [
-            'payment_completed' => 'El pago se completó exitosamente.',
-            'payment_pending' => 'El pago está pendiente de completarse.',
-            'payment_failed' => 'El pago falló.',
-            'payment_canceled' => 'El pago fue cancelado.'
+            'payment_pending' => 'Payment Pending',
+            'payment_completed' => 'Payment Completed',
+            'payment_failed' => 'Payment Failed',
+            'payment_canceled' => 'Payment Canceled'
         ];
     }
     public function get_target_audiences()

@@ -37,6 +37,7 @@
                 </div>
                 <div class="py-4">
                   <div class="table-responsive ">
+                
                     <table id="data-table" class="table rounded-2 table-bordered mb-0">
                       <thead class="thead-light">
                         <tr>
@@ -50,7 +51,7 @@
                       <tbody>
                         <tr class="row_to_clone">
                           <td>
-                            <input type="number" name="price[]" class="txt price form-control rounded-2" placeholder="Price" step="0.01" autocomplete='off' />
+                            <input type="number" name="price[]" min="" class="txt price form-control rounded-2" placeholder="Price" step="0.01" autocomplete='off' />
                           </td>
                           <td>
                             <input type="number" name="quantity[]" class="txt quantity form-control rounded-2" placeholder="Quantity" autocomplete='off' />

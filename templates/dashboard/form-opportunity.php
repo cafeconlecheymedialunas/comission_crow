@@ -231,7 +231,6 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
         }
   
     } ?> 
-     <div class="error-message"></div>
 
     <div class="col-md-6">
         <label for="supporting_materials" class="form-label">Supporting Materials</label>

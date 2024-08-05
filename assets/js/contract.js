@@ -19,8 +19,6 @@ jQuery(document).ready(function ($) {
         $customSpinner.removeClass("d-flex").hide();
         console.log(response);
         if (response.success) {
-         
-     
           Swal.fire({
             title: "contract created successfully!",
             text: "Redirecting to the contract page.",
@@ -35,7 +33,6 @@ jQuery(document).ready(function ($) {
             window.location.href = `/dashboard/${key}/contract/all`;
           });
         } else {
-    
           displayFormErrors(form, response.data);
         }
       },
@@ -67,7 +64,6 @@ jQuery(document).ready(function ($) {
       success: function (response) {
         $customSpinner.removeClass("d-flex").hide();
         if (response.success) {
-          
           Swal.fire({
             title: "contract updated successfully!",
             text: "Redirecting to the contract page.",
@@ -78,7 +74,7 @@ jQuery(document).ready(function ($) {
             location.reload();
           });
         } else {
-          displayFormErrors(form,response.data)
+          displayFormErrors(form, response.data);
           console.log(response);
         }
       },

@@ -83,7 +83,7 @@ jQuery(document).ready(function ($) {
                 location.reload(); // Puedes eliminar esta línea si no quieres recargar la página
               });
             } else {
-             displayFormErrors(form,response.data)
+              displayFormErrors(form, response.data);
             }
           },
           error: function (error) {

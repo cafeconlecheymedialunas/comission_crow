@@ -6,10 +6,12 @@ class ContainerCustomFields
 {
 
     private $admin;
+    private $status_manager;
 
     public function __construct($admin)
     {
         $this->admin = $admin;
+        $this->status_manager = StatusManager::get_instance();
     }
 
 
@@ -20,7 +22,7 @@ class ContainerCustomFields
         $this->register_company_fields();
         $this->register_contract_fields();
         $this->register_review_fields();
-        $this->register_payment_fields();
+       
         $this->register_dispute_fields();
         $this->register_commission_request_fields();
         $this->register_payment_fields();
@@ -28,23 +30,6 @@ class ContainerCustomFields
         $this->register_theme_options();
     }
 
-    public function register_review_fields()
-    {
-        Container::make('post_meta', __('Review'))
-
-            ->add_fields([
-                Field::make('select', 'commercial_agent', __('Commercial Agent'))
-                ->add_options([$this->admin,'get_commercial_agents']),
-                Field::make('select', 'score', __('Score'))
-                    ->set_options([
-                        "1" => 1,
-                        "2" => 2,
-                        "3" => 3,
-                        "4" => 4,
-                        "5" => 5,
-                    ]),
-            ])->where('post_type', '=', 'review');
-    }
     public function register_company_fields()
     {
 
@@ -97,6 +82,64 @@ class ContainerCustomFields
                
 
             ])->where('post_type', '=', 'commercial_agent');
+    }
+
+    
+    public function register_opportunity_fields()
+    {
+
+        Container::make('post_meta', __('Oportunity Info'))
+            ->add_tab(__('Info'), [
+                Field::make('select', 'company', __('Company'))
+                ->add_options([$this->admin,'get_companies']),
+                
+                Field::make('radio', 'target_audience', __('Target Audience'))->set_options([
+                    'companies' => "Companies",
+                    'individuals' => "Individuals",
+                ]),
+               
+        
+                Field::make('select', 'age', __('Age'))
+                ->set_options([
+                    'over_18' => 'Over 18',
+                    'over_30' => 'Over 30',
+                    'over_60' => 'Over 60',
+                    'any_age' => 'Any age',
+                ]),
+                Field::make('select', 'gender', __('Gender'))
+                ->set_options([
+                    'male' => 'Male',
+                    'female' => 'Female',
+                    'any_gender' => 'Any gender',
+                ]),
+
+            ])
+            ->add_tab(__('Pricing'), [
+                Field::make('text', 'price', __('Price')),
+                Field::make('text', 'commission', __('Commission')),
+                Field::make('checkbox', 'deliver_leads', 'Deliver Leads?')
+                    ->set_option_value('yes'),
+                Field::make('text', 'sales_cycle_estimation', __('Sales cycle estimation')),
+            ])->add_tab(__('Materials'), [
+            Field::make('media_gallery', 'images', __('Images')),//->set_attribute( 'readOnly', true),
+            Field::make('media_gallery', 'supporting_materials', __('Supporting materials')),
+            Field::make('complex', 'videos', __('Videos urls'))
+                ->add_fields([
+                    Field::make('oembed', 'video', __('Url Video')),
+                ]),
+            Field::make('textarea', 'tips', __('Tips')),
+
+        ])->add_tab(__('Questions'), [
+
+            Field::make('textarea', 'question_1', __('1) What is your company’s elevator pitch?')),
+            Field::make('textarea', 'question_2', __('2) Please complete the below value statement: Example: "We help (XXX) in the (XXX) industry (XXX) WITHOUT (XXX) & WITHOUT (XXX).')),
+            Field::make('textarea', 'question_3', __('3) How do you currently pitch your company to a prospect?')),
+            Field::make('textarea', 'question_4', __('4) What are the most common objections you face within your current sales cycle?')),
+            Field::make('textarea', 'question_5', __('5) What strategies do you employ to overcome the objections specified?')),
+            Field::make('textarea', 'question_6', __('6) Please give an overview of what company challenges you help your clients overcome?')),
+
+        ])->where('post_type', '=', 'opportunity');
+
     }
 
     public function register_contract_fields()
@@ -165,20 +208,22 @@ class ContainerCustomFields
                     Field::make('text', 'subtotal', 'Subtotal'),
                     Field::make('media_gallery', 'invoice', 'Invoice'),
                     Field::make('text', 'detail', 'Detail'),
-                ]),
+                ])->set_layout('tabbed-horizontal'),
              
                 Field::make('select', 'initiating_user', __('Initiating User:'))
                     ->add_options([$this->admin,'get_users']),
 
                 Field::make('text', 'total_cart', 'Total'),
-
                 Field::make('text', 'total_agent', 'Total Agent'),
-            
+                Field::make('text', 'total_platform', 'Total Platform'),
+                Field::make('text', 'total_tax_service', 'Total Tax Serves'),
+                Field::make('text', 'total_to_pay', 'Total To Pay'),
+                Field::make('media_gallery', 'general_invoice', 'General Invoices'),
                 Field::make('date_time', 'date', 'Commission Request Date'),
         
                 Field::make('rich_text', 'comments', 'Comments'),
                 Field::make('select', 'status', __('Status'))
-                ->set_options([$this->admin,"get_status_commission_request"]),
+                ->set_options([$this->status_manager,"get_status_commission_request"]),
                 
                 Field::make('complex', 'status_history', 'Contract Status History')
                 ->add_fields([
@@ -196,62 +241,6 @@ class ContainerCustomFields
           
     }
     
-    public function register_opportunity_fields()
-    {
-
-        Container::make('post_meta', __('Oportunity Info'))
-            ->add_tab(__('Info'), [
-                Field::make('select', 'company', __('Company'))
-                ->add_options([$this->admin,'get_companies']),
-                
-                Field::make('radio', 'target_audience', __('Target Audience'))->set_options([
-                    'companies' => "Companies",
-                    'individuals' => "Individuals",
-                ]),
-               
-        
-                Field::make('select', 'age', __('Age'))
-                ->set_options([
-                    'over_18' => 'Over 18',
-                    'over_30' => 'Over 30',
-                    'over_60' => 'Over 60',
-                    'any_age' => 'Any age',
-                ]),
-                Field::make('select', 'gender', __('Gender'))
-                ->set_options([
-                    'male' => 'Male',
-                    'female' => 'Female',
-                    'any_gender' => 'Any gender',
-                ]),
-
-            ])
-            ->add_tab(__('Pricing'), [
-                Field::make('text', 'price', __('Price')),
-                Field::make('text', 'commission', __('Commission')),
-                Field::make('checkbox', 'deliver_leads', 'Deliver Leads?')
-                    ->set_option_value('yes'),
-                Field::make('text', 'sales_cycle_estimation', __('Sales cycle estimation')),
-            ])->add_tab(__('Materials'), [
-            Field::make('media_gallery', 'images', __('Images')),//->set_attribute( 'readOnly', true),
-            Field::make('media_gallery', 'supporting_materials', __('Supporting materials')),
-            Field::make('complex', 'videos', __('Videos urls'))
-                ->add_fields([
-                    Field::make('oembed', 'video', __('Url Video')),
-                ]),
-            Field::make('textarea', 'tips', __('Tips')),
-
-        ])->add_tab(__('Questions'), [
-
-            Field::make('textarea', 'question_1', __('1) What is your company’s elevator pitch?')),
-            Field::make('textarea', 'question_2', __('2) Please complete the below value statement: Example: "We help (XXX) in the (XXX) industry (XXX) WITHOUT (XXX) & WITHOUT (XXX).')),
-            Field::make('textarea', 'question_3', __('3) How do you currently pitch your company to a prospect?')),
-            Field::make('textarea', 'question_4', __('4) What are the most common objections you face within your current sales cycle?')),
-            Field::make('textarea', 'question_5', __('5) What strategies do you employ to overcome the objections specified?')),
-            Field::make('textarea', 'question_6', __('6) Please give an overview of what company challenges you help your clients overcome?')),
-
-        ])->where('post_type', '=', 'opportunity');
-
-    }
 
     public function register_dispute_fields()
     {
@@ -284,7 +273,7 @@ class ContainerCustomFields
                 Field::make('complex', 'status_history', 'Dispute Status History')
                 ->add_fields([
                     Field::make('select', 'history_status', __('Status'))
-                    ->set_options([$this->admin,"get_statuses_dispute"]),
+                    ->set_options([$this->status_manager,"get_status_dispute"]),
                     Field::make('date_time', 'date_status', 'Date'),
                     Field::make('select', 'changed_by', __('Changed by:'))->add_options([$this->admin,'get_users']),
 
@@ -295,22 +284,6 @@ class ContainerCustomFields
             ])->where('post_type', '=', 'dispute');
 
           
-    }
-    public function register_theme_options()
-    {
-        Container::make('theme_options', __('Nexfy Options'))
-        ->add_fields([
-            Field::make('textarea', 'stripe_secret_key', __('Stripe Secret Key')),
-            Field::make('textarea', 'stripe_publishable_key', __('Stripe Publishable key')),
-            Field::make('text', 'billing_address_street', __('Billing Address Street')),
-            Field::make('text', 'billing_address_number', __('Billing Address Number')),
-            Field::make('text', 'billing_address_city', __('Billing Address City')),
-            Field::make('text', 'billing_address_state', __('Billing Address State')),
-            Field::make('text', 'billing_address_country', __('Billing Address Country')),
-            Field::make('text', 'billing_address_postalcode', __('Billing Address Postal Code')),
-            Field::make('text', 'billing_company_holder', __('Billing Company Holder')),
-            Field::make('text', 'billing_company_name', __('Billing Company Name')),
-        ]);
     }
 
     public function register_payment_fields()
@@ -345,7 +318,7 @@ class ContainerCustomFields
                 Field::make('date_time', 'date', 'payment Date'),
 
                 Field::make('select', 'status', __('Status'))
-                ->set_options([$this->admin,"get_status_payment"]),
+                ->set_options([$this->status_manager,"get_status_payment"]),
 
                 
     
@@ -358,6 +331,24 @@ class ContainerCustomFields
 
           
     }
+    public function register_theme_options()
+    {
+        Container::make('theme_options', __('Nexfy Options'))
+        ->add_fields([
+            Field::make('textarea', 'stripe_secret_key', __('Stripe Secret Key')),
+            Field::make('textarea', 'stripe_publishable_key', __('Stripe Publishable key')),
+            Field::make('text', 'billing_address_street', __('Billing Address Street')),
+            Field::make('text', 'billing_address_number', __('Billing Address Number')),
+            Field::make('text', 'billing_address_city', __('Billing Address City')),
+            Field::make('text', 'billing_address_state', __('Billing Address State')),
+            Field::make('text', 'billing_address_country', __('Billing Address Country')),
+            Field::make('text', 'billing_address_postalcode', __('Billing Address Postal Code')),
+            Field::make('text', 'billing_company_holder', __('Billing Company Holder')),
+            Field::make('text', 'billing_company_name', __('Billing Company Name')),
+        ]);
+    }
+
+
 
     public function register_deposit_fields()
     {
@@ -366,11 +357,8 @@ class ContainerCustomFields
             ->add_fields([
 
            
-                Field::make('text', 'total_paid', 'Total Paid'),
+                Field::make('text', 'total_withdraw_founds', 'Total Withdraw'),
                 
-                Field::make('select', 'source', 'Source')->add_options([
-                    "stripe" => "Stripe"
-                ]),
                 Field::make('select', 'user', __('User:'))
                 ->add_options([$this->admin,'get_users'])->set_required(true),
                 
@@ -384,7 +372,8 @@ class ContainerCustomFields
                 Field::make('date_time', 'date', 'payment Date'),
 
                 
-    
+                Field::make('select', 'status', __('Status'))
+                ->set_options([$this->status_manager,"get_status_payment"]),
 
             
 
@@ -393,5 +382,24 @@ class ContainerCustomFields
             ])->where('post_type', '=', 'deposit');
 
           
+    }
+
+    
+    public function register_review_fields()
+    {
+        Container::make('post_meta', __('Review'))
+
+            ->add_fields([
+                Field::make('select', 'commercial_agent', __('Commercial Agent'))
+                ->add_options([$this->admin,'get_commercial_agents']),
+                Field::make('select', 'score', __('Score'))
+                    ->set_options([
+                        "1" => 1,
+                        "2" => 2,
+                        "3" => 3,
+                        "4" => 4,
+                        "5" => 5,
+                    ]),
+            ])->where('post_type', '=', 'review');
     }
 }

@@ -96,7 +96,7 @@ class Opportunity extends Crud
 
     
         if (isset($_FILES['images']) && !empty($_FILES['images']['name'][0])) {
-            $validation_result = validate_files($_FILES['images'],$allowed_image_types,$max_image_size);
+            $validation_result = validate_files($_FILES['images'], $allowed_image_types, $max_image_size);
             if (isset($validation_result['error'])) {
                 $errors['images'][] = $validation_result['error'];
             }
@@ -107,7 +107,7 @@ class Opportunity extends Crud
 
         
         if (isset($_FILES['supporting_materials']) && !empty($_FILES['supporting_materials']['name'][0])) {
-            $validation_result = validate_files($_FILES['supporting_materials'],$allowed_supporting_types,$max_supporting_size);
+            $validation_result = validate_files($_FILES['supporting_materials'], $allowed_supporting_types, $max_supporting_size);
             if (isset($validation_result['error'])) {
                 $errors['supporting_materials'][] = $validation_result['error'];
             }

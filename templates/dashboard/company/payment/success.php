@@ -12,15 +12,22 @@ if ($session_id) :
         
         // Recuperar los detalles del pago
         $payment = Payment::get_instance();
-        $payment_id = Payment::get_instance()->get_post_id_by_stripe_session($session_id);
+        $payment_id =$payment->get_post_id_by_stripe_session($session_id);
         $invoice = carbon_get_post_meta($payment_id, 'invoice');
 
         if(!$invoice) {
-            $invoice = Payment::get_instance()->generate_invoice($session_id);
+            $invoice = $payment->generate_invoice($session_id);
         }
+        $payment->send_create_admin_payment_email($payment_id);
+        $payment->send_create_agent_payment_email($payment_id);
+        $payment->send_create_company_payment_email($payment_id);
         $payment_post = get_post($payment_id);
-        carbon_set_post_meta($payment_id, 'status', "succeeded");
         
+        carbon_set_post_meta($payment_id, 'status', "payment_completed");
+        $commission_request_id = carbon_get_post_meta($payment_id, 'commission_request_id');
+        $status_commision_request_history = Helper::add_item_to_status_history($commission_request_id, "");
+        carbon_set_post_meta($commission_request_id, 'status_history', $status_commision_request_history);
+        carbon_set_post_meta($commission_request_id, 'status', "payment_completed");
         
         // Obtener los campos personalizados del post type 'payment'
         $total_cart = carbon_get_post_meta($payment_id, 'total_cart');
@@ -33,7 +40,7 @@ if ($session_id) :
        
         $source = carbon_get_post_meta($payment_id, 'source');
         
-        $commission_request_id = carbon_get_post_meta($payment_id, 'commission_request_id');
+       
         $items =  carbon_get_post_meta($commission_request_id, 'items');
         $commission_request = get_post($commission_request_id);
        
@@ -49,7 +56,19 @@ if ($session_id) :
         <div class="row">
             <div class="col-md-12">
                 <div class="alert alert-success" role="alert">
-                    <h4 class="alert-heading">Thank you for your purchase!</h4>
+                    <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="alert-heading d-inline mb-0">Thank you for your purchase!</h4>
+                    <?php if(!empty($invoice)):?>
+                   
+                                                <li class="list-inline-item"></li>
+                                                <a href="<?php echo wp_get_attachment_url($invoice[0]); ?>" download class="btn btn-sm btn-primary">
+                                                    <i class="fa-solid fa-file-invoice"></i> 
+                                                </a>
+                                                </li>
+                                               
+                                                <?php endif;?>
+                    </div>
+                    
                     <hr>
                     <div class="mb-0 d-flex justify-content-between">
                         <span class="fw-bold">#SKU: <?php echo esc_html($sku); ?></span>
@@ -83,12 +102,11 @@ if ($session_id) :
                     <p><strong>Source:</strong> <?php echo esc_html($source); ?></p>
                     <hr>
                     <h5>Total Paid: <?php echo esc_html(Helper::format_price($total_paid)); ?></h5>
-                    <hr>
-                    <?php if(!empty($invoice)):?>
-                    <a href="<?php echo wp_get_attachment_url($invoice[0]); ?>" download class="btn btn-primary">
-                        <i class="fas fa-file-invoice"></i> Download Invoice
-                    </a>
-                    <?php endif;?>
+                 
+                
+                  
+                      
+                    
                 </div>
             </div>
         </div>

@@ -93,36 +93,36 @@ class Dispute
         }
     
         // Crear el post de dispute
-        $post_id = wp_insert_post([
+        $dispute_id = wp_insert_post([
             'post_type'   => 'dispute',
             'post_status' => 'publish',
             'post_title'  => 'Dispute related to request ' . $commission_request_id
         ]);
     
         // Check for errors
-        if (is_wp_error($post_id)) {
+        if (is_wp_error($dispute_id)) {
             $general_errors[] = 'Could not create dispute.';
             wp_send_json_error(['general' => $general_errors]);
             wp_die();
         }
     
         // Set post meta
-        $status_history = Helper::add_item_to_status_history($post_id);
-        carbon_set_post_meta($post_id, 'commission_request_id', $commission_request_id);
-        carbon_set_post_meta($post_id, 'description', $description);
-        carbon_set_post_meta($post_id, 'subject', $subject);
-        carbon_set_post_meta($post_id, 'status', "pending");
-        carbon_set_post_meta($post_id, 'initiating_user', get_current_user_id());
-        carbon_set_post_meta($post_id, 'status_history', $status_history);
-        carbon_set_post_meta($post_id, 'date', current_time("mysql"));
+        $status_history = Helper::add_item_to_status_history($dispute_id);
+        carbon_set_post_meta($dispute_id, 'commission_request_id', $commission_request_id);
+        carbon_set_post_meta($dispute_id, 'description', $description);
+        carbon_set_post_meta($dispute_id, 'subject', $subject);
+        carbon_set_post_meta($dispute_id, 'status', "dispute_pending");
+        carbon_set_post_meta($dispute_id, 'initiating_user', get_current_user_id());
+        carbon_set_post_meta($dispute_id, 'status_history', $status_history);
+        carbon_set_post_meta($dispute_id, 'date', current_time("mysql"));
 
         // Updatge Commission Request to in_DISPUTE
-        $status_commision_request_history = Helper::add_item_to_status_history($commission_request_id, "in_dispute");
+        $status_commision_request_history = Helper::add_item_to_status_history($commission_request_id, "dispute_pending");
         carbon_set_post_meta($commission_request_id, 'status_history', $status_commision_request_history);
-        carbon_set_post_meta($commission_request_id, 'status', "in_dispute");
+        carbon_set_post_meta($commission_request_id, 'status', "dispute_pending");
 
         if (!empty($uploads)) {
-            carbon_set_post_meta($post_id, 'documents', $uploads); // Save as array of attachment IDs
+            carbon_set_post_meta($dispute_id, 'documents', $uploads); // Save as array of attachment IDs
         }
     
         wp_send_json_success(['message' => 'Dispute successfully created.']);
@@ -164,14 +164,17 @@ class Dispute
         }
 
         // Actualizar el estado de la solicitud de comisión a 'pending'
-        carbon_set_post_meta($commission_request_id, 'status', 'pending');
+        $status_commision_request_history = Helper::add_item_to_status_history($commission_request_id, "payment_pending");
+        carbon_set_post_meta($commission_request_id, 'status_history', $status_commision_request_history);
+        carbon_set_post_meta($commission_request_id, 'status', "payment_pending");
 
-        if (wp_delete_post($dispute_id, true)) {
-            wp_send_json_success(['message' => 'Dispute successfully deleted!']);
-        } else {
+        $dispute_id = wp_delete_post($dispute_id, true);
+
+        
+        if(is_wp_error($dispute_id)) {
             wp_send_json_error(['message' => 'Error deleting the post. Try again later.']);
         }
-
+        wp_send_json_success(['message' => 'Dispute successfully deleted!']);
         wp_die();
     }
 

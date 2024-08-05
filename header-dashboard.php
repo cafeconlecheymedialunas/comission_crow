@@ -17,8 +17,7 @@ $current_user = wp_get_current_user();
 
 	<?php wp_head();?>
 	<script>
-	
-  function displayFormErrors(form, data) {
+	function displayFormErrors(form, data) {
    // Clear previous error messages
    jQuery(form).find(".error-message").empty();
    jQuery(form).find(".general-errors").hide().empty();
@@ -26,46 +25,46 @@ $current_user = wp_get_current_user();
    var firstErrorElement = null;
 
    // Display field-specific errors
-   jQuery.each(data.fields, function (fieldName, errorMessages) {
-      var field = jQuery(form).find("#" + fieldName);
-      if (field.length) {
-         // Display the first error message for the field
-         if (errorMessages.length > 0) {
-            field.next(".error-message").text(errorMessages[0]);
+   if(data.fields){
+		jQuery.each(data.fields, function (fieldName, errorMessages) {
+		var field = jQuery(form).find("#" + fieldName);
+		if (field.length) {
+			// Display the first error message for the field
+			if (errorMessages.length > 0) {
+				field.next(".error-message").text(errorMessages[0]);
 
-            // Set the first error element for scrolling
-            if (firstErrorElement === null) {
-               firstErrorElement = field;
-            }
-         }
-      }
-   });
+				// Set the first error element for scrolling
+				if (firstErrorElement === null) {
+				firstErrorElement = field;
+				}
+			}
+		}
+	});
+
+		if (firstErrorElement) {
+			jQuery('html, body').animate({
+				scrollTop: firstErrorElement.offset().top - 100 // Adjust offset as needed
+			}, 500);
+		}
+   }
+
 
    // Display the first general error
    if (data.general && data.general.length > 0) {
- 
-    
-         // Append the first general error message
-         var errorElement = jQuery('<p class="text-danger"></p>').text(data.general[0]);
+
+
+		 var errorElement = jQuery('<p class="text-danger"></p>').text(data.general);
          Swal.fire(
                 "Error!",
-                data.general[0],
+                data.general,
                 "error",
               );
 
-         // Set the general errors element as the first error for scrolling if no field-specific errors
-         if (firstErrorElement === null) {
-            firstErrorElement = generalErrorsElement;
-         }
-      
+
+
    }
 
-   // Scroll to the first error element if it exists
-   if (firstErrorElement) {
-      jQuery('html, body').animate({
-         scrollTop: firstErrorElement.offset().top - 100 // Adjust offset as needed
-      }, 500);
-   }
+
 }
 </script>
 </head>
@@ -79,62 +78,62 @@ $current_user = wp_get_current_user();
 				<div class="site-link">
                 <a href="<?php echo home_url(); ?>" class="custom-logo-link" rel="home">
                 <?php
-                    if (has_custom_logo()) {
-                        the_custom_logo();
-                    } else {
-                        // O simplemente muestra el nombre del sitio
-                        echo esc_attr(get_bloginfo('name', 'display'));
-                    }
+if (has_custom_logo()) {
+    the_custom_logo();
+} else {
+    // O simplemente muestra el nombre del sitio
+    echo esc_attr(get_bloginfo('name', 'display'));
+}
 ?>
                 </a>
 			    </div>
 				<?php
 ?>
-               
-				
+
+
 				<div class="menu-account">
 					<div class="d-flex jus">
 						<?php
-            $wallet_balance = ProfileUser::get_instance()->calculate_wallet_balance();
-if(in_array("commercial_agent", $current_user->roles) && $wallet_balance):?>
-						<span class="balance"><?php  echo Helper::format_price($wallet_balance);?></span>
+$wallet_balance = ProfileUser::get_instance()->calculate_wallet_balance();
+if (in_array("commercial_agent", $current_user->roles) && $wallet_balance): ?>
+						<span class="balance"><?php echo Helper::format_price($wallet_balance); ?></span>
 						<?php endif;?>
-						
-						
+
+
 	                    <div class="notifications-messages">
 	                        	<i class="fas fa-fw fa-envelope"></i>
-								<?php echo do_shortcode('[better_messages_unread_counter hide_when_no_messages="0" preserve_space="1"]');?>
+								<?php echo do_shortcode('[better_messages_unread_counter hide_when_no_messages="0" preserve_space="1"]'); ?>
 	                    </div>
-	                    
+
 						<div class="my-account">
-						<?php if (is_user_logged_in()) : ?>
-							<?php $post_thumbnail  = get_the_post_thumbnail($associated_post->ID, [ 50, 50], [ 'class' => 'rounded-circle' ]); ?>
+						<?php if (is_user_logged_in()): ?>
+							<?php $post_thumbnail = get_the_post_thumbnail($associated_post->ID, [50, 50], ['class' => 'rounded-circle']);?>
 							<div class="dropdown">
 								<span class="dropdown-toggle" type="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
 								<?php
-                    $default = get_template_directory_uri() . "/assets/img/placeholder.png";
+$default = get_template_directory_uri() . "/assets/img/placeholder.png";
 						    if ($post_thumbnail) {
 						        echo $post_thumbnail;
 						    } else {
 						        echo '<img width="50" height="50" class="rounded-circle" src="' . $default . '"/>';
 						    }
 ?>
-								
+
 								</span>
 								<ul class="dropdown-menu" aria-labelledby="accountDropdown">
 									<li><a class="dropdown-item" href="<?php echo esc_url(home_url('/dashboard')); ?>">Profile</a></li>
 									<li><a class="dropdown-item" href="<?php echo esc_url(wp_logout_url(home_url())); ?>">Logout</a></li>
 								</ul>
 							</div>
-						<?php else : ?>
+						<?php else: ?>
 							<a class="btn btn-primary" href="<?php echo esc_url(home_url("/auth?action=login")); ?>">Login</a>
 							<a class="btn btn-secondary" href="<?php echo esc_url(home_url("/auth?action=register&role=commercial_agent")); ?>">Register as a Agent</a>
               <a class="btn btn-secondary" href="<?php echo esc_url(home_url("/auth?action=register&role=company")); ?>">Register your Company</a>
-						<?php endif; ?>
+						<?php endif;?>
 	                    </div>
                     </div>
 				</div>
-				
+
 
 			</div>
 		</div>

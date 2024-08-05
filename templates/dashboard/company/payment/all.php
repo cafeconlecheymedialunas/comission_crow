@@ -20,12 +20,14 @@ $payments = ProfileUser::get_instance()->get_payments_for_user();
             <th scope="col">Source</th>
             <th scope="col">Status</th>
             <th scope="col">Date</th>
-            <th scope="col">Download Invoice</th>
+            <th scope="col"></th>
         </tr>
     </thead>
     <tbody>
         <?php if (!empty($payments)):
             foreach ($payments as $payment):
+
+                $payment_stripe_id = carbon_get_post_meta($payment->ID, 'payment_stripe_id');
                 $commission_request_id = carbon_get_post_meta($payment->ID, 'commission_request_id');
 
                 $contract_id = carbon_get_post_meta($commission_request_id, 'contract_id');
@@ -78,7 +80,7 @@ $payments = ProfileUser::get_instance()->get_payments_for_user();
 		                            <td><?php echo $payment->ID; ?></td>
 				                    <td><span class="txt-sm"><?php echo $commission_request_id; ?></span></td>
 		                            <td><?php echo esc_html(Helper::format_price($total_paid)); ?></td>
-				                    <td><a href=""><?php echo $source; ?></a></td>
+				                    <td>Stripe</td>
 
 				                    <td>
 				                        <?php if ($status) {
@@ -92,11 +94,16 @@ $payments = ProfileUser::get_instance()->get_payments_for_user();
                                         
                                               <?php if(!empty($invoice)):?>
                                                 <li class="list-inline-item"></li>
-                                                <a href="<?php echo wp_get_attachment_url($invoice[0]); ?>" download class="btn btn-sm btn-primary">
+                                                <a href="<?php echo wp_get_attachment_url($invoice[0]); ?>" download class="operation">
                                                     <i class="fa-solid fa-file-invoice"></i> 
                                                 </a>
                                                 </li>
                                                 <?php endif;?>
+                                                <li class="list-inline-item"></li>
+                                                <a href="<?php echo esc_url($dasboard->get_role_url_link_dashboard_page('payment_show')); ?>?session_id=<?php echo $payment_stripe_id;?>" class="operation">
+                                                 <i class="text-secondary view fa-regular fa-eye"></i>
+                                                </a>
+                                                </li>
                                         </ul>
 		                            </td>
 		                        </tr>

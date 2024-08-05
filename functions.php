@@ -27,9 +27,12 @@ $files_to_require = [
      __DIR__ . '/inc/data/ProfileUser.php',
      __DIR__ . '/inc/data/Contract.php',
      __DIR__ . '/inc/data/Commissionrequest.php',
+     __DIR__ . '/inc/data/StatusManager.php',
+     __DIR__ . '/inc/data/Deposit.php',
      __DIR__ . '/inc/data/Dispute.php',
      __DIR__ . '/inc/data/Opportunity.php',
      __DIR__ . '/inc/data/Payment.php',
+     __DIR__ . '/inc/core/EmailSender.php',
      __DIR__ . '/inc/core/CustomPostType.php',
      __DIR__ . '/inc/core/CustomTaxonomy.php',
      __DIR__ . '/inc/core/ContainerCustomFields.php',
@@ -65,83 +68,7 @@ add_action('carbon_fields_register_fields', [$containerCustomFields,'register_fi
 
 
 
-function calculate_agent_price($commission_request_id)
-{
-    $post = get_post($commission_request_id);
-    if (!$post) {
-        return;
-    }
 
-    $contract_id = carbon_get_post_meta($commission_request_id, "contract_id");
-    $total_cart = floatval(carbon_get_post_meta($commission_request_id, "total_cart"));
-    $commission = floatval(carbon_get_post_meta($contract_id, "commission"));
-
-    if (empty($total_cart) || !is_numeric($total_cart)) {
-        return;
-    }
-    if (empty($commission) || !is_numeric($commission)) {
-        return;
-    }
-
-    $discount = $total_cart * $commission / 100;
-
-    return $discount;
-}
-
-function calculate_tax_stripe_price($commission_request_id)
-{
-    $post = get_post($commission_request_id);
-    if (!$post) {
-        return;
-    }
-
-    $total_cart = floatval(carbon_get_post_meta($commission_request_id, "total_cart"));
-    if (empty($total_cart) || !is_numeric($total_cart)) {
-        return;
-    }
-
-    $tax = $total_cart * 3 / 100;
-
-    return $tax;
-}
-
-function calculate_platform_price($commission_request_id)
-{
-    $post = get_post($commission_request_id);
-    if (!$post) {
-        return;
-    }
-
-    $total = floatval(carbon_get_post_meta($commission_request_id, "total_cart"));
-    if (empty($total) || !is_numeric($total)) {
-        return;
-    }
-
-    // Calcular la tasa del 5%
-    $tax = $total * 5 / 100;
-
-    return $tax;
-}
-
-function calculate_total($commission_request_id)
-{
-    $post = get_post($commission_request_id);
-    if (!$post) {
-        return;
-    }
-
-    $total = floatval(carbon_get_post_meta($commission_request_id, "total_cart"));
-    if (empty($total) || !is_numeric($total)) {
-        return;
-    }
-    $agent_price = calculate_agent_price($commission_request_id);
-    $tax_price = calculate_tax_stripe_price($commission_request_id);
-    $platform_price = calculate_platform_price($commission_request_id);
-
-    $total_final = $agent_price + $tax_price + $platform_price;
-
-    return $total_final;
-}
 
 
 
@@ -233,28 +160,14 @@ function send_email_on_deposit_creation($post_id, $post, $update)
 add_action('save_post', 'send_email_on_deposit_creation', 10, 3);
 
 
-function update_commission_request_on_dispute_save($post_id)
+
+
+
+
+
+
+function custom_login_redirect($redirect_to, $request, $user)
 {
-
-    // Verifica que el post type sea 'dispute'
-    if (get_post_type($post_id) !== 'dispute' || get_post_type($post_id) !== 'payment') {
-        return;
-    }
-
-    // Obtén el nuevo estado del post dispute
-    $dispute_status = carbon_get_post_meta($post_id, 'status');
-
-    // Encuentra el commission_request relacionado (aquí asumo que tienes una forma de vincularlos)
-    $commission_request_id = carbon_get_post_meta($post_id, 'commission_request_id');
-
-    if ($commission_request_id) {
-        // Actualiza el estado del commission_request
-        carbon_set_post_meta($commission_request_id, "status",$dispute_status);
-    }
-}
-//add_action('save_post', 'update_commission_request_on_dispute_save');
-
-function custom_login_redirect($redirect_to, $request, $user) {
     // Verifica que el usuario esté autenticado y que no sea un objeto WP_Error
     if (!is_wp_error($user) && isset($user->roles) && is_array($user->roles)) {
         // Verifica que el usuario tenga uno de los roles especificados
@@ -268,5 +181,3 @@ function custom_login_redirect($redirect_to, $request, $user) {
     return $redirect_to;
 }
 add_filter('login_redirect', 'custom_login_redirect', 10, 3);
-
-

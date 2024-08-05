@@ -1,6 +1,6 @@
 <?php
 // Incluye el archivo de Stripe PHP SDK
-\Stripe\Stripe::setApiKey(STRIPE_SECRET_KEY);
+\Stripe\Stripe::setApiKey(carbon_get_theme_option("stripe_secret_key"));
 
 $session_id = isset($_GET['session_id']) ? $_GET['session_id'] : '';
 if ($session_id) {
@@ -52,19 +52,31 @@ if ($session_id) {
 
 ?>
 
-<div class="container mt-5">
+<div class="container">
     <div class="row">
         <div class="col-md-12">
-            <div class="alert alert-success" role="alert">
-                <h4 class="alert-heading">Thank you for your purchase!</h4>
-                <p><?php echo esc_html($status_message); ?></p>
-                <hr>
+            <div class="card">
                 <div class="mb-0 d-flex justify-content-between">
                     <span class="fw-bold">#SKU:<?php echo esc_html($sku); ?></span>
                     <span><?php echo esc_html($date); ?></span>
                 </div>
                 <hr>
-                <h5><?php echo get_the_title($opportunity_id);?></h5>
+                <div class="mb-0 w-100 d-flex justify-content-between align-items-center">
+                   
+                                                <h5><?php echo get_the_title($opportunity_id);?></h5>
+                                                <?php if(!empty($invoice)):?>
+                   
+                                              
+                   <a href="<?php echo wp_get_attachment_url($invoice[0]); ?>" download class="btn btn-sm btn-secondary">
+                       <i class="fa-solid fa-file-invoice"></i> Donwload Invoice 
+                   </a>
+                  
+                  
+                   <?php endif;?>
+                                               
+                </div>
+
+                <hr>
                 <p><strong>Detail:</strong></p>
 
                 <ul class="list-group mb-3">
@@ -86,13 +98,13 @@ if ($session_id) {
                         
                     </li>
                 </ul>
+               
+                <p><strong>Agent Commission: </strong> <?php echo esc_html(Helper::format_price($total_agent)); ?></p>
+                <p><strong>Platform Fee: </strong> <?php echo esc_html(Helper::format_price($total_platform)); ?></p>
+                <p><strong>Tax Service Fee: </strong><?php echo esc_html(Helper::format_price($total_tax_service)); ?></p>
+                <p><strong>Source: </strong> <?php echo esc_html($source); ?></p>
                 <hr>
-                <p><strong>Agent Commission:</strong> <?php echo esc_html(Helper::format_price($total_agent)); ?></p>
-                <p><strong>Platform Fee:</strong> <?php echo esc_html(Helper::format_price($total_platform)); ?></p>
-                <p><strong>Tax Service Fee:</strong><?php echo esc_html(Helper::format_price($total_tax_service)); ?></p>
-                <p><strong>Source:</strong> <?php echo esc_html($source); ?></p>
-                <hr>
-                <h5>Total Paid: <?php echo esc_html($total_paid); ?></h5>
+                <h5>Total Paid: <?php echo esc_html(Helper::format_price($total_paid)); ?></h5>
             </div>
         </div>
     </div>

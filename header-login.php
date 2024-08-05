@@ -20,44 +20,46 @@
    var firstErrorElement = null;
 
    // Display field-specific errors
-   jQuery.each(data.fields, function (fieldName, errorMessages) {
-      var field = jQuery(form).find("#" + fieldName);
-      if (field.length) {
-         // Display the first error message for the field
-         if (errorMessages.length > 0) {
-            field.next(".error-message").text(errorMessages[0]);
+   if(data.fields){
+		jQuery.each(data.fields, function (fieldName, errorMessages) {
+		var field = jQuery(form).find("#" + fieldName);
+		if (field.length) {
+			// Display the first error message for the field
+			if (errorMessages.length > 0) {
+				field.next(".error-message").text(errorMessages[0]);
 
-            // Set the first error element for scrolling
-            if (firstErrorElement === null) {
-               firstErrorElement = field;
-            }
-         }
-      }
-   });
+				// Set the first error element for scrolling
+				if (firstErrorElement === null) {
+				firstErrorElement = field;
+				}
+			}
+		}
+	});
+		
+		if (firstErrorElement) {
+			jQuery('html, body').animate({
+				scrollTop: firstErrorElement.offset().top - 100 // Adjust offset as needed
+			}, 500);
+		}
+   }
+  
 
    // Display the first general error
    if (data.general && data.general.length > 0) {
-      var generalErrorsElement = jQuery(form).find(".general-errors");
-      if (generalErrorsElement.length) {
-         // Append the first general error message
-         var errorElement = jQuery('<p class="text-danger"></p>').text(data.general[0]);
-         generalErrorsElement.append(errorElement);
-         // Show the general errors element
-         generalErrorsElement.show();
+     
 
-         // Set the general errors element as the first error for scrolling if no field-specific errors
-         if (firstErrorElement === null) {
-            firstErrorElement = generalErrorsElement;
-         }
-      }
+		 var errorElement = jQuery('<p class="text-danger"></p>').text(data.general);
+         Swal.fire(
+                "Error!",
+                data.general,
+                "error",
+              );
+
+         
+      
    }
 
-   // Scroll to the first error element if it exists
-   if (firstErrorElement) {
-      jQuery('html, body').animate({
-         scrollTop: firstErrorElement.offset().top - 100 // Adjust offset as needed
-      }, 500);
-   }
+ 
 }
 
 </script>

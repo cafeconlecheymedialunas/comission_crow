@@ -22,10 +22,10 @@ jQuery(document).ready(function ($) {
             timer: 2000, // 2 segundos
           }).then(function () {
             let key =
-            response.data.roles[0] === "commercial_agent"
-              ? "commercial-agent"
-              : "company";
-          window.location.href = `/dashboard/${key}/profile`;
+              response.data.roles[0] === "commercial_agent"
+                ? "commercial-agent"
+                : "company";
+            window.location.href = `/dashboard/${key}/profile`;
           });
         } else {
           displayFormErrors(form, response.data);

@@ -18,12 +18,13 @@ class Payment
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['payment_init'])) {
             $commission_request_id = intval($_POST['commission_request_id']);
+            $currency = isset($_POST["currency"])?sanitize_text_field($_POST["currency"]):"USD";
     
             $total_cart = carbon_get_post_meta($commission_request_id, 'total_cart');
-            $total_agent = calculate_agent_price($commission_request_id);
-            $total_platform = calculate_platform_price($commission_request_id);
-            $total_tax_service = calculate_tax_stripe_price($commission_request_id);
-            $total_paid = calculate_total($commission_request_id);
+            $total_agent = carbon_get_post_meta($commission_request_id, 'total_agent');
+            $total_platform = carbon_get_post_meta($commission_request_id, 'total_platform');
+            $total_tax_service = carbon_get_post_meta($commission_request_id, 'total_tax_service');
+            $total_paid = carbon_get_post_meta($commission_request_id, 'total_to_pay');
     
             $contract_id = carbon_get_post_meta($commission_request_id, 'contract_id');
             $opportunity_id = carbon_get_post_meta($contract_id, 'opportunity');
@@ -51,7 +52,7 @@ class Payment
                 $price = \Stripe\Price::create([
                     'product' => $product->id,
                     'unit_amount' => intval($total_paid * 100), // Precio en centavos
-                    'currency' => 'usd',
+                    'currency' => $currency,
                 ]);
                 $line_items[] = [
                     'price' => $price->id,
@@ -84,8 +85,16 @@ class Payment
                 carbon_set_post_meta($payment_id, "source", "stripe");
                 carbon_set_post_meta($payment_id, "payment_stripe_id", $checkout_session->id);
                 carbon_set_post_meta($payment_id, "date", current_time('mysql'));
-                carbon_set_post_meta($payment_id, "status", 'pending'); // Inicializar el estado
+                carbon_set_post_meta($payment_id, "status", 'payment_psending'); // Inicializar el estado
                 carbon_set_post_meta($payment_id, "user", get_current_user_id());
+
+
+                $status_commision_request_history = Helper::add_item_to_status_history($commission_request_id, "payment_pending");
+                carbon_set_post_meta($commission_request_id, 'status_history', $status_commision_request_history);
+                carbon_set_post_meta($commission_request_id, 'status', "payment_pending");
+
+
+              
                 // Redirigir a la página de checkout de Stripe
                 header("HTTP/1.1 303 See Other");
                 header("Location: " . $checkout_session->url);
@@ -98,6 +107,118 @@ class Payment
             echo "Solicitud no válida.";
         }
     }
+
+
+    public function send_create_agent_payment_email($payment_id)
+    {
+        // Obtener detalles del pago
+        $commission_request_id = carbon_get_post_meta($payment_id, 'commission_request_id');
+        $total_agent = Helper::format_price(carbon_get_post_meta($commission_request_id, 'total_agent'));
+        $contract_id = carbon_get_post_meta($commission_request_id, 'contract_id');
+        $commercial_agent = carbon_get_post_meta($contract_id, 'commercial_agent');
+        $user = carbon_get_post_meta($commercial_agent, 'user');
+        $user = get_user_by('ID', $user);
+        $sku = carbon_get_post_meta($contract_id, 'sku');
+    
+        // Crear una instancia de la clase EmailSender
+        $email_sender = new EmailSender();
+    
+        // Definir los parámetros del correo electrónico
+        $to = $user->user_email;
+        $subject = 'Payment Received for Your Commission';
+        $message = "<p>Hello, {$user->first_name},</p>
+            <p>Your commission payment has been successfully processed.</p>
+            <p><strong>Commission Request ID:</strong> {$commission_request_id}</p>
+            <p><strong>Agent Commission:</strong> {$total_agent}</p>
+            <p><strong>Contract SKU:</strong> {$sku}</p>
+            <p>Thank you for your business.</p>";
+    
+        // Enviar el correo electrónico
+        $sent = $email_sender->send_email($to, $subject, $message);
+    
+        if (!$sent) {
+            $errors = $email_sender->get_error();
+            foreach ($errors->get_error_messages() as $error_message) {
+                echo '<p>Error: ' . esc_html($error_message) . '</p>';
+            }
+        } else {
+            echo '<p>Email sent successfully to the agent.</p>';
+        }
+    }
+    
+    public function send_create_company_payment_email($payment_id)
+    {
+        // Obtener detalles del pago
+        $commission_request_id = carbon_get_post_meta($payment_id, 'commission_request_id');
+        $total_agent = Helper::format_price(carbon_get_post_meta($commission_request_id, 'total_agent'));
+        $contract_id = carbon_get_post_meta($commission_request_id, 'contract_id');
+        $commercial_agent = carbon_get_post_meta($contract_id, 'commercial_agent');
+        $user = carbon_get_post_meta($commercial_agent, 'user');
+        $user = get_user_by('ID', $user);
+        $sku = carbon_get_post_meta($contract_id, 'sku');
+    
+        // Crear una instancia de la clase EmailSender
+        $email_sender = new EmailSender();
+    
+        // Definir los parámetros del correo electrónico
+        $to = $user->user_email;
+        $subject = 'Payment Confirmation for Your Company';
+        $message = "<p>Hello, {$user->first_name},</p>
+            <p>Your company payment has been successfully processed.</p>
+            <p><strong>Commission Request ID:</strong> {$commission_request_id}</p>
+            <p><strong>Agent Commission:</strong> {$total_agent}</p>
+            <p><strong>Contract SKU:</strong> {$sku}</p>
+            <p>Thank you for your business.</p>";
+    
+        // Enviar el correo electrónico
+        $sent = $email_sender->send_email($to, $subject, $message);
+    
+        if (!$sent) {
+            $errors = $email_sender->get_error();
+            foreach ($errors->get_error_messages() as $error_message) {
+                echo '<p>Error: ' . esc_html($error_message) . '</p>';
+            }
+        } else {
+            echo '<p>Email sent successfully to the company.</p>';
+        }
+    }
+   
+    
+    public function send_create_admin_payment_email($payment_id)
+    {
+        // Obtener detalles del pago
+        $commission_request_id = carbon_get_post_meta($payment_id, 'commission_request_id');
+      
+        $contract_id = carbon_get_post_meta($commission_request_id, 'contract_id');
+       
+      
+        $sku = carbon_get_post_meta($contract_id, 'sku');
+    
+        // Crear una instancia de la clase EmailSender
+        $email_sender = new EmailSender();
+    
+        // Definir los parámetros del correo electrónico
+        $to = get_option('admin_email');
+        $subject = "New Payment Created";
+        $message = "<p>Hello Admin,</p>
+            <p>A new payment has been created with the following details:</p>
+            <p><strong>Commission Request ID:</strong> <?php echo esc_html($commission_request_id); ?></p>
+            <p><strong>Contract SKU:</strong> <?php echo esc_html($sku); ?></p>
+            <p>Thank you for your attention.</p>";
+    
+        // Enviar el correo electrónico
+        $sent = $email_sender->send_email($to, $subject, $message);
+    
+        if (!$sent) {
+            $errors = $email_sender->get_error();
+            foreach ($errors->get_error_messages() as $error_message) {
+                echo '<p>Error: ' . esc_html($error_message) . '</p>';
+            }
+        } else {
+            echo '<p>Email sent successfully to the company.</p>';
+        }
+    }
+    
     
     public function generate_invoice($session_id)
     {
@@ -214,12 +335,12 @@ class Payment
     
         // Guardar el PDF en un archivo temporal
         $upload_dir = wp_upload_dir();
-        $file_path = $upload_dir['path'] . '/invoice-stripeid-' . $session_id . '-payment-'.$payment_id.'.pdf';
+        $file_path = $upload_dir['path'] . '/payment-'.$payment_id.'.pdf';
         $invoice->render($file_path, 'F');
     
         // Cargar el archivo PDF a la biblioteca de medios de WordPress
         $attachment_id = wp_insert_attachment([
-            'guid' => $upload_dir['url'] . '/invoice-' . $session_id . '.pdf',
+            'guid' => $upload_dir['url'] . '/invoice-' . $payment_id. '.pdf',
             'post_mime_type' => 'application/pdf',
             'post_title' => 'Invoice for Payment ' . $payment_id,
             'post_content' => '',

@@ -47,7 +47,7 @@
      
                 // Obtener los usuarios administradores
                 $users = get_users(['role' => 'administrator']);
-                $admin_id = $users[0]->ID; 
+                $admin_id = $users[0]->ID;
 
 
                 ?>
@@ -65,13 +65,13 @@
 			                                <?php
 
                                                 $user_ids = [$admin_id, $current_user->ID];
-                                                    $unique_key = $contract_sku;
-                                                    // Subject will be used only if conversation not exists yet
-                                                    $subject = 'Questions about your Dispute about contract: ' . $contract_sku;
+                $unique_key = $contract_sku;
+                // Subject will be used only if conversation not exists yet
+                $subject = 'Questions about your Dispute about contract: ' . $contract_sku;
 
-                                                    $thread_id = Better_Messages()->functions->get_unique_conversation_id($user_ids, $unique_key, $subject);
+                $thread_id = Better_Messages()->functions->get_unique_conversation_id($user_ids, $unique_key, $subject);
 
-                                                    ?>
+                ?>
                                               <?php if(!empty($invoice)):?>
                                                 <li class="list-inline-item"></li>
                                                 <a href="<?php echo wp_get_attachment_url($invoice[0]); ?>" download class="btn btn-primary">
