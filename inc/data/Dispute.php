@@ -1,11 +1,12 @@
 <?php
 class Dispute
 {
-
     private function __construct()
     {
     }
+
     private static $instance = null;
+
     public static function get_instance()
     {
         if (self::$instance === null) {
@@ -14,13 +15,9 @@ class Dispute
         return self::$instance;
     }
 
-   
-
-  
-
     public function handle_create_dispute()
     {
-        // Verify nonce for security
+        // Verificar nonce para seguridad
         check_ajax_referer('create_dispute_nonce', 'security');
     
         $subject = sanitize_textarea_field($_POST['subject']);
@@ -33,8 +30,6 @@ class Dispute
         $commission_request_id = intval($_POST['commission_request_id']);
         $commission_request = get_post($commission_request_id);
 
-
-    
         if (!$commission_request) {
             $general_errors[] = 'Commission Request not found.';
             wp_send_json_error(['general' => $general_errors]);
@@ -83,7 +78,6 @@ class Dispute
     
         // Validar y manejar la carga de documentos si existen
         if (isset($_FILES['documents']) && !empty($_FILES['documents']['name'][0])) {
-        
             $uploads = handle_multiple_file_upload($_FILES['documents']);
             if (isset($uploads['error'])) {
                 $general_errors[] = $uploads['error'];
@@ -125,10 +119,12 @@ class Dispute
             carbon_set_post_meta($dispute_id, 'documents', $uploads); // Save as array of attachment IDs
         }
     
+        $this->send_dispute_created_email_to_agent($dispute_id);
+        $this->send_dispute_created_email_to_company($dispute_id);
+    
         wp_send_json_success(['message' => 'Dispute successfully created.']);
         wp_die();
     }
-
 
     public function delete_dispute()
     {
@@ -170,15 +166,198 @@ class Dispute
 
         $dispute_id = wp_delete_post($dispute_id, true);
 
-        
         if(is_wp_error($dispute_id)) {
             wp_send_json_error(['message' => 'Error deleting the post. Try again later.']);
         }
+
+        $this->send_dispute_deleted_email_to_agent($dispute_id);
+        $this->send_dispute_deleted_email_to_company($dispute_id);
+
         wp_send_json_success(['message' => 'Dispute successfully deleted!']);
         wp_die();
     }
 
-    
+    private function send_dispute_created_email_to_agent($dispute_id)
+    {
+        // Obtener detalles de la disputa
+        $dispute = get_post($dispute_id);
+        if (!$dispute) {
+            error_log('Invalid dispute ID.');
+            return;
+        }
 
+        $commission_request_id = carbon_get_post_meta($dispute_id, 'commission_request_id');
+        $agent_user_id = carbon_get_post_meta($dispute_id, 'initiating_user');
+        $agent_user = get_user_by('ID', $agent_user_id);
+        
+        if (!$agent_user) {
+            error_log('Invalid agent user ID.');
+            return;
+        }
 
+        $company_id = carbon_get_post_meta($commission_request_id, 'company');
+        $company_name = get_post_meta($company_id, 'company_name', true);
+
+        // Crear una instancia de la clase EmailSender
+        $email_sender = new EmailSender();
+
+        // Definir los parámetros del correo electrónico
+        $to = $agent_user->user_email;
+        $subject = 'New Dispute Created';
+        $message = "<p>Hello {$agent_user->first_name},</p>
+            <p>A new dispute has been created with the following details:</p>
+            <p><strong>Commission Request ID:</strong> {$commission_request_id}</p>
+            <p><strong>Dispute ID:</strong> {$dispute_id}</p>
+            <p><strong>Subject:</strong> {$dispute->post_title}</p>
+            <p><strong>Description:</strong> {$dispute->post_content}</p>
+            <p><strong>Company:</strong> {$company_name}</p>
+            <p>If you have any questions or need further assistance, please contact us.</p>";
+
+        // Enviar el correo electrónico
+        $sent = $email_sender->send_email($to, $subject, $message);
+
+        if (!$sent) {
+            $errors = $email_sender->get_error();
+            foreach ($errors->get_error_messages() as $error_message) {
+                error_log('Error sending email to agent regarding dispute creation: ' . $error_message);
+            }
+        }
+    }
+
+    private function send_dispute_created_email_to_company($dispute_id)
+    {
+        // Obtener detalles de la disputa
+        $dispute = get_post($dispute_id);
+        if (!$dispute) {
+            error_log('Invalid dispute ID.');
+            return;
+        }
+
+        $commission_request_id = carbon_get_post_meta($dispute_id, 'commission_request_id');
+        $company_id = carbon_get_post_meta($commission_request_id, 'company');
+        $company_user_id = get_post_meta($company_id, 'user', true);
+        $company_user = get_user_by('ID', $company_user_id);
+
+        if (!$company_user) {
+            error_log('Invalid company user ID.');
+            return;
+        }
+
+        $company_name = get_post_meta($company_id, 'company_name', true);
+
+        // Crear una instancia de la clase EmailSender
+        $email_sender = new EmailSender();
+
+        // Definir los parámetros del correo electrónico
+        $to = $company_user->user_email;
+        $subject = 'New Dispute Created';
+        $message = "<p>Hello,</p>
+            <p>A new dispute has been created related to your company with the following details:</p>
+            <p><strong>Company:</strong> {$company_name}</p>
+            <p><strong>Commission Request ID:</strong> {$commission_request_id}</p>
+            <p><strong>Dispute ID:</strong> {$dispute_id}</p>
+            <p><strong>Subject:</strong> {$dispute->post_title}</p>
+            <p><strong>Description:</strong> {$dispute->post_content}</p>
+            <p>If you have any questions or need further assistance, please contact us.</p>";
+
+        // Enviar el correo electrónico
+        $sent = $email_sender->send_email($to, $subject, $message);
+
+        if (!$sent) {
+            $errors = $email_sender->get_error();
+            foreach ($errors->get_error_messages() as $error_message) {
+                error_log('Error sending email to company regarding dispute creation: ' . $error_message);
+            }
+        }
+    }
+
+    private function send_dispute_deleted_email_to_agent($dispute_id)
+    {
+        // Obtener detalles de la disputa
+        $dispute = get_post($dispute_id);
+        if (!$dispute) {
+            error_log('Invalid dispute ID.');
+            return;
+        }
+
+        $commission_request_id = carbon_get_post_meta($dispute_id, 'commission_request_id');
+        $agent_user_id = carbon_get_post_meta($dispute_id, 'initiating_user');
+        $agent_user = get_user_by('ID', $agent_user_id);
+
+        if (!$agent_user) {
+            error_log('Invalid agent user ID.');
+            return;
+        }
+
+        // Crear una instancia de la clase EmailSender
+        $email_sender = new EmailSender();
+
+        // Definir los parámetros del correo electrónico
+        $to = $agent_user->user_email;
+        $subject = 'Dispute Deleted';
+        $message = "<p>Hello {$agent_user->first_name},</p>
+            <p>The dispute with the following details has been deleted:</p>
+            <p><strong>Commission Request ID:</strong> {$commission_request_id}</p>
+            <p><strong>Dispute ID:</strong> {$dispute_id}</p>
+            <p><strong>Subject:</strong> {$dispute->post_title}</p>
+            <p><strong>Description:</strong> {$dispute->post_content}</p>
+            <p>If you have any questions or need further assistance, please contact us.</p>";
+
+        // Enviar el correo electrónico
+        $sent = $email_sender->send_email($to, $subject, $message);
+
+        if (!$sent) {
+            $errors = $email_sender->get_error();
+            foreach ($errors->get_error_messages() as $error_message) {
+                error_log('Error sending email to agent regarding dispute deletion: ' . $error_message);
+            }
+        }
+    }
+
+    private function send_dispute_deleted_email_to_company($dispute_id)
+    {
+        // Obtener detalles de la disputa
+        $dispute = get_post($dispute_id);
+        if (!$dispute) {
+            error_log('Invalid dispute ID.');
+            return;
+        }
+
+        $commission_request_id = carbon_get_post_meta($dispute_id, 'commission_request_id');
+        $company_id = carbon_get_post_meta($commission_request_id, 'company');
+        $company_user_id = get_post_meta($company_id, 'user', true);
+        $company_user = get_user_by('ID', $company_user_id);
+
+        if (!$company_user) {
+            error_log('Invalid company user ID.');
+            return;
+        }
+
+        $company_name = get_post_meta($company_id, 'company_name', true);
+
+        // Crear una instancia de la clase EmailSender
+        $email_sender = new EmailSender();
+
+        // Definir los parámetros del correo electrónico
+        $to = $company_user->user_email;
+        $subject = 'Dispute Deleted';
+        $message = "<p>Hello,</p>
+            <p>The dispute related to your company with the following details has been deleted:</p>
+            <p><strong>Company:</strong> {$company_name}</p>
+            <p><strong>Commission Request ID:</strong> {$commission_request_id}</p>
+            <p><strong>Dispute ID:</strong> {$dispute_id}</p>
+            <p><strong>Subject:</strong> {$dispute->post_title}</p>
+            <p><strong>Description:</strong> {$dispute->post_content}</p>
+            <p>If you have any questions or need further assistance, please contact us.</p>";
+
+        // Enviar el correo electrónico
+        $sent = $email_sender->send_email($to, $subject, $message);
+
+        if (!$sent) {
+            $errors = $email_sender->get_error();
+            foreach ($errors->get_error_messages() as $error_message) {
+                error_log('Error sending email to company regarding dispute deletion: ' . $error_message);
+            }
+        }
+    }
 }

@@ -18,9 +18,7 @@ if ($session_id) :
         if(!$invoice) {
             $invoice = $payment->generate_invoice($session_id);
         }
-        $payment->send_create_admin_payment_email($payment_id);
-        $payment->send_create_agent_payment_email($payment_id);
-        $payment->send_create_company_payment_email($payment_id);
+        
         $payment_post = get_post($payment_id);
         
         carbon_set_post_meta($payment_id, 'status', "payment_completed");
@@ -47,7 +45,9 @@ if ($session_id) :
         $contract_id = carbon_get_post_meta($commission_request_id, 'contract_id');
         $opportunity_id = carbon_get_post_meta($contract_id, 'opportunity');
         $sku = carbon_get_post_meta($contract_id, 'sku');
-       
+        $payment->send_create_admin_payment_email($payment_id);
+        $payment->send_create_agent_payment_email($payment_id);
+        $payment->send_create_company_payment_email($payment_id);
     } catch (Exception $e) {
         $status_message = 'Error retrieving session: ' . $e->getMessage();
     }

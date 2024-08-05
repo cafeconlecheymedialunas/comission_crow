@@ -50,9 +50,13 @@ $opportunities = $company->get_opportunities();
                                         
                                         <td>
                                             <div class="mb-0 d-flex justify-content-center align-items-center">
-                                                    <a class="operation" href="<?php echo home_url("/dashboard/company/opportunity/edit"). "?opportunity_id=". esc_attr($opportunity->ID); ?>"><i class="text-primary fa-regular fa-pen-to-square"></i></a>
+                                                    <a class="operation" href="<?php echo home_url("/dashboard/company/opportunity/edit"). "?opportunity_id=". esc_attr($opportunity->ID); ?>">
+                                                    <i class="text-primary fa-regular fa-pen-to-square"></i>
+                                                </a>
                                              
-                                                    <a class="operation" href="<?php echo home_url("/dashboard/company/opportunity/view"). "?opportunity_id=". esc_attr($opportunity->ID); ?>"><i class="text-secondary text-secondary view fa-regular fa-eye"></i></a>
+                                                    <a class="operation" href="<?php echo home_url("/dashboard/company/opportunity/view"). "?opportunity_id=". esc_attr($opportunity->ID); ?>">
+                                                    <i class="text-secondary text-secondary view fa-regular fa-eye"></i>
+                                                </a>
                                                 
                                                  
                                                     <form class="delete-opportunity-form d-inline">
