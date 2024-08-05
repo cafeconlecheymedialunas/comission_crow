@@ -3,11 +3,11 @@ class Opportunity extends Crud
 {
     private function __construct()
     {
-      
         parent::__construct('opportunity');
-        
     }
+
     private static $instance = null;
+
     public static function get_instance()
     {
         if (self::$instance === null) {
@@ -15,6 +15,7 @@ class Opportunity extends Crud
         }
         return self::$instance;
     }
+
     public function save_opportunity()
     {
         check_ajax_referer('create-opportunity-nonce', 'security');
@@ -22,11 +23,10 @@ class Opportunity extends Crud
 
         $general_errors = [];
         $errors = [];
-    
-        // Sanitización de datos
+
         $data = [
-            'post_title' => sanitize_text_field($_POST['title']), // Asegurarse de usar 'post_title'
-            'post_content' => wp_kses_post($_POST['post_content']), // Asegurarse de usar 'post_content'
+            'post_title' => sanitize_text_field($_POST['title']),
+            'post_content' => wp_kses_post($_POST['post_content']),
             'target_audience' => sanitize_text_field($_POST['target_audience']),
             'age' => sanitize_text_field($_POST['age']),
             'gender' => sanitize_text_field($_POST['gender']),
@@ -51,11 +51,6 @@ class Opportunity extends Crud
             'post_author' => $current_user->ID,
             'opportunity_id' => isset($_POST['opportunity_id']) ? (int) $_POST['opportunity_id'] : null,
         ];
-
-
-   
-        // Validación
-
 
         if (empty($data['post_title'])) {
             $errors["title"][] = __("Title field is required.");
@@ -83,7 +78,6 @@ class Opportunity extends Crud
                 break;
             }
             $videos[]["video"] = $video_url;
-
         }
 
         $data["videos"] = $videos;
@@ -92,9 +86,8 @@ class Opportunity extends Crud
         }
 
         $allowed_image_types = ['image/jpeg', 'image/png', 'image/gif'];
-        $max_image_size = 5 * 1024 * 1024; // 5 MB
+        $max_image_size = 5 * 1024 * 1024;
 
-    
         if (isset($_FILES['images']) && !empty($_FILES['images']['name'][0])) {
             $validation_result = validate_files($_FILES['images'], $allowed_image_types, $max_image_size);
             if (isset($validation_result['error'])) {
@@ -103,47 +96,37 @@ class Opportunity extends Crud
         }
 
         $allowed_supporting_types = ['application/pdf', 'text/plain'];
-        $max_supporting_size = 10 * 1024 * 1024; // 10 MB
+        $max_supporting_size = 10 * 1024 * 1024;
 
-        
         if (isset($_FILES['supporting_materials']) && !empty($_FILES['supporting_materials']['name'][0])) {
             $validation_result = validate_files($_FILES['supporting_materials'], $allowed_supporting_types, $max_supporting_size);
             if (isset($validation_result['error'])) {
                 $errors['supporting_materials'][] = $validation_result['error'];
             }
         }
+
         $company = ProfileUser::get_instance()->get_user_associated_post_type();
-
-        
-        if(is_wp_error($company) || empty($company->ID)) {
-            $general_errors = "You need be a company to create an opportunity";
+        if (is_wp_error($company) || empty($company->ID)) {
+            $general_errors[] = __("You need to be a company to create an opportunity.");
         }
-
         $data["company"] = $company->ID;
 
-        if(isset($_POST["opportunity_id"])) {
+        if (isset($_POST["opportunity_id"])) {
             $opportunity = get_post($_POST["opportunity_id"]);
-
-            if(is_wp_error($opportunity)) {
-                $general_errors[] = "Opportunity does not exist";
+            if (is_wp_error($opportunity)) {
+                $general_errors[] = __("Opportunity does not exist.");
             }
-
             $opportunity_id = $opportunity->ID;
-            
         }
 
         if (!empty($errors)) {
             wp_send_json_error(['fields' => $errors]);
         }
 
-      
         $uploaded_image_ids = handle_multiple_file_upload($_FILES['images']);
         $uploaded_supporting_material_ids = handle_multiple_file_upload($_FILES['supporting_materials']);
-
         $data["images"] = $uploaded_image_ids;
         $data["supporting_materials"] = $uploaded_supporting_material_ids;
-
-  
 
         $field_mappings = [
             "company" => "Company",
@@ -170,65 +153,102 @@ class Opportunity extends Crud
         if (!empty($general_errors)) {
             wp_send_json_error(['general' => $general_errors]);
         }
-    
+
         $opportunity_id = isset($opportunity_id) && !empty($opportunity_id) ? $this->update($opportunity_id, $data, $field_mappings) : $this->create($data, $field_mappings);
-        if($this->has_errors()) {
+        if ($this->has_errors()) {
             wp_send_json_error(['general' => $this->get_errors()]);
         }
 
-        
-
-        
-     
         if (!empty($data['language'])) {
             wp_set_post_terms($opportunity_id, $data['language'], 'language');
         }
-    
+
         if (!empty($data['country'])) {
             wp_set_post_terms($opportunity_id, $data['country'], 'country');
         }
-    
+
         if (!empty($data['currency'])) {
             wp_set_post_terms($opportunity_id, $data['currency'], 'currency');
         }
-    
+
         if (!empty($data['industry'])) {
             wp_set_post_terms($opportunity_id, $data['industry'], 'industry');
         }
-    
+
         if (!empty($data['type_of_company'])) {
             wp_set_post_terms($opportunity_id, $data['type_of_company'], 'type_of_company');
         }
-       
-        
-        wp_send_json_success(['message' => __('Opportunity saved successfully!'), 'opportunity_id' => $opportunity_id]);
-        
 
+        $this->send_opportunity_created_email_to_company($opportunity_id);
+
+        wp_send_json_success(['message' => __('Opportunity saved successfully!'), 'opportunity_id' => $opportunity_id]);
         wp_die();
     }
 
     public function delete_opportunity()
     {
-      
-    
-        // Verificar el nonce para la seguridad
         check_ajax_referer('delete-opportunity-nonce', 'security');
-
-        // Obtener el ID de la oportunidad a eliminar
         $opportunity_id = isset($_POST['opportunity_id']) ? intval($_POST['opportunity_id']) : 0;
 
-        // Verificar si el ID es válido
         if (!$opportunity_id) {
             wp_send_json_error(['message' => 'Necesitas un ID válido.']);
         }
 
+        $deleted = wp_delete_post($opportunity_id, true);
 
-        // Intentar eliminar la oportunidad
-        if (wp_delete_post($opportunity_id, true)) {
+        if ($deleted) {
+            $this->send_opportunity_deleted_email_to_company($opportunity_id);
             wp_send_json_success(['message' => 'Oportunidad eliminada correctamente.']);
         } else {
             wp_send_json_error(['message' => 'Error al eliminar la oportunidad. Inténtalo de nuevo más tarde.']);
         }
         wp_die();
+    }
+
+    private function send_opportunity_created_email_to_company($opportunity_id)
+    {
+        $opportunity = get_post($opportunity_id);
+        if (!$opportunity) {
+            return;
+        }
+
+        $company_id = get_post_meta($opportunity_id, 'company', true);
+        $company = get_post($company_id);
+        if (!$company) {
+            return;
+        }
+
+        $to = get_post_meta($company_id, 'company_email', true);
+        $subject = __('New Opportunity Created');
+        $message = sprintf(
+            __('A new opportunity "%s" has been created. Check it out here: %s'),
+            $opportunity->post_title,
+            get_permalink($opportunity_id)
+        );
+
+        wp_mail($to, $subject, $message);
+    }
+
+    private function send_opportunity_deleted_email_to_company($opportunity_id)
+    {
+        $opportunity = get_post($opportunity_id);
+        if (!$opportunity) {
+            return;
+        }
+
+        $company_id = get_post_meta($opportunity_id, 'company', true);
+        $company = get_post($company_id);
+        if (!$company) {
+            return;
+        }
+
+        $to = get_post_meta($company_id, 'company_email', true);
+        $subject = __('Opportunity Deleted');
+        $message = sprintf(
+            __('The opportunity "%s" has been deleted.'),
+            $opportunity->post_title
+        );
+
+        wp_mail($to, $subject, $message);
     }
 }
