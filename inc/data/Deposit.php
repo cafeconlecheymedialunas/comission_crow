@@ -1,13 +1,12 @@
 <?php
 class Deposit
 {
-
-    
-
     private function __construct()
     {
     }
+
     private static $instance = null;
+
     public static function get_instance()
     {
         if (self::$instance === null) {
@@ -15,61 +14,313 @@ class Deposit
         }
         return self::$instance;
     }
-    public function withdraw_founds()
+
+    public function withdraw_funds()
     {
-        // Verificar nonce para seguridad
-        if (!isset($_POST['security']) || !wp_verify_nonce($_POST['security'], 'withdraw-founds')) {
+        if (!isset($_POST['security']) || !wp_verify_nonce($_POST['security'], 'withdraw-funds')) {
             wp_send_json_error(['message' => 'Nonce verification failed.']);
             return;
         }
-    
-        // Validar y sanitizar los datos
+
         $commercial_agent_id = isset($_POST['commercial_agent_id']) ? intval($_POST['commercial_agent_id']) : 0;
         $current_user_id = get_current_user_id();
-    
-        // Asegúrate de que el usuario esté autorizado a realizar el retiro
+
         if ($current_user_id <= 0 || $commercial_agent_id <= 0) {
             wp_send_json_error(['message' => 'Invalid user or agent ID.']);
             return;
         }
-    
-        // Obtener el saldo de la billetera del usuario
+
         $wallet_balance = ProfileUser::get_instance()->calculate_wallet_balance();
-    
-        // Aquí puedes añadir lógica para determinar la cantidad a retirar.
-        // Por simplicidad, supongamos que el usuario desea retirar todo el saldo.
         $amount_to_withdraw = $wallet_balance;
-    
-        // Crear un nuevo post de tipo 'deposit'
+
         $post_data = [
-            'post_title'    => 'Withdraw Found Requests for User ' . $current_user_id,
+            'post_title'    => 'Withdraw Fund Request for User ' . $current_user_id,
             'post_content'  => 'Amount: ' . $amount_to_withdraw,
-            'post_status'   => 'publish', // O 'pending' si necesitas revisión
+            'post_status'   => 'publish',
             'post_author'   => $current_user_id,
             'post_type'     => 'deposit',
         ];
-    
-        
+
         $post_id = wp_insert_post($post_data);
-    
+
         if (!$post_id) {
             wp_send_json_error(['message' => 'Failed to create deposit record.']);
-           
         }
 
-        carbon_set_post_meta($post_id, 'total_withdraw_founds', $amount_to_withdraw);
+        carbon_set_post_meta($post_id, 'total_withdraw_funds', $amount_to_withdraw);
         carbon_set_post_meta($post_id, 'user', $current_user_id);
-
         carbon_set_post_meta($post_id, 'status', 'pending');
 
-        wp_send_json_success(['message' => 'Funds withdrawn successfully and deposit recorded.']);
+        $this->send_deposit_request_email_to_admin($post_id);
+        $this->send_deposit_request_email_to_agent($commercial_agent_id, $post_id);
+
+        wp_send_json_success(['message' => 'Funds withdrawal request successfully recorded.']);
     }
-    
-   
-    
-    
-    
-    
 
+    public function send_deposit_request_email_to_admin($post_id)
+    {
+        $admin_email = get_option('admin_email');
+        $post = get_post($post_id);
 
+        if (!$post) {
+            error_log('Invalid deposit post ID.');
+            return false;
+        }
+
+        $amount = get_post_meta($post_id, 'total_withdraw_funds', true);
+
+        // Crear una instancia de la clase EmailSender
+        $email_sender = new EmailSender();
+
+        // Definir los parámetros del correo electrónico
+        $to = $admin_email;
+        $subject = __('New Deposit Request');
+        $message = "<p>Hello Admin,</p>
+            <p>A new deposit request has been created with the following details:</p>
+            <p><strong>Deposit ID:</strong> {$post_id}</p>
+            <p><strong>Requested Amount:</strong> {$amount}</p>
+            <p><strong>Description:</strong> {$post->post_content}</p>
+            <p><strong>User:</strong> " . get_user_by('ID', $post->post_author)->user_login . "</p>
+            <p>Please review and process this request as soon as possible.</p>";
+
+        // Enviar el correo electrónico
+        $sent = $email_sender->send_email($to, $subject, $message);
+
+        if (!$sent) {
+            $errors = $email_sender->get_error();
+            foreach ($errors->get_error_messages() as $error_message) {
+                error_log('Error sending deposit request email to admin: ' . $error_message);
+            }
+            return false;
+        }
+
+        return true;
+    }
+
+    public function send_deposit_request_email_to_agent($agent_id, $post_id)
+    {
+        $agent_user = get_user_by('ID', $agent_id);
+
+        if (!$agent_user) {
+            error_log('Invalid agent user ID.');
+            return false;
+        }
+
+        $post = get_post($post_id);
+
+        if (!$post) {
+            error_log('Invalid deposit post ID.');
+            return false;
+        }
+
+        $amount = get_post_meta($post_id, 'total_withdraw_funds', true);
+
+        // Crear una instancia de la clase EmailSender
+        $email_sender = new EmailSender();
+
+        // Definir los parámetros del correo electrónico
+        $to = $agent_user->user_email;
+        $subject = __('Deposit Request Received');
+        $message = "<p>Hello {$agent_user->first_name},</p>
+            <p>Your deposit request has been received with the following details:</p>
+            <p><strong>Deposit ID:</strong> {$post_id}</p>
+            <p><strong>Requested Amount:</strong> {$amount}</p>
+            <p><strong>Description:</strong> {$post->post_content}</p>
+            <p><strong>User:</strong> " . get_user_by('ID', $post->post_author)->user_login . "</p>
+            <p>Your request will be processed within the next 48 hours. If you have any questions, please contact us.</p>";
+
+        // Enviar el correo electrónico
+        $sent = $email_sender->send_email($to, $subject, $message);
+
+        if (!$sent) {
+            $errors = $email_sender->get_error();
+            foreach ($errors->get_error_messages() as $error_message) {
+                error_log('Error sending deposit request email to agent: ' . $error_message);
+            }
+            return false;
+        }
+
+        return true;
+    }
+
+    public function send_deposit_approval_email_to_agent($post_id)
+    {
+        $post = get_post($post_id);
+
+        if (!$post) {
+            error_log('Invalid deposit post ID.');
+            return false;
+        }
+
+        $agent_id = get_post_meta($post_id, 'agent', true);
+        $agent_user = get_user_by('ID', $agent_id);
+
+        if (!$agent_user) {
+            error_log('Invalid agent user ID.');
+            return false;
+        }
+
+        $amount = get_post_meta($post_id, 'total_deposit_amount', true);
+
+        // Crear una instancia de la clase EmailSender
+        $email_sender = new EmailSender();
+
+        // Definir los parámetros del correo electrónico
+        $to = $agent_user->user_email;
+        $subject = __('Deposit Approved');
+        $message = "<p>Hello {$agent_user->first_name},</p>
+            <p>Your deposit request has been approved with the following details:</p>
+            <p><strong>Deposit ID:</strong> {$post_id}</p>
+            <p><strong>Approved Amount:</strong> {$amount}</p>
+            <p><strong>Description:</strong> {$post->post_content}</p>
+            <p>If you have any questions or need further assistance, please contact us.</p>";
+
+        // Enviar el correo electrónico
+        $sent = $email_sender->send_email($to, $subject, $message);
+
+        if (!$sent) {
+            $errors = $email_sender->get_error();
+            foreach ($errors->get_error_messages() as $error_message) {
+                error_log('Error sending deposit approval email to agent: ' . $error_message);
+            }
+            return false;
+        }
+
+        return true;
+    }
+
+    public function send_deposit_approval_email_to_company($post_id)
+    {
+        $post = get_post($post_id);
+
+        if (!$post) {
+            error_log('Invalid deposit post ID.');
+            return false;
+        }
+
+        $company_email = get_option('company_email');
+        $amount = get_post_meta($post_id, 'total_deposit_amount', true);
+
+        if (!$company_email) {
+            error_log('Company email is not set.');
+            return false;
+        }
+
+        // Crear una instancia de la clase EmailSender
+        $email_sender = new EmailSender();
+
+        // Definir los parámetros del correo electrónico
+        $to = $company_email;
+        $subject = __('Deposit Approved');
+        $message = "<p>Hello,</p>
+            <p>A deposit request has been approved with the following details:</p>
+            <p><strong>Deposit ID:</strong> {$post_id}</p>
+            <p><strong>Approved Amount:</strong> {$amount}</p>
+            <p><strong>Description:</strong> {$post->post_content}</p>
+            <p>If you have any questions or need further assistance, please contact us.</p>";
+
+        // Enviar el correo electrónico
+        $sent = $email_sender->send_email($to, $subject, $message);
+
+        if (!$sent) {
+            $errors = $email_sender->get_error();
+            foreach ($errors->get_error_messages() as $error_message) {
+                error_log('Error sending deposit approval email to company: ' . $error_message);
+            }
+            return false;
+        }
+
+        return true;
+    }
+
+    public function send_deposit_rejection_email_to_agent($post_id)
+    {
+        $post = get_post($post_id);
+
+        if (!$post) {
+            error_log('Invalid deposit post ID.');
+            return false;
+        }
+
+        $agent_id = get_post_meta($post_id, 'agent', true);
+        $agent_user = get_user_by('ID', $agent_id);
+
+        if (!$agent_user) {
+            error_log('Invalid agent user ID.');
+            return false;
+        }
+
+        $amount = get_post_meta($post_id, 'total_deposit_amount', true);
+
+        // Crear una instancia de la clase EmailSender
+        $email_sender = new EmailSender();
+
+        // Definir los parámetros del correo electrónico
+        $to = $agent_user->user_email;
+        $subject = __('Deposit Rejected');
+        $message = "<p>Hello {$agent_user->first_name},</p>
+            <p>Your deposit request has been rejected with the following details:</p>
+            <p><strong>Deposit ID:</strong> {$post_id}</p>
+            <p><strong>Requested Amount:</strong> {$amount}</p>
+            <p><strong>Description:</strong> {$post->post_content}</p>
+            <p>If you have any questions or need further assistance, please contact us.</p>";
+
+        // Enviar el correo electrónico
+        $sent = $email_sender->send_email($to, $subject, $message);
+
+        if (!$sent) {
+            $errors = $email_sender->get_error();
+            foreach ($errors->get_error_messages() as $error_message) {
+                error_log('Error sending deposit rejection email to agent: ' . $error_message);
+            }
+            return false;
+        }
+
+        return true;
+    }
+
+    public function send_deposit_rejection_email_to_company($post_id)
+    {
+        $post = get_post($post_id);
+
+        if (!$post) {
+            error_log('Invalid deposit post ID.');
+            return false;
+        }
+
+        $company_email = get_option('company_email');
+
+        if (!$company_email) {
+            error_log('Company email is not set.');
+            return false;
+        }
+
+        $amount = get_post_meta($post_id, 'total_deposit_amount', true);
+
+        // Crear una instancia de la clase EmailSender
+        $email_sender = new EmailSender();
+
+        // Definir los parámetros del correo electrónico
+        $to = $company_email;
+        $subject = __('Deposit Rejected');
+        $message = "<p>Hello,</p>
+            <p>A deposit request has been rejected with the following details:</p>
+            <p><strong>Deposit ID:</strong> {$post_id}</p>
+            <p><strong>Requested Amount:</strong> {$amount}</p>
+            <p><strong>Description:</strong> {$post->post_content}</p>
+            <p>If you have any questions or need further assistance, please contact us.</p>";
+
+        // Enviar el correo electrónico
+        $sent = $email_sender->send_email($to, $subject, $message);
+
+        if (!$sent) {
+            $errors = $email_sender->get_error();
+            foreach ($errors->get_error_messages() as $error_message) {
+                error_log('Error sending deposit rejection email to company: ' . $error_message);
+            }
+            return false;
+        }
+
+        return true;
+    }
 }

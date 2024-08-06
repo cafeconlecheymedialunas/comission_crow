@@ -181,7 +181,7 @@ class Opportunity extends Crud
 
         $this->send_opportunity_created_email_to_company($opportunity_id);
 
-        wp_send_json_success(['message' => __('Opportunity saved successfully!'), 'opportunity_id' => $opportunity_id]);
+        wp_send_json_success(["general" => __('Opportunity saved successfully!'), 'opportunity_id' => $opportunity_id]);
         wp_die();
     }
 
@@ -191,16 +191,38 @@ class Opportunity extends Crud
         $opportunity_id = isset($_POST['opportunity_id']) ? intval($_POST['opportunity_id']) : 0;
 
         if (!$opportunity_id) {
-            wp_send_json_error(['message' => 'Necesitas un ID válido.']);
+            wp_send_json_error(['general' => 'You need a valid ID.']);
+        }
+
+        $opportunity = get_post($opportunity_id);
+
+        if (!$opportunity || $opportunity->post_type !== 'opportunity') {
+            wp_send_json_error(['general' => 'Opportunity not found.']);
+        }
+
+        $contracts_query = new WP_Query([
+            'post_type'   => 'contract', // Update this to the post type used for contracts
+            'meta_query'  => [
+                [
+                    'key'     => 'opportunity_id', // Update this to the meta field that links contracts to opportunities
+                    'value'   => $opportunity_id,
+                    'compare' => '='
+                ]
+            ]
+        ]);
+
+        // Check if there are any active contracts associated
+        if ($contracts_query->have_posts()) {
+            wp_send_json_error(['general' => 'Cannot delete the opportunity because there are active contracts associated.']);
         }
 
         $deleted = wp_delete_post($opportunity_id, true);
 
         if ($deleted) {
             $this->send_opportunity_deleted_email_to_company($opportunity_id);
-            wp_send_json_success(['message' => 'Oportunidad eliminada correctamente.']);
+            wp_send_json_success(["general" => 'Opportunity deleted successfully.']);
         } else {
-            wp_send_json_error(['message' => 'Error al eliminar la oportunidad. Inténtalo de nuevo más tarde.']);
+            wp_send_json_error(["general" => 'Error deleting the opportunity. Please try again later.']);
         }
         wp_die();
     }
