@@ -9,17 +9,7 @@ get_header();
 
 the_post();
 ?>
- <h1>Purchase your new kit</h1>
-  <!-- Paste your embed code script here. -->
-  <script
-    async
-    src="https://js.stripe.com/v3/buy-button.js">
-  </script>
-  <stripe-buy-button
-    buy-button-id='{{BUY_BUTTON_ID}}'
-    publishable-key="pk_test_51OuK5YKEo9Rkz0Ya0BQkqPPgH6AcSXrR6Jkpk9ZFlTNRM86QfhzUAM5UHqLiKjapPjgNPJM8z8PLxI2IqOoVTx9R00qyCHDnn9"
-  >
-  </stripe-buy-button>
+
 <div class="row">
 	<div class="col-md-8 order-md-2 col-sm-12">
 		<div id="post-<?php the_ID(); ?>" <?php post_class('content'); ?>>

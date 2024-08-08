@@ -12,16 +12,22 @@
   "scripts": {
     "format:js": "prettier . --write",
     "format": "npm run format:js && composer run-script format:php",
-    "start": "wp-scripts start --webpack-src-dir=resources --output-path=public",
-    "build": "wp-scripts build --webpack-src-dir=resources --output-path=public"
+    "build": "wp-scripts build",
+    "start": "wp-scripts start"
   },
   "browserslist": [
     "last 2 versions"
   ],
   "devDependencies": {
     "@wordpress/scripts": "^28.5.0",
+    "clean-webpack-plugin": "^4.0.0",
+    "css-minimizer-webpack-plugin": "^7.0.0",
     "path": "^0.12.7",
     "prettier": "3.3.3",
-    "webpack-remove-empty-scripts": "^1.0.4"
+    "webpack-remove-empty-scripts": "^1.0.4",
+       "style-loader": "^4.0.0"
+  },
+  "dependencies": {
+ 
   }
 }

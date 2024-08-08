@@ -11,56 +11,97 @@ class PublicFront
     {
         $theme_version = wp_get_theme()->get('Version');
 
+        // Encolar jQuery si aún no está encolado.
         wp_enqueue_script('jquery');
 
+        // Encolar scripts de comentario si es necesario.
         if (is_singular() && comments_open() && get_option('thread_comments')) {
             wp_enqueue_script('comment-reply');
         }
 
+        // Encolar scripts y estilos de terceros.
         wp_enqueue_media();
         wp_enqueue_script('media-upload');
         wp_enqueue_style('media-views');
         wp_enqueue_script('tinymce');
-        wp_enqueue_script('chartjs', "https://cdn.jsdelivr.net/npm/chart.js", ["jquery"], "1.19.3", true);
-        wp_enqueue_script('popperjs', "https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js", ["jquery"], "1.14.3", true);
-        wp_enqueue_script('bootstrapjs', "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js", ["jquery"], "5.3.3", true);
-        wp_enqueue_style('bootstrap', "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css", [], "", 'all');
+        wp_enqueue_script('chartjs', 'https://cdn.jsdelivr.net/npm/chart.js', ['jquery'], '1.19.3', true);
+        wp_enqueue_script('popperjs', 'https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js', ['jquery'], '1.14.3', true);
+        wp_enqueue_script('bootstrapjs', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js', ['jquery'], '5.3.3', true);
+        wp_enqueue_style('bootstrap', 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css', [], '', 'all');
         wp_enqueue_style('sweetalertcss', 'https://cdn.jsdelivr.net/npm/sweetalert2@11.12.2/dist/sweetalert2.min.css', [], '11.2.2', 'all');
-        wp_enqueue_script('sweetalertjs', "https://cdn.jsdelivr.net/npm/sweetalert2@11.12.2/dist/sweetalert2.all.min.js", ["jquery"], "4.1.3", true);
-        wp_enqueue_style('select2-css', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css', [], "4.0.13", "all");
-        wp_enqueue_script('select2-js', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js', ['jquery'], null, true);
-        wp_enqueue_style('fontawesomcss', "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css", [], "6.5.2", "all");
-        wp_enqueue_style('quill-editorcss', "https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css", [], "7.3.0", "all");
-        wp_enqueue_script('quill-editorjs', "https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js", ["jquery"], "7.3.0", true);
-        wp_enqueue_style('select2bootstracss', "https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css", [], $theme_version, "all");
-        wp_enqueue_script('jqueryvalidatejs', "https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js", ["jquery"], "1.19.3", true);
+        wp_enqueue_script('sweetalertjs', 'https://cdn.jsdelivr.net/npm/sweetalert2@11.12.2/dist/sweetalert2.all.min.js', ['jquery'], '11.2.2', true);
+        wp_enqueue_style('select2-css', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css', [], '4.0.13', 'all');
+        wp_enqueue_script('select2-js', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js', ['jquery'], '4.0.13', true);
+        wp_enqueue_style('fontawesomcss', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css', [], '6.5.2', 'all');
+        wp_enqueue_style('quill-editorcss', 'https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css', [], '2.0.2', 'all');
+        wp_enqueue_script('quill-editorjs', 'https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js', ['jquery'], '2.0.2', true);
+        wp_enqueue_style('select2bootstracss', 'https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css', [], $theme_version, 'all');
+        wp_enqueue_script('jqueryvalidatejs', 'https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js', ['jquery'], '1.19.5', true);
 
-        wp_enqueue_script('main', get_template_directory_uri() . '/assets/js/main.js', ['jquery'], '1.0', true);
-        wp_enqueue_script('authjs', get_template_directory_uri() . "/assets/js/auth.js", ["jquery", "main"], "1.0.0", true);
-        wp_localize_script('authjs', 'ajax_object', ['ajax_url' => admin_url('admin-ajax.php'), 'login_nonce' => wp_create_nonce('login-nonce')]);
+        // Encolar los archivos JS y CSS generados por Webpack usando archivos .asset.php.
+        $this->enqueue_script_with_assets('main');
+        $this->enqueue_script_with_assets('auth');
+        $this->enqueue_script_with_assets('opportunity');
+        $this->enqueue_script_with_assets('profile');
+        $this->enqueue_script_with_assets('contract');
+        $this->enqueue_script_with_assets('commission');
+        $this->enqueue_script_with_assets('dispute');
+        $this->enqueue_script_with_assets('payment');
+        $this->enqueue_script_with_assets('deposit');
+        $this->enqueue_script_with_assets('find-opportunities');
 
-        wp_enqueue_script('opportunity', get_template_directory_uri() . '/assets/js/opportunity.js', ['jquery', 'chartjs'], '1.0', true);
-        wp_enqueue_script('profile', get_template_directory_uri() . '/assets/js/profile.js', ['jquery'], '1.0', true);
-        wp_enqueue_script('contract', get_template_directory_uri() . '/assets/js/contract.js', ['jquery'], '1.0', true);
-        wp_enqueue_script('commission', get_template_directory_uri() . '/assets/js/commission.js', ['jquery'], '1.0', true);
-        wp_enqueue_script('dispute', get_template_directory_uri() . '/assets/js/dispute.js', ['jquery'], '1.0', true);
-        wp_enqueue_script('payment', get_template_directory_uri() . '/assets/js/payment.js', ['jquery'], '1.0', true);
-        wp_enqueue_script('deposit', get_template_directory_uri() . '/assets/js/deposit.js', ['jquery'], '1.0', true);
-        wp_enqueue_script('find-opportunities', get_template_directory_uri() . '/assets/js/find-opportunities.js', ['jquery'], '1.0', true);
+        // Encolar los estilos usando archivos .asset.php.
         wp_enqueue_style('style', get_theme_file_uri('style.css'), [], $theme_version, 'all');
-        wp_enqueue_style('maincss', get_template_directory_uri() . '/assets/css/main.css', [], $theme_version, "all");
-        wp_enqueue_style('headercss', get_template_directory_uri() . '/assets/css/header.css', [], $theme_version, "all");
-        wp_enqueue_style('authcss', get_template_directory_uri() . '/assets/css/auth.css', [], $theme_version, "all");
-        wp_enqueue_style('dashboardcss', get_template_directory_uri() . '/assets/css/dashboard.css', [], $theme_version, "all");
+        $this->enqueue_style_with_assets('main');
+        $this->enqueue_style_with_assets('header');
+        $this->enqueue_style_with_assets('auth');
+        $this->enqueue_style_with_assets('admin-dashboard');
 
+        // Localizar scripts con datos AJAX.
         $ajax_data = [
             'ajax_url' => admin_url('admin-ajax.php'),
         ];
-        wp_localize_script('opportunity', 'ajax_object', $ajax_data);
-        wp_localize_script('profile', 'ajax_object', $ajax_data);
-        wp_localize_script('contract', 'ajax_object', $ajax_data);
-        wp_localize_script('payment', 'ajax_object', $ajax_data);
-        wp_localize_script('deposit', 'ajax_object', $ajax_data);
-        wp_localize_script('find-opportunities', 'ajax_object', $ajax_data);
+        $this->localize_script('opportunity', $ajax_data);
+        $this->localize_script('profile', $ajax_data);
+        $this->localize_script('contract', $ajax_data);
+        $this->localize_script('payment', $ajax_data);
+        $this->localize_script('deposit', $ajax_data);
+        $this->localize_script('find-opportunities', $ajax_data);
+    }
+
+    private function enqueue_script_with_assets($handle)
+    {
+        $asset_file = get_template_directory() . '/public/js/' . $handle . '.asset.php';
+
+   
+            $assets = include $asset_file;
+            wp_enqueue_script(
+                $handle,
+                get_template_directory_uri() . '/public/js/' . $handle . '.js',
+                $assets['dependencies'],
+                $assets['version'],
+                true
+            );
+        
+    }
+
+    private function enqueue_style_with_assets($handle)
+    {
+        $asset_file = get_template_directory() . '/public/css/' . $handle . '.asset.php';
+
+       
+            $assets = include $asset_file;
+            wp_enqueue_style(
+                $handle,
+                get_template_directory_uri() . '/public/css/' . $handle . '.css',
+                $assets['dependencies'],
+                $assets['version']
+            );
+        
+    }
+
+    private function localize_script($handle, $data)
+    {
+        wp_localize_script($handle, 'ajax_object', $data);
     }
 }
