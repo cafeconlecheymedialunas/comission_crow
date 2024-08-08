@@ -1,4 +1,5 @@
-<table class="table custom-table">
+<div class="table-container">
+<table class="table default-table">
     <thead>
         <tr>
             <th scope="col">#</th>
@@ -121,7 +122,7 @@
         <?php endif;?>
     </tbody>
 </table>
-
+</div>
 
 <?php $template_path = 'templates/dashboard/form-dispute.php';
         if (locate_template($template_path)) {

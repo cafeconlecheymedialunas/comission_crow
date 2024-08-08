@@ -9,7 +9,7 @@ ob_start();
 
 // Redirige a la página de inicio de sesión si el usuario no está autenticado
 if (!is_user_logged_in()) {
-    wp_redirect(home_url('/login'));
+    wp_redirect(home_url('/auth'));
     exit;
 }
 

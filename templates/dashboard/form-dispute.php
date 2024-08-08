@@ -15,8 +15,8 @@ $commission_requests = ProfileUser::get_instance()->get_commission_requests_for_
    
     <div class="row">
         <div class="col-md-12">
-        <label for="commission_request_select form-label">Commission Request:</label>
-        <select name="commission_request_select" class="form-select" id="commission_request_select">
+        <label for="commission_request_id form-label">Commission Request:</label>
+        <select name="commission_request_id" class="form-select" id="commission_request_id">
             <?php foreach ($admin->get_commission_requests() as $value => $label): ?>
                 <option value="<?php echo esc_attr($value); ?>"><?php echo esc_html($label); ?></option>
             <?php endforeach;?>
@@ -45,7 +45,6 @@ $commission_requests = ProfileUser::get_instance()->get_commission_requests_for_
     <input type="hidden" name="security" value="<?php echo wp_create_nonce(
         "create_dispute_nonce"
     ); ?>"/>
-    <input type="hidden" id="commission_request_id" name="commission_request_id">
      <div class="alert alert-danger general-errors mt-4" role="alert" style="display:none;">
      </div>
 </form>

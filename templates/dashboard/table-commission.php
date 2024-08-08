@@ -1,10 +1,19 @@
-<?php
-// Obtén el usuario actual al inicio
-$current_user = wp_get_current_user();
+<?php 
 
+$status_classes = [
+    'pending' => 'badge bg-secondary',  // Gris
+    'dispute_pending' => 'badge bg-warning',  // Amarillo
+    'dispute_accepted' => 'badge bg-info',  // Azul claro
+    'dispute_refused' => 'badge bg-danger',  // Rojo
+    'dispute_cancelled' => 'badge bg-dark',  // Negro
+    'payment_pending' => 'badge bg-warning',  // Amarillo
+    'payment_completed' => 'badge bg-success',  // Verde
+    'payment_failed' => 'badge bg-danger',  // Rojo
+    'payment_canceled' => 'badge bg-dark',  // Negro
+];
 ?>
-
-<table class="table custom-table">
+<div class="table-container">
+<table class="table default-table">
     <thead>
         <tr>
             <th scope="col">#ID</th>
@@ -72,6 +81,9 @@ $current_user = wp_get_current_user();
                 $initiating_user_id = carbon_get_post_meta($commission_request->ID, "initiating_user");
                 $last_update_text = Helper::get_last_update_by_and_date($commission_request->ID);
 
+                // Obtener la clase CSS para el estado actual
+                $status_class = isset($status_classes[$status]) ? $status_classes[$status] : 'badge bg-secondary';
+
                 ?>
 
                 <tr>
@@ -83,7 +95,7 @@ $current_user = wp_get_current_user();
                     <td><?php echo esc_html(carbon_get_post_meta($contract_id, "commission") . "%"); ?></td>
                     <td><?php echo esc_html(Helper::format_price($total_agent_commission_request)); ?></td>
                     <td>
-                        <span class=""><?php echo $status; ?></span>
+                        <span class="<?php echo $status_class; ?>"><?php echo esc_html(ucwords(str_replace('_', ' ', $status))); ?></span>
                     </td>
                     <td><?php echo esc_html($last_update_text); ?></td>
                     <td>
@@ -143,6 +155,7 @@ $current_user = wp_get_current_user();
         <?php endif; ?>
     </tbody>
 </table>
+</div>
 
 <?php
 $template_path = 'templates/dashboard/form-commission-request.php';

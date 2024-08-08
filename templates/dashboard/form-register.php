@@ -1,3 +1,4 @@
+
 <h1 class="site-title"><?php echo $title; ?></h1>
         <div id="registration_errors"></div>
         <form id="registration_form">
@@ -33,7 +34,6 @@
             <p>
                 <button type="submit"><?php _e('Save'); ?></button>
             </p>
-            <?php echo $role;?>
             
             <input type="hidden" name="role" value="<?php echo $role; ?>" />
             <input type="hidden" name="security" value="<?php echo wp_create_nonce('register-nonce'); ?>" />

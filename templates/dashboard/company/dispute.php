@@ -12,7 +12,7 @@ $disputes = ProfileUser::get_instance()->get_disputes_for_user();
 <div class="row">
     <div class="col-md-12">
         <div class="card">
-            <div class="table-responsive">
+            <div class="table-container">
             <?php $template_path = 'templates/dashboard/table-dispute.php';
 if (locate_template($template_path)) {
     include locate_template($template_path);

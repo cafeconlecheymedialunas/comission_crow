@@ -1,4 +1,5 @@
-<table class="table custom-table">
+<div class="table-container">
+<table class="table default-table">
                     <thead>
                         <tr>
                             <th scope="col">#SKU</th>
@@ -22,6 +23,7 @@
 
                                 
                                 $opportunity = carbon_get_post_meta($contract->ID, 'opportunity');
+                
                                 $opportunity = get_post($opportunity);
 
                                 $date = carbon_get_post_meta($contract->ID, 'date');
@@ -82,7 +84,7 @@
                                 ?>
                                 
                                     <tr>
-                                        <th scope="row"><a class="text-sm" href=""><?php echo carbon_get_post_meta($contract->ID, "sku"); ?></a></th>
+                                        <th scope="row"><span class="text-sm"><?php echo carbon_get_post_meta($contract->ID, "sku"); ?></span></th>
                                         <td><a href=""><?php echo esc_html($opportunity->post_title); ?></a></td>
                                         
                                         <td><?php echo esc_html($another_part->post_title); ?></td>
@@ -158,3 +160,4 @@
                         <?php endif; ?>
                     </tbody>
                 </table>
+</div>

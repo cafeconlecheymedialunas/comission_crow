@@ -9,7 +9,7 @@ $payments = ProfileUser::get_instance()->get_payments_for_user();
 <div class="row">
     <div class="col-md-12">
         <div class="card">
-            <div class="table-responsive">
+            <div class="table-container">
 
 <table class="table custom-table">
     <thead>

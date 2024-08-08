@@ -36,7 +36,7 @@
                   <h5 class="mb-0">Detail sItems</h5>
                 </div>
                 <div class="py-4">
-                  <div class="table-responsive ">
+                  <div class="table-container">
                 
                     <table id="data-table" class="table rounded-2 table-bordered mb-0">
                       <thead class="thead-light">

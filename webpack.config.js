@@ -1,43 +1,61 @@
-const path = require("path"),
-  removeEmptyScriptsPlugin = require("webpack-remove-empty-scripts"),
-  webpackConfig = require("@wordpress/scripts/config/webpack.config");
+// WordPress webpack config.
+const defaultConfig = require('@wordpress/scripts/config/webpack.config');
 
-// Extend the @wordpress webpack config and add the entry points.
+// Plugins.
+const RemoveEmptyScriptsPlugin = require('webpack-remove-empty-scripts');
+
+// Utilities.
+const path = require('path');
+
+// Add any new entry points by extending the webpack config.
 module.exports = {
-  ...webpackConfig,
-  ...{
-    mode: "production",
-    devServer: {
-      static: {
-        directory: path.join(__dirname, "assets"),
-      },
-      client: {
-        overlay: false,
-      },
-      // open: ["http://localhost"], // (Optional) Add your local domain here
-      liveReload: true,
-      hot: false,
-      compress: true,
-      devMiddleware: {
-        writeToDisk: true,
-      },
+    ...defaultConfig,
+    entry: {
+        'js/auth': path.resolve(process.cwd(), 'assets/js', 'auth.js'),
+        'js/commission': path.resolve(process.cwd(), 'assets/js', 'commission.js'),
+        'js/contract': path.resolve(process.cwd(), 'assets/js', 'contract.js'),
+        'js/deposit': path.resolve(process.cwd(), 'assets/js', 'deposit.js'),
+        'js/dispute': path.resolve(process.cwd(), 'assets/js', 'dispute.js'),
+        'js/find-opportunities': path.resolve(process.cwd(), 'assets/js', 'find-opportunities.js'),
+        'js/main': path.resolve(process.cwd(), 'assets/js', 'main.js'),
+        'js/opportunity': path.resolve(process.cwd(), 'assets/js', 'opportunity.js'),
+        'js/payment': path.resolve(process.cwd(), 'assets/js', 'payment.js'),
+        'js/profile': path.resolve(process.cwd(), 'assets/js', 'profile.js'),
+        'css/auth': path.resolve(process.cwd(), 'assets/css', 'auth.scss'),
+        'css/dashboard': path.resolve(process.cwd(), 'assets/css', 'dashboard.scss'),
+        'css/header': path.resolve(process.cwd(), 'assets/css', 'header.scss'),
+        'css/main': path.resolve(process.cwd(), 'assets/css', 'main.scss'),
     },
-    context: path.resolve(__dirname, "assets"),
-    entry: ["./main.js", "./main.scss"],
-    // jQuery support
-    /*externals: {
-			jquery: "jQuery",
-		},*/
+    output: {
+        path: path.resolve(process.cwd(), 'dist'),
+        filename: '[name].js',
+        publicPath: '/dist/',
+    },
+    module: {
+        rules: [
+            ...defaultConfig.module.rules,
+            {
+                test: /\.scss$/,
+                use: [
+                    'style-loader', // Creates `style` nodes from JS strings
+                    'css-loader', // Translates CSS into CommonJS
+                    'postcss-loader', // Process CSS with PostCSS
+                    'sass-loader', // Compiles Sass to CSS
+                ],
+                include: path.resolve(process.cwd(), 'resources/scss'),
+            },
+        ],
+    },
     plugins: [
-      ...webpackConfig.plugins,
-      /*new webpack.ProvidePlugin({
-				$: "jquery",
-				jQuery: "jquery",
-				"window.jQuery": "jquery",
-			}),*/
-      new removeEmptyScriptsPlugin({
-        stage: removeEmptyScriptsPlugin.STAGE_AFTER_PROCESS_PLUGINS,
-      }),
+        ...defaultConfig.plugins,
+        new RemoveEmptyScriptsPlugin({
+            stage: RemoveEmptyScriptsPlugin.STAGE_AFTER_PROCESS_PLUGINS,
+        }),
     ],
-  },
+    resolve: {
+        alias: {
+            '@': path.resolve(process.cwd(), 'resources/js'),
+        },
+        extensions: ['.js', '.jsx', '.scss'],
+    },
 };

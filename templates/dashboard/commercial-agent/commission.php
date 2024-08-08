@@ -3,7 +3,7 @@
 $commission_requests = ProfileUser::get_instance()->get_commission_requests_for_user();
 
 
-$contracts = ProfileUser::get_instance()->get_contracts(["accepted","finishing"]);
+$contracts = ProfileUser::get_instance()->get_contracts(["accepted","finishing","finished"]);
 ?>
 <div class="card mb-4 flex-row d-flex justify-content-between align-items-center">
     <h2 class="mb-0 d-inline"><?php echo __("Sended commission requests"); ?></h2>
@@ -14,7 +14,7 @@ $contracts = ProfileUser::get_instance()->get_contracts(["accepted","finishing"]
 <div class="row">
     <div class="col-md-12">
         <div class="card">
-            <div class="table-responsive">
+            <div class="table-container">
             <?php $template_path = 'templates/dashboard/table-commission.php';
 if (locate_template($template_path)) {
     include locate_template($template_path);

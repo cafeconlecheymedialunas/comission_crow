@@ -147,18 +147,20 @@ $youtube_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'y
                     <?php if ($activity_terms): ?>
                     <div class="col-md-6">
                         <label for="activity" class="form-label">Activity:</label>
-                        <select name="activity[]"class="form-select">
+                        <select name="activity[]" class="form-select">
+                            <option value="">Select an option</option>
                             <?php foreach ($activity_terms as $term): ?>
                                 <option
-                                        value="<?php echo esc_attr($term->term_id); ?>"
-                                        <?php selected($activity[0], $term->term_id);?>>
-                                        <?php echo esc_html($term->name); ?>
-                                    </option>
-                            <?php endforeach;?>
+                                    value="<?php echo esc_attr($term->term_id); ?>"
+                                    <?php if (isset($activity[0]) && $activity[0] == $term->term_id) echo 'selected'; ?>>
+                                    <?php echo esc_html($term->name); ?>
+                                </option>
+                            <?php endforeach; ?>
                         </select>
                         <div class="error-message"></div>
                     </div>
-                    <?php endif;?>
+                <?php endif; ?>
+
 
                     <?php if ($type_of_company_terms): ?>
                         <div class="col-md-6">
@@ -168,7 +170,7 @@ $youtube_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'y
                                 <?php foreach ($type_of_company_terms as $term): ?>
                                     <option
                                         value="<?php echo esc_attr($term->term_id); ?>"
-                                        <?php selected($type_of_company[0], $term->term_id);?>>
+                                        <?php if (isset($type_of_company[0]) && $type_of_company[0] == $term->term_id) echo 'selected'; ?>>
                                         <?php echo esc_html($term->name); ?>
                                     </option>
                                 <?php endforeach;?>

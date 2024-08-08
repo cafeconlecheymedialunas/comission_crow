@@ -14,7 +14,7 @@ $current_user = wp_get_current_user();
 <div class="row">
     <div class="col-md-12">
         <div class="card">
-            <div class="table-responsive">
+            <div class="table-container">
             <?php $template_path = 'templates/dashboard/table-contract.php';
 if (locate_template($template_path)) {
     include locate_template($template_path);

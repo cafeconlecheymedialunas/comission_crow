@@ -15,7 +15,7 @@ $commission_requests = ProfileUser::get_instance()->get_commission_requests_for_
 <div class="row">
     <div class="col-md-12">
         <div class="card">
-            <div class="table-responsive">
+            <div class="table-container">
             <?php $template_path = 'templates/dashboard/table-payment.php';
 if (locate_template($template_path)) {
     include locate_template($template_path);

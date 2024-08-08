@@ -1,0 +1,142 @@
+.auth-page {
+  background-color: transparent;
+  background-image: linear-gradient(180deg, #6787fe 0%, #0f1b63 100%);
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.auth-page .form-wrap {
+  padding: 20px;
+  background: #fff;
+  z-index: 100;
+  position: relative;
+}
+.auth-page svg {
+  transform: rotate(180deg);
+  position: absolute;
+  bottom: 0;
+  fill: white;
+  max-width: 100%;
+  width: calc(160% + 1.3px);
+
+}
+
+.auth-page .form-control {
+  border-radius: 50px;
+}
+.auth-page .auth-title {
+  color: #ffffff;
+  font-family: "Poppins", Sans-serif;
+  font-size: 56px;
+  font-weight: 700;
+  line-height: 63px;
+  margin-bottom: 20px;
+  /* text-align: center; */
+}
+
+
+
+.auth-page .auth-description {
+  color: #ffffff;
+  font-family: "Poppins", Sans-serif;
+  font-size: 22px;
+  font-weight: 300;
+  line-height: 33px;
+  max-width: 80%;
+}
+
+.auth-page .custom-logo-link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.auth-page .custom-logo {
+  max-width: 100px;
+  height: auto;
+  margin: 0 auto;
+}
+
+.auth-page .site-title {
+  color: rgb(74, 99, 117);
+  text-align: center;
+  font-size: 22px;
+  font-weight: 500;
+  margin-bottom: 30px;
+  margin-top: 20px;
+}
+.auth-page .form-field,
+.auth-page .form-control {
+  width: 100%;
+  border: 1px solid #dfdfdf;
+  height: 60px;
+  border-radius: 50px;
+  padding: 0 15px;
+  -webkit-transition: 0.3s linear;
+  -o-transition: 0.3s linear;
+  transition: 0.3s linear;
+  background-color: white !important;
+  color: black !important;
+}
+
+.auth-page .form-field:active,
+.auth-page .form-control:active,
+.auth-page .form-control:focus {
+  outline: none !important;
+  border-color: #dee2e6 !important;
+}
+.auth-page .form-select {
+  margin-bottom: 20px;
+}
+.auth-page button {
+  background: #6787fe;
+  display: inline-block;
+  padding: 18px 50px;
+  color: #fff;
+  font-size: 1rem;
+  border: none;
+}
+
+.auth-page button {
+  border-radius: 50px;
+}
+
+.auth-page .another-pages {
+  margin-top: 0.8rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #f1f1f1;
+  color: rgb(74, 99, 117);
+}
+.auth-page .another-pages a {
+  color: rgb(74, 99, 117);
+  font-size: 16px;
+}
+
+@media (max-width: 1024px) {
+  .auth-page {
+   padding:50px 0;
+}
+  .auth-page .auth-title,
+  .auth-page .auth-description {
+    text-align: center;
+    width:100%!important;
+    max-width:100%;
+  }
+  .auth-page .auth-description {
+   margin-bottom:30px;
+    font-size:1.2rem;
+  }
+   .auth-page .auth-title {
+
+    font-size:3rem;
+  }
+
+  .auth-page .form-wrap {
+    max-width:500px;
+    margin:0 auto;
+    border-radius:20px;
+  }
+
+}

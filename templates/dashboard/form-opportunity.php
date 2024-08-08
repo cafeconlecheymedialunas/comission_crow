@@ -22,9 +22,21 @@ $type_of_company_terms = get_terms([
     "hide_empty" => false,
 ]);
 
-$age_options = $admin->get_ages();
-$target_audience_options = $admin->get_target_audiences();
-$gender_options = $admin->get_genders();
+$age_terms = get_terms([
+    "taxonomy" => "age",
+    "hide_empty" => false,
+]);
+
+$target_audience_terms = get_terms([
+    "taxonomy" => "target_audience",
+    "hide_empty" => false,
+]);
+
+$gender_terms = get_terms([
+    "taxonomy" => "gender",
+    "hide_empty" => false,
+]);
+
 
 
 
@@ -37,9 +49,9 @@ $company_post = ProfileUser::get_instance()->get_user_associated_post_type();
 
 
 
-$target_audience = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'target_audience') : '';
-$age = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'age') : '';
-$gender = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'gender') : '';
+$target_audience = isset($_GET['target_audience']) ?  wp_get_post_terms($opportunity_post->ID, 'target_audience', ['fields' => 'ids']) : [];
+$age = isset($_GET['age']) ?  wp_get_post_terms($opportunity_post->ID, 'age', ['fields' => 'ids']): [];
+$gender = isset($_GET['gender']) ?  wp_get_post_terms($opportunity_post->ID, 'gender', ['fields' => 'ids']) : [];
 $images = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'images') : [];
 $supporting_materials = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'supporting_materials') : [];
 $videos = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, 'videos') : [];
@@ -126,22 +138,23 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
         <div class="error-message"></div>
     </div>
     <?php endif;?>
+    <?php if($target_audience_terms):?>
     <div class="col-md-6">
         <label for="target_audience" class="form-label">Target Audience:</label>
-        <select name="target_audience" class="form-select">
+        <select name="target_audience[]" class="form-select">
             <option value="">Select an option</option>
-            <?php foreach ($target_audience_options as $key => $value): ?>
+            <?php foreach ($target_audience_terms as $term): ?>
                 <option 
-                    value="<?php echo esc_attr($key); ?>" 
-                    <?php echo selected($target_audience, $key); ?>
+                    value="<?php echo esc_attr($term->term_id); ?>" 
+                    <?php echo in_array($term->term_id, $currency) ? 'selected' : ''; ?>
                 >
-                
-                    <?php echo esc_html($value); ?>
+                    <?php echo esc_html($term->name); ?>
                 </option>
             <?php endforeach;?>
         </select>
         <div class="error-message"></div>
     </div>
+    <?php endif;?>
     <?php if($type_of_company_terms):?>
     <div class="col-md-6">
         <label for="type_of_company" class="form-label">Company Type:</label>
@@ -168,28 +181,40 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
    
   
    
-
+    <?php if($age_terms):?>
     <div class="col-md-6">
         <label for="age" class="form-label">Age:</label>
-        <select name="age" class="form-select">
+        <select name="age[]" class="form-select">
             <option value="">Select an option</option>
-            <?php foreach ($age_options as $key => $value): ?>
-                <option value="<?php echo esc_attr($key); ?>" <?php selected($age, $key); ?>><?php echo esc_html($value); ?></option>
+            <?php foreach ($age_terms as $term): ?>
+                <option 
+                    value="<?php echo esc_attr($term->term_id); ?>" 
+                    <?php echo in_array($term->term_id, $currency) ? 'selected' : ''; ?>
+                >
+                    <?php echo esc_html($term->name); ?>
+                </option>
             <?php endforeach;?>
         </select>
         <div class="error-message"></div>
     </div>
-
+    <?php endif;?>
+    <?php if($gender_terms):?>
     <div class="col-md-6">
-        <label for="gender" class="form-label">Gender:</label>
+        <label for="gender[]" class="form-label">Gender:</label>
         <select name="gender" class="form-select">
             <option value="">Select an option</option>
-            <?php foreach ($gender_options as $key => $value): ?>
-                <option value="<?php echo esc_attr($key); ?>" <?php selected($gender, $key); ?>><?php echo esc_html($value); ?></option>
+            <?php foreach ($gender_terms as $term): ?>
+                <option 
+                    value="<?php echo esc_attr($term->term_id); ?>" 
+                    <?php echo in_array($term->term_id, $currency) ? 'selected' : ''; ?>
+                >
+                    <?php echo esc_html($term->name); ?>
+                </option>
             <?php endforeach;?>
         </select>
         <div class="error-message"></div>
     </div>
+    <?php endif;?>
 
 
     <div class="col-md-6">
