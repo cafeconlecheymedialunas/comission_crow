@@ -269,33 +269,33 @@ class Commissionrequest
     }
 
     private function send_commission_request_deletion_email_to_agent($commission_request_id)
-{
-    // Obtener detalles de la solicitud de comisión
-    $commission_request = get_post($commission_request_id);
-    if (!$commission_request) {
-        error_log('Invalid commission request ID.');
-        return;
-    }
+    {
+        // Obtener detalles de la solicitud de comisión
+        $commission_request = get_post($commission_request_id);
+        if (!$commission_request) {
+            error_log('Invalid commission request ID.');
+            return;
+        }
 
-    $contract_id = carbon_get_post_meta($commission_request_id, 'contract_id');
-    $agent_user_id = carbon_get_post_meta($commission_request_id, 'initiating_user');
-    $agent_user = get_user_by('ID', $agent_user_id);
-    
-    if (!$agent_user) {
-        error_log('Invalid agent user ID.');
-        return;
-    }
+        $contract_id = carbon_get_post_meta($commission_request_id, 'contract_id');
+        $agent_user_id = carbon_get_post_meta($commission_request_id, 'initiating_user');
+        $agent_user = get_user_by('ID', $agent_user_id);
 
-    $company_id = carbon_get_post_meta($contract_id, 'company');
-    $company_name = get_post_meta($company_id, 'company_name', true);
+        if (!$agent_user) {
+            error_log('Invalid agent user ID.');
+            return;
+        }
 
-    // Crear una instancia de la clase EmailSender
-    $email_sender = new EmailSender();
+        $company_id = carbon_get_post_meta($contract_id, 'company');
+        $company_name = get_post_meta($company_id, 'company_name', true);
 
-    // Definir los parámetros del correo electrónico
-    $to = $agent_user->user_email;
-    $subject = 'Commission Request Deleted';
-    $message = "<p>Hello {$agent_user->first_name},</p>
+        // Crear una instancia de la clase EmailSender
+        $email_sender = new EmailSender();
+
+        // Definir los parámetros del correo electrónico
+        $to = $agent_user->user_email;
+        $subject = 'Commission Request Deleted';
+        $message = "<p>Hello {$agent_user->first_name},</p>
         <p>We regret to inform you that the commission request you created has been deleted. Here are the details:</p>
         <p><strong>Contract ID:</strong> {$contract_id}</p>
         <p><strong>Company:</strong> {$company_name}</p>
@@ -303,44 +303,45 @@ class Commissionrequest
         <p><strong>Details:</strong> {$commission_request->post_content}</p>
         <p>If you have any questions or need further assistance, please contact us.</p>";
 
-    // Enviar el correo electrónico
-    $sent = $email_sender->send_email($to, $subject, $message);
+        // Enviar el correo electrónico
+        $sent = $email_sender->send_email($to, $subject, $message);
 
-    if (!$sent) {
-        $errors = $email_sender->get_error();
-        foreach ($errors->get_error_messages() as $error_message) {
-            error_log('Error sending email to agent regarding deletion: ' . $error_message);
+        if (!$sent) {
+            $errors = $email_sender->get_error();
+            foreach ($errors->get_error_messages() as $error_message) {
+                error_log('Error sending email to agent regarding deletion: ' . $error_message);
+            }
         }
+        return $sent;
     }
-}
-private function send_commission_request_deletion_email_to_company($commission_request_id)
-{
-    // Obtener detalles de la solicitud de comisión
-    $commission_request = get_post($commission_request_id);
-    if (!$commission_request) {
-        error_log('Invalid commission request ID.');
-        return;
-    }
+    private function send_commission_request_deletion_email_to_company($commission_request_id)
+    {
+        // Obtener detalles de la solicitud de comisión
+        $commission_request = get_post($commission_request_id);
+        if (!$commission_request) {
+            error_log('Invalid commission request ID.');
+            return;
+        }
 
-    $contract_id = carbon_get_post_meta($commission_request_id, 'contract_id');
-    $company_id = carbon_get_post_meta($contract_id, 'company');
-    $company_user_id = get_post_meta($company_id, 'user', true);
-    $company_user = get_user_by('ID', $company_user_id);
+        $contract_id = carbon_get_post_meta($commission_request_id, 'contract_id');
+        $company_id = carbon_get_post_meta($contract_id, 'company');
+        $company_user_id = get_post_meta($company_id, 'user', true);
+        $company_user = get_user_by('ID', $company_user_id);
 
-    if (!$company_user) {
-        error_log('Invalid company user ID.');
-        return;
-    }
+        if (!$company_user) {
+            error_log('Invalid company user ID.');
+            return;
+        }
 
-    $company_name = get_post_meta($company_id, 'company_name', true);
+        $company_name = get_post_meta($company_id, 'company_name', true);
 
-    // Crear una instancia de la clase EmailSender
-    $email_sender = new EmailSender();
+        // Crear una instancia de la clase EmailSender
+        $email_sender = new EmailSender();
 
-    // Definir los parámetros del correo electrónico
-    $to = $company_user->user_email;
-    $subject = 'Commission Request Deleted';
-    $message = "<p>Hello,</p>
+        // Definir los parámetros del correo electrónico
+        $to = $company_user->user_email;
+        $subject = 'Commission Request Deleted';
+        $message = "<p>Hello,</p>
         <p>We regret to inform you that a commission request associated with your company has been deleted. Here are the details:</p>
         <p><strong>Company:</strong> {$company_name}</p>
         <p><strong>Contract ID:</strong> {$contract_id}</p>
@@ -348,18 +349,17 @@ private function send_commission_request_deletion_email_to_company($commission_r
         <p><strong>Details:</strong> {$commission_request->post_content}</p>
         <p>If you have any questions or need further assistance, please contact us.</p>";
 
-    // Enviar el correo electrónico
-    $sent = $email_sender->send_email($to, $subject, $message);
+        // Enviar el correo electrónico
+        $sent = $email_sender->send_email($to, $subject, $message);
 
-    if (!$sent) {
-        $errors = $email_sender->get_error();
-        foreach ($errors->get_error_messages() as $error_message) {
-            error_log('Error sending email to company regarding deletion: ' . $error_message);
+        if (!$sent) {
+            $errors = $email_sender->get_error();
+            foreach ($errors->get_error_messages() as $error_message) {
+                error_log('Error sending email to company regarding deletion: ' . $error_message);
+            }
         }
+        return $sent;
     }
-}
-
-
 
     public function is_paid($commission_request_id)
     {
@@ -452,6 +452,7 @@ private function send_commission_request_deletion_email_to_company($commission_r
                 error_log('Error sending email to agent: ' . $error_message);
             }
         }
+        return $sent;
     }
     private function send_commission_request_email_to_company($commission_request_id)
     {
@@ -498,6 +499,7 @@ private function send_commission_request_deletion_email_to_company($commission_r
                 error_log('Error sending email to company: ' . $error_message);
             }
         }
+        return $sent;
     }
 
     /* Cron para chequear la finalizacion de un contrato

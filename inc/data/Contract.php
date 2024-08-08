@@ -232,68 +232,68 @@ class Contract
         }
     }
     
-
     public function update_contract_status()
     {
         check_ajax_referer('update-status-contract-nonce', 'security');
-
+    
         $contract_id = intval($_POST['contract_id']);
         $new_status = sanitize_text_field($_POST['status']);
-
+    
         $current_user = wp_get_current_user();
-
+    
         if (!$contract_id || !$new_status) {
             wp_send_json_error('Invalid request.');
         }
-
+    
+        // Initialize finalization date
+        $finalization_date = '';
+    
         if ($new_status === "finished") {
             if (in_array('company', (array) $current_user->roles)) {
-
                 $finalization_date = date('Y-m-d H:i:s', strtotime('+30 days'));
                 $new_status = "finishing";
                 carbon_set_post_meta($contract_id, 'finalization_date', $finalization_date);
-
             }
         }
+    
         $status_history = Helper::add_item_to_status_history($contract_id, $new_status);
         carbon_set_post_meta($contract_id, 'status', $new_status);
         carbon_set_post_meta($contract_id, 'status_history', $status_history);
-
+    
         $company_email = carbon_get_post_meta($contract_id, 'company_email'); // Correo de la compañía
         $commercial_agent_id = carbon_get_post_meta($contract_id, 'commercial_agent');
         $commercial_agent_user = get_user_by('ID', $commercial_agent_id);
         $agent_email = $commercial_agent_user->user_email;
         $sku = carbon_get_post_meta($contract_id, 'sku');
-
-        $finalization_date = carbon_get_post_meta($contract_id, 'finalization_date');
-
+    
         switch ($new_status) {
             case 'accepted':
                 $this->send_email_to_agent($agent_email, $sku, 'accepted');
-                $this->send_email_to_company($company_email,  $sku, null,'accepted');
+                $this->send_email_to_company($company_email, $sku, 'accepted');
                 break;
-
+    
             case 'rejected':
                 $this->send_email_to_agent($agent_email, $sku, 'rejected');
-                $this->send_email_to_company($company_email, $sku,null, 'rejected');
+                $this->send_email_to_company($company_email, $sku, 'rejected');
                 break;
-
+    
             case 'finished':
                 $this->send_email_to_agent($agent_email, $sku, 'finished');
-                $this->send_email_to_company($company_email, $sku,null, 'finished');
+                $this->send_email_to_company($company_email, $sku, 'finished');
                 break;
-
+    
             case 'finishing':
                 $this->send_email_to_agent($agent_email, $sku, 'finishing');
-                $this->send_email_to_company($company_email, $sku,$finalization_date, 'finishing');
+                $this->send_email_to_company($company_email, $sku, $finalization_date, 'finishing');
                 break;
-
+    
             default:
                 break;
         }
-
+    
         wp_send_json_success('Contract status updated successfully.');
     }
+    
 
     private function send_email_to_agent($agent_email, $sku, $status)
     {
@@ -311,10 +311,11 @@ class Contract
                 error_log('Error sending email to agent: ' . $error_message);
             }
         }
+        return $sent;
     }
     
 
-    private function send_email_to_company($company_email, $sku, $finalization_date = "", $status)
+    private function send_email_to_company($company_email, $sku, $status, $finalization_date = "")
     {
         $email_sender = new EmailSender();
         $finalization_text_date = ($status === "finishing" && $finalization_date) ? "at " . Helper::get_human_time_diff($finalization_date) : "";
@@ -331,6 +332,9 @@ class Contract
                 error_log('Error sending email to company: ' . $error_message);
             }
         }
+    
+        return $sent;
     }
+    
     
 }

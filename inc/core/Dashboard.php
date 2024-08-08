@@ -65,7 +65,7 @@ class Dashboard
         add_action('wp_ajax_nopriv_delete_commission_request', [$commission_request, 'delete_commission_request']);
 
 
-        add_action('wp_ajax_withdraw_founds', [$deposit,'withdraw_founds']);
+        add_action('wp_ajax_withdraw_funds', [$deposit,'withdraw_funds']);
 
         //TO DO
 

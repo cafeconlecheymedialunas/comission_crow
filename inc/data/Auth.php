@@ -25,6 +25,8 @@ class Auth
                
                 ob_start();
                 $role = isset($_GET['role']) && !empty($_GET['role']) ? sanitize_text_field($_GET['role']):"";
+
+                $title = ($role == "commercial_agent")?"Register as a Commercial Agent":"Register your company";
                 
                 $template_path = 'templates/dashboard/form-register.php';
               

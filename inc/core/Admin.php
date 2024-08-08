@@ -46,7 +46,9 @@ class Admin
         $CustomTaxonomy->register('selling_method', ['commercial_agent'], 'Selling Method', 'Selling Methods');
         $CustomTaxonomy->register('industry', ['commercial_agent','company',"opportunity"], 'Industry', 'Industries');
         $CustomTaxonomy->register('seller_type', ['commercial_agent'], 'Seller Type', 'Seller Types');
-
+        $CustomTaxonomy->register('target_audience', ['opportunity'], 'Target Audience', 'Target Audiences');
+        $CustomTaxonomy->register('gender', ['opportunity'], 'Gender', 'Genders');
+        $CustomTaxonomy->register('age', ['opportunity'], 'Age', 'Ages');
         $CustomTaxonomy->register('activity', ['company'], 'Activity', 'Activities');
         $CustomTaxonomy->register('type_of_company', ["opportunity","company"], 'Company Type', 'Company Types');
         $CustomTaxonomy->register('country', ['company',"commercial_agent","opportunity"], 'Country', 'Countries');
@@ -148,7 +150,7 @@ class Admin
             'payment_canceled' => 'Payment Canceled'
         ];
     }
-    public function get_target_audiences()
+    /*public function get_target_audiences()
     {
         return [
             'companies' => 'Companies',
@@ -171,7 +173,7 @@ class Admin
             'female' => 'Female',
             'any_gender' => 'Any Gender',
         ];
-    }
+    }*/
     public function get_agent_users()
     {
         $users = get_users(['role__in' => ['commercial_agent'],]);

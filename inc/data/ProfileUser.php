@@ -14,102 +14,6 @@ class ProfileUser
         return self::$instance;
     }
 
-    public function calculate_total_income_by_month()
-    {
-        $commission_requests = ProfileUser::get_instance()->get_commission_requests_for_user();
-
-        // Extraer los IDs de los commission requests
-        $commission_request_ids = array_map(function ($post) {
-            return $post->ID;
-        }, $commission_requests);
-
-        $payments = get_posts([
-            'post_type' => 'payment',
-            'posts_per_page' => -1,
-        ]);
-
-        // Array para almacenar el ingreso total por mes
-        $total_income_by_month = array_fill(1, 12, 0);
-
-        foreach ($payments as $payment) {
-            $commission_request_id = carbon_get_post_meta($payment->ID, 'commission_request_id');
-
-            // Verifica si el commission_request_id está en la lista de IDs de commission_requests del usuario
-            if (in_array($commission_request_id, $commission_request_ids)) {
-                $total_paid = carbon_get_post_meta($payment->ID, 'total_paid');
-                $payment_date = get_post_meta($payment->ID, 'date', true);
-
-                if ($payment_date) {
-                    $timestamp = strtotime($payment_date);
-                    $month = (int) date('n', $timestamp);
-                    $total_income_by_month[$month] += floatval($total_paid);
-                }
-            }
-        }
-
-        return $total_income_by_month;
-    }
-
-    public function calculate_total_income()
-    {
-        $commission_requests = ProfileUser::get_instance()->get_commission_requests_for_user();
-
-        // Extraer los IDs de los commission requests
-        $commission_request_ids = array_map(function ($post) {
-            return $post->ID;
-        }, $commission_requests);
-
-        $payments = get_posts([
-            'post_type' => 'payment',
-            'posts_per_page' => -1,
-        ]);
-
-        $total_income = 0;
-
-        foreach ($payments as $payment) {
-            $commission_request_id = carbon_get_post_meta($payment->ID, 'commission_request_id');
-
-            // Verifica si el commission_request_id está en la lista de IDs de commission_requests del usuario
-            if (in_array($commission_request_id, $commission_request_ids)) {
-                $total_paid = carbon_get_post_meta($payment->ID, 'total_paid');
-                $total_income += floatval($total_paid);
-            }
-        }
-
-        return $total_income;
-    }
-
-    public function calculate_total_expenses()
-    {
-
-        $deposits = get_posts([
-            'post_type' => 'deposit',
-            'posts_per_page' => -1,
-            'meta_query' => [
-                [
-                    'key' => 'user',
-                    'value' => get_current_user_id(),
-                    'compare' => '=',
-                ],
-            ],
-        ]);
-
-        $total_expenses = 0;
-
-        foreach ($deposits as $deposit) {
-            $total_paid = carbon_get_post_meta($deposit->ID, 'total_paid');
-            $total_expenses += floatval($total_paid);
-        }
-
-        return $total_expenses;
-    }
-    public function calculate_wallet_balance()
-    {
-        $total_income = $this->calculate_total_income();
-        $total_expenses = $this->calculate_total_expenses();
-        $wallet_balance = $total_income - $total_expenses;
-        return $wallet_balance;
-    }
 
     public function update_user_data()
     {
@@ -527,10 +431,6 @@ class ProfileUser
         $counterparter_key = in_array("company", $current_user->roles) ? "commercial_agent" : "company";
 
         $counterparty_id = carbon_get_post_meta($post_id, $counterparter_key);
-
-        
-
-       
 
         $user_id = carbon_get_post_meta($counterparty_id, 'user_id');
 

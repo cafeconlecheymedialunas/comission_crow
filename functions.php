@@ -17,7 +17,14 @@ $files_to_require = [
     __DIR__ . '/inc/setup/wp-bootstrap-navwalker-footer.php',
     __DIR__ . '/inc/setup/customizer.php',
     __DIR__ . '/inc/setup/setup-theme.php',
-
+    __DIR__ . '/inc/core/Admin.php',
+    __DIR__ . '/inc/core/Public.php',
+    __DIR__ . '/inc/core/EmailSender.php',
+    __DIR__ . '/inc/core/CustomPostType.php',
+    __DIR__ . '/inc/core/CustomTaxonomy.php',
+    __DIR__ . '/inc/core/ContainerCustomFields.php',
+  
+    __DIR__ . '/inc/core/Dashboard.php',
     __DIR__ . '/inc/core/Crud.php',
 
     __DIR__ . '/inc/core/Helper.php',
@@ -32,14 +39,7 @@ $files_to_require = [
      __DIR__ . '/inc/data/Dispute.php',
      __DIR__ . '/inc/data/Opportunity.php',
      __DIR__ . '/inc/data/Payment.php',
-     __DIR__ . '/inc/core/EmailSender.php',
-     __DIR__ . '/inc/core/CustomPostType.php',
-     __DIR__ . '/inc/core/CustomTaxonomy.php',
-     __DIR__ . '/inc/core/ContainerCustomFields.php',
-     __DIR__ . '/inc/core/Admin.php',
-     __DIR__ . '/inc/core/Public.php',
 
-     __DIR__ . '/inc/core/Dashboard.php',
    
   
 ];
@@ -356,3 +356,199 @@ add_action('wp_ajax_send_custom_email', function() {
         wp_send_json_error(['message' => 'Failed to send email.']);
     }
 });
+function handle_ajax_requests() {
+    ob_start();
+
+    // Recuperar filtros de la solicitud AJAX
+    $industry_filter = isset($_GET['industry']) ? $_GET['industry'] : [];
+    $language_filter = isset($_GET['language']) ? $_GET['language'] : [];
+    $country_filter = isset($_GET['country']) ? $_GET['country'] : [];
+    $currency_filter = isset($_GET['currency']) ? $_GET['currency'] : [];
+    $target_audience_filter = isset($_GET['target_audience']) ? $_GET['target_audience'] : [];
+    $age_filter = isset($_GET['age']) ? $_GET['age'] : [];
+    $gender_filter = isset($_GET['gender']) ? $_GET['gender'] : [];
+    $type_of_company_filter = isset($_GET['type_of_company']) ? $_GET['type_of_company'] : [];
+    $deliver_leads_filter = isset($_GET['deliver_leads']) ? $_GET['deliver_leads'] : null;
+    $min_price = isset($_GET['minimum_price']) ? floatval($_GET['minimum_price']) : null;
+    $max_price = isset($_GET['maximum_price']) ? floatval($_GET['maximum_price']) : null;
+    $commission = isset($_GET['commission']) ? intval($_GET['commission']) : null;
+
+
+    // Configuración básica de la consulta
+    $query_args = array(
+        'post_type' => 'opportunity',
+        'posts_per_page' => -1,
+    );
+
+    // Agregar meta_query si se especifica
+    if ($min_price || $max_price || $commission) {
+        $meta_query = array('relation' => 'AND');
+
+        // Convertir min_price y max_price a texto para la comparación
+        if ($min_price !== null) {
+            $meta_query[] = array(
+                'key' => 'price',
+                'value' => $min_price,
+                'compare' => '>=',
+                'type' => 'NUMERIC'
+            );
+        }
+
+        // Comparar precio máximo
+        if ($max_price !== null) {
+            $meta_query[] = array(
+                'key' => 'price',
+                'value' => $max_price,
+                'compare' => '<=',
+                'type' => 'NUMERIC'
+            );
+        }
+
+        if (is_numeric($commission) && $commission > 0) {
+            $meta_query[] = array(
+                'key' => 'commission',
+                'value' => $commission,
+                'compare' => '<=',
+                'type' => 'NUMERIC'
+            );
+        }
+
+        $query_args['meta_query'] = $meta_query;
+    }
+
+    var_dump($query_args);
+
+    // Agregar tax_query si se especifica
+    if ($industry_filter || $language_filter || $country_filter || $currency_filter || $type_of_company_filter || $target_audience_filter || $age_filter || $gender_filter) {
+        $tax_query = array('relation' => 'AND');
+
+        if ($industry_filter) {
+            $tax_query[] = array(
+                'taxonomy' => 'industry',
+                'field'    => 'term_id',
+                'terms'    => $industry_filter,
+                'operator' => 'IN'
+            );
+        }
+
+        if ($language_filter) {
+            $tax_query[] = array(
+                'taxonomy' => 'language',
+                'field'    => 'term_id',
+                'terms'    => $language_filter,
+                'operator' => 'IN'
+            );
+        }
+
+        if ($country_filter) {
+            $tax_query[] = array(
+                'taxonomy' => 'country',
+                'field'    => 'term_id',
+                'terms'    => $country_filter,
+                'operator' => 'IN'
+            );
+        }
+
+        if ($currency_filter) {
+            $tax_query[] = array(
+                'taxonomy' => 'currency',
+                'field'    => 'term_id',
+                'terms'    => $currency_filter,
+                'operator' => 'IN'
+            );
+        }
+
+        if ($type_of_company_filter) {
+            $tax_query[] = array(
+                'taxonomy' => 'type_of_company',
+                'field'    => 'term_id',
+                'terms'    => $type_of_company_filter,
+                'operator' => 'IN'
+            );
+        }
+
+        if ($target_audience_filter) {
+            $tax_query[] = array(
+                'taxonomy' => 'target_audience',
+                'field'    => 'term_id',
+                'terms'    => $target_audience_filter,
+                'operator' => 'IN'
+            );
+        }
+
+        if ($gender_filter) {
+            $tax_query[] = array(
+                'taxonomy' => 'gender',
+                'field'    => 'term_id',
+                'terms'    => $gender_filter,
+                'operator' => 'IN'
+            );
+        }
+
+        if ($age_filter) {
+            $tax_query[] = array(
+                'taxonomy' => 'age',
+                'field'    => 'term_id',
+                'terms'    => $age_filter,
+                'operator' => 'IN'
+            );
+        }
+
+        $query_args['tax_query'] = $tax_query;
+    }
+
+    // Agregar meta_query para deliver_leads si se especifica
+    if ($deliver_leads_filter === 'yes') {
+        $meta_query = isset($query_args['meta_query']) ? $query_args['meta_query'] : array();
+        $meta_query[] = array(
+            'key' => 'deliver_leads',
+            'value' => 'yes',
+            'compare' => '=',
+        );
+        $query_args['meta_query'] = $meta_query;
+    }
+
+
+
+    $opportunities = new WP_Query($query_args);
+
+    // Preparar la respuesta
+    if ($opportunities->have_posts()) {
+        while ($opportunities->have_posts()) : $opportunities->the_post();
+            $company_id = carbon_get_post_meta(get_the_ID(), "company");
+            $target_audience = carbon_get_post_meta(get_the_ID(), "target_audience");
+            $company_logo = get_the_post_thumbnail($company_id, [50, 50], [
+                'class' => 'rounded-circle company-logo',
+                'width' => '50',
+                'height' => '50',
+            ]);
+            $industry = wp_get_post_terms(get_the_ID(), "industry")[0];
+            ?>
+            <div class="card result-item d-flex flex-row align-items-center mb-4">
+                <?php if ($company_logo) {
+                    echo $company_logo;
+                } ?>
+                <div class="detail">
+                    <h3 class="title"><?php the_title(); ?></h3>
+                    <p class="skill"><?php echo esc_html($industry->name); ?></p>
+                    <p class="category"><?php echo esc_html($target_audience); ?></p>
+                </div>
+                <div class="detail">
+                    <h5 class="price"><?php echo Helper::format_price(carbon_get_post_meta(get_the_ID(), "price")); ?></h5>
+                    <p class="commissions"><?php echo carbon_get_post_meta(get_the_ID(), "commission"); ?> %</p>
+                </div>
+                <a href="<?php the_permalink(); ?>" class="btn btn-primary">Detail</a>
+            </div>
+            <?php
+        endwhile;
+        wp_reset_postdata();
+    } else {
+        echo '<p>No opportunities found.</p>';
+    }
+
+    wp_die(); // Termina la ejecución para solicitudes AJAX
+}
+add_action('wp_ajax_my_ajax_filter', 'handle_ajax_requests');
+add_action('wp_ajax_nopriv_my_ajax_filter', 'handle_ajax_requests');
+
+

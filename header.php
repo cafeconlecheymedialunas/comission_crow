@@ -72,10 +72,6 @@ endif;
 										<a class="nav-link" href="<?php echo esc_url(home_url("/auth?action=register&role=commercial_agent")); ?>">Register as a Agent</a>
 										<a class="nav-link" href="<?php echo esc_url(home_url("/auth?action=register&role=company")); ?>">Register as a Company</a>
 									<?php else: ?>
-										<li class="nav-item"><a class="nav-link" href="<?php echo site_url('/dashboard'); ?>">Dashboard</a></li>
-										<li><a href="<?php echo site_url('/dashboard/overview'); ?>">Overview</a></li>
-										<li><a href="<?php echo site_url('/dashboard/profile'); ?>">Profile</a></li>
-										<li><a href="<?php echo site_url('/dashboard/settings'); ?>">Settings</a></li>
 										<li class="nav-item"><a class="nav-link" href="<?php echo wp_logout_url(home_url()); ?>">Logout</a></li>
 									<?php endif; ?>
 								</ul>

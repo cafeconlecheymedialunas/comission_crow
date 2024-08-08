@@ -94,7 +94,7 @@ if (has_custom_logo()) {
 				<div class="menu-account">
 					<div class="d-flex jus">
 						<?php
-$wallet_balance = ProfileUser::get_instance()->calculate_wallet_balance();
+$wallet_balance = Deposit::get_instance()->calculate_wallet_balance();
 if (in_array("commercial_agent", $current_user->roles) && $wallet_balance): ?>
 						<span class="balance"><?php echo Helper::format_price($wallet_balance); ?></span>
 						<?php endif;?>
@@ -107,17 +107,18 @@ if (in_array("commercial_agent", $current_user->roles) && $wallet_balance): ?>
 
 						<div class="my-account">
 						<?php if (is_user_logged_in()): ?>
-							<?php $post_thumbnail = get_the_post_thumbnail($associated_post->ID, [50, 50], ['class' => 'rounded-circle']);?>
+							
 							<div class="dropdown">
 								<span class="dropdown-toggle" type="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
 								<?php
-$default = get_template_directory_uri() . "/assets/img/placeholder.png";
-						    if ($post_thumbnail) {
-						        echo $post_thumbnail;
-						    } else {
-						        echo '<img width="50" height="50" class="rounded-circle" src="' . $default . '"/>';
-						    }
-?>
+								$default = get_template_directory_uri() . "/assets/img/placeholder.png";
+								if (has_post_thumbnail() && $associated_post) {
+									$post_thumbnail = get_the_post_thumbnail($associated_post->ID, [50, 50], ['class' => 'rounded-circle']);
+									echo $post_thumbnail;
+								} else {
+									echo '<img width="50" height="50" class="rounded-circle" src="' . $default . '"/>';
+								}
+								?>
 
 								</span>
 								<ul class="dropdown-menu" aria-labelledby="accountDropdown">

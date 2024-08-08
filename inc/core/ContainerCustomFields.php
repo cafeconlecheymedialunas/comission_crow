@@ -91,27 +91,7 @@ class ContainerCustomFields
         Container::make('post_meta', __('Oportunity Info'))
             ->add_tab(__('Info'), [
                 Field::make('select', 'company', __('Company'))
-                ->add_options([$this->admin,'get_companies']),
-                
-                Field::make('radio', 'target_audience', __('Target Audience'))->set_options([
-                    'companies' => "Companies",
-                    'individuals' => "Individuals",
-                ]),
-               
-        
-                Field::make('select', 'age', __('Age'))
-                ->set_options([
-                    'over_18' => 'Over 18',
-                    'over_30' => 'Over 30',
-                    'over_60' => 'Over 60',
-                    'any_age' => 'Any age',
-                ]),
-                Field::make('select', 'gender', __('Gender'))
-                ->set_options([
-                    'male' => 'Male',
-                    'female' => 'Female',
-                    'any_gender' => 'Any gender',
-                ]),
+                ->add_options([$this->admin,'get_companies'])
 
             ])
             ->add_tab(__('Pricing'), [
@@ -318,7 +298,7 @@ class ContainerCustomFields
                 Field::make('date_time', 'date', 'payment Date'),
 
                 Field::make('select', 'status', __('Status'))
-                ->set_options([$this->status_manager,"get_status_payment"]),
+                ->set_options([$this->status_manager,"get_status_deposit"]),
 
                 
     
@@ -357,7 +337,7 @@ class ContainerCustomFields
             ->add_fields([
 
            
-                Field::make('text', 'total_withdraw_founds', 'Total Withdraw'),
+                Field::make('text', 'total_withdraw_funds', 'Total Withdraw'),
                 
                 Field::make('select', 'user', __('User:'))
                 ->add_options([$this->admin,'get_users'])->set_required(true),

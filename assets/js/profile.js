@@ -17,7 +17,7 @@ jQuery(document).ready(function ($) {
       cache: false,
       success: function (response) {
         $customSpinner.removeClass("d-flex").hide();
-
+        console.log(response)
         if (response.success) {
           console.log(response);
 
@@ -98,7 +98,7 @@ jQuery(document).ready(function ($) {
       cache: false,
       success: function (response) {
         $customSpinner.removeClass("d-flex").hide();
-
+        console.log(response)
         if (response.success) {
           Swal.fire({
             title: "User updated successfully!",

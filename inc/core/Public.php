@@ -46,6 +46,7 @@ class PublicFront
         wp_enqueue_script('dispute', get_template_directory_uri() . '/assets/js/dispute.js', ['jquery'], '1.0', true);
         wp_enqueue_script('payment', get_template_directory_uri() . '/assets/js/payment.js', ['jquery'], '1.0', true);
         wp_enqueue_script('deposit', get_template_directory_uri() . '/assets/js/deposit.js', ['jquery'], '1.0', true);
+        wp_enqueue_script('find-opportunities', get_template_directory_uri() . '/assets/js/find-opportunities.js', ['jquery'], '1.0', true);
         wp_enqueue_style('style', get_theme_file_uri('style.css'), [], $theme_version, 'all');
         wp_enqueue_style('maincss', get_template_directory_uri() . '/assets/css/main.css', [], $theme_version, "all");
         wp_enqueue_style('headercss', get_template_directory_uri() . '/assets/css/header.css', [], $theme_version, "all");
@@ -60,5 +61,6 @@ class PublicFront
         wp_localize_script('contract', 'ajax_object', $ajax_data);
         wp_localize_script('payment', 'ajax_object', $ajax_data);
         wp_localize_script('deposit', 'ajax_object', $ajax_data);
+        wp_localize_script('find-opportunities', 'ajax_object', $ajax_data);
     }
 }

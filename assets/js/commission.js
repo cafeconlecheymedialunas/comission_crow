@@ -105,20 +105,15 @@ jQuery(document).ready(function ($) {
     console.log(commissionRequestId);
 
     if (commissionRequestId !== undefined) {
-      $("#commission_request_select").val(commissionRequestId).change();
-      $("#commission_request_select").attr("disabled", true);
+      $("#commission_request_id").val(commissionRequestId).change();
+      $("#commission_request_id").attr("disabled", true);
     } else {
-      $("#commission_request_select").val("").change();
-      $("#commission_request_select").attr("disabled", false);
+      $("#commission_request_id").val("").change();
+      $("#commission_request_id").attr("disabled", false);
     }
-    $("#commission_request_id").val(commissionRequestId);
+  
   });
 
-  $("#commission_request_select").on("change", function (e) {
-    const commissionRequestId = $("#commission_request_select").val();
-
-    $("#commission_request_id").val(commissionRequestId);
-  });
 
   // Form submission handling
   $("#commission-form").on("submit", function (e) {

@@ -27,9 +27,9 @@ class Opportunity extends Crud
         $data = [
             'post_title' => sanitize_text_field($_POST['title']),
             'post_content' => wp_kses_post($_POST['post_content']),
-            'target_audience' => sanitize_text_field($_POST['target_audience']),
-            'age' => sanitize_text_field($_POST['age']),
-            'gender' => sanitize_text_field($_POST['gender']),
+            'target_audience' => isset($_POST["target_audience"]) ? $_POST["target_audience"] : [],
+            'age' => isset($_POST["age"]) ? $_POST["age"] : [],
+            'gender' => isset($_POST["gender"]) ? $_POST["gender"] : [],
             'price' => sanitize_text_field($_POST['price']),
             'commission' => sanitize_text_field($_POST['commission']),
             'deliver_leads' => isset($_POST['deliver_leads']) && $_POST['deliver_leads'] === 'yes' ? true : false,
@@ -130,9 +130,6 @@ class Opportunity extends Crud
 
         $field_mappings = [
             "company" => "Company",
-            'target_audience' => 'Target Audience',
-            'age' => 'Age',
-            'gender' => 'Gender',
             'price' => 'Price',
             'commission' => 'Commission',
             'deliver_leads' => 'Deliver Leads',
@@ -179,6 +176,16 @@ class Opportunity extends Crud
             wp_set_post_terms($opportunity_id, $data['type_of_company'], 'type_of_company');
         }
 
+        if (!empty($data['target_audience'])) {
+            wp_set_post_terms($opportunity_id, $data['target_audience'], 'target_audience');
+        }
+        if (!empty($data['age'])) {
+            wp_set_post_terms($opportunity_id, $data['age'], 'age');
+        }
+        if (!empty($data['gender'])) {
+            wp_set_post_terms($opportunity_id, $data['gender'], 'gender');
+        }
+
         $this->send_opportunity_created_email_to_company($opportunity_id);
 
         wp_send_json_success(["general" => __('Opportunity saved successfully!'), 'opportunity_id' => $opportunity_id]);
@@ -204,7 +211,7 @@ class Opportunity extends Crud
             'post_type'   => 'contract', // Update this to the post type used for contracts
             'meta_query'  => [
                 [
-                    'key'     => 'opportunity_id', // Update this to the meta field that links contracts to opportunities
+                    'key'     => 'opportunity', // Update this to the meta field that links contracts to opportunities
                     'value'   => $opportunity_id,
                     'compare' => '='
                 ]
@@ -233,23 +240,36 @@ class Opportunity extends Crud
         if (!$opportunity) {
             return;
         }
-
+    
         $company_id = get_post_meta($opportunity_id, 'company', true);
         $company = get_post($company_id);
         if (!$company) {
             return;
         }
-
+    
         $to = get_post_meta($company_id, 'company_email', true);
-        $subject = __('New Opportunity Created');
-        $message = sprintf(
-            __('A new opportunity "%s" has been created. Check it out here: %s'),
-            $opportunity->post_title,
-            get_permalink($opportunity_id)
-        );
-
-        wp_mail($to, $subject, $message);
+        $subject = 'New Opportunity Created';
+        $message = "<p>Hello,</p>
+            <p>A new opportunity titled \"{$opportunity->post_title}\" has been created.</p>
+            <p>Check it out here: <a href=\"" . esc_url(get_permalink($opportunity_id)) . "\">View Opportunity</a></p>
+            <p>If you have any questions, please contact us.</p>";
+    
+        // Crear una instancia de la clase EmailSender
+        $email_sender = new EmailSender();
+    
+        // Enviar el correo electrónico
+        $sent = $email_sender->send_email($to, $subject, $message);
+    
+        if (!$sent) {
+            $errors = $email_sender->get_error();
+            foreach ($errors->get_error_messages() as $error_message) {
+                error_log('Error sending email: ' . $error_message);
+            }
+        }
+    
+        return $sent;
     }
+    
 
     private function send_opportunity_deleted_email_to_company($opportunity_id)
     {
@@ -257,20 +277,33 @@ class Opportunity extends Crud
         if (!$opportunity) {
             return;
         }
-
+    
         $company_id = get_post_meta($opportunity_id, 'company', true);
         $company = get_post($company_id);
         if (!$company) {
             return;
         }
-
+    
         $to = get_post_meta($company_id, 'company_email', true);
-        $subject = __('Opportunity Deleted');
-        $message = sprintf(
-            __('The opportunity "%s" has been deleted.'),
-            $opportunity->post_title
-        );
-
-        wp_mail($to, $subject, $message);
+        $subject = 'Opportunity Deleted';
+        $message = "<p>Hello,</p>
+            <p>The opportunity titled \"{$opportunity->post_title}\" has been deleted.</p>
+            <p>If you have any questions, please contact us.</p>";
+    
+        // Crear una instancia de la clase EmailSender
+        $email_sender = new EmailSender();
+    
+        // Enviar el correo electrónico
+        $sent = $email_sender->send_email($to, $subject, $message);
+    
+        if (!$sent) {
+            $errors = $email_sender->get_error();
+            foreach ($errors->get_error_messages() as $error_message) {
+                error_log('Error sending email: ' . $error_message);
+            }
+        }
+    
+        return $sent;
     }
+    
 }

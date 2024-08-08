@@ -57,6 +57,14 @@ class StatusManager
         ];
     }
 
+    public function get_status_deposit()
+    {
+        return [
+            'deposit_requested' => 'Deposit Requested',
+            'deposit_completed' => 'Deposit Completed',
+        ];
+    }
+
 
     public function update_commission_request_on_save($post_id)
     {

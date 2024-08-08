@@ -139,11 +139,11 @@ class Payment
         if (!$sent) {
             $errors = $email_sender->get_error();
             foreach ($errors->get_error_messages() as $error_message) {
-                echo '<p>Error: ' . esc_html($error_message) . '</p>';
+                error_log('Error sending email: ' . $error_message);
             }
-        } else {
-            echo '<p>Email sent successfully to the agent.</p>';
         }
+    
+        return $sent;
     }
     
     public function send_create_company_payment_email($payment_id)
@@ -176,11 +176,11 @@ class Payment
         if (!$sent) {
             $errors = $email_sender->get_error();
             foreach ($errors->get_error_messages() as $error_message) {
-                echo '<p>Error: ' . esc_html($error_message) . '</p>';
+                error_log('Error sending email: ' . $error_message);
             }
-        } else {
-            echo '<p>Email sent successfully to the company.</p>';
         }
+    
+        return $sent;
     }
    
     
@@ -212,11 +212,11 @@ class Payment
         if (!$sent) {
             $errors = $email_sender->get_error();
             foreach ($errors->get_error_messages() as $error_message) {
-                echo '<p>Error: ' . esc_html($error_message) . '</p>';
+                error_log('Error sending email: ' . $error_message);
             }
-        } else {
-            echo '<p>Email sent successfully to the company.</p>';
         }
+    
+        return $sent;
     }
     
     

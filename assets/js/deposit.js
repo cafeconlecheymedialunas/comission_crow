@@ -1,11 +1,11 @@
 jQuery(document).ready(function ($) {
   var $customSpinner = $(".custom-spinner");
 
-  $("#withdraw-founds-form").on("submit", function (e) {
+  $("#withdraw-funds-form").on("submit", function (e) {
     e.preventDefault();
     const form = this;
     var formData = new FormData(form);
-    formData.append("action", "withdraw_founds");
+    formData.append("action", "withdraw_funds");
 
     $customSpinner.addClass("d-flex");
     $.ajax({

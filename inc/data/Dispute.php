@@ -26,15 +26,38 @@ class Dispute
         $errors = [];
         $general_errors = [];
 
-        // Validar commission_request_id
-        $commission_request_id = intval($_POST['commission_request_id']);
-        $commission_request = get_post($commission_request_id);
+         // Validar description
+         if (empty($_POST['description'])) {
+            $errors['description'][] = 'Description is required.';
+        }
 
-        if (!$commission_request) {
-            $general_errors[] = 'Commission Request not found.';
-            wp_send_json_error(['general' => $general_errors]);
+        // Validar subject
+        if (empty($_POST['subject'])) {
+            $errors['subject'][] = 'Subject is required.';
+        }
+
+        if (isset($_FILES['documents']) && !empty($_FILES['documents']['name'][0])) {
+            $validation_result = validate_files($_FILES['documents']);
+            if (isset($validation_result['error'])) {
+                $errors['documents'][] = $validation_result['error'];
+            }
+        }
+         // Validar commission_request_id
+         $commission_request_id = intval($_POST['commission_request_id']);
+         if (!$commission_request_id) {
+            $errors['commission_request_id'][] = 'You need a valid commission request id';
+        } 
+         $commission_request = get_post($commission_request_id);
+ 
+         if (!$commission_request) {
+             $errors['commission_request_id'][] = 'Commission Request not found.';
+         }
+        
+        if (!empty($errors)) {
+            wp_send_json_error(['fields' => $errors]);
             wp_die();
         }
+       
 
         $dispute_query = new WP_Query([
             'post_type' => 'dispute',
@@ -53,28 +76,9 @@ class Dispute
             wp_die();
         }
 
-        // Validar description
-        if (empty($_POST['description'])) {
-            $errors['description'][] = 'Description is required.';
-        }
+       
 
-        // Validar subject
-        if (empty($_POST['subject'])) {
-            $errors['subject'][] = 'Subject is required.';
-        }
-
-        if (isset($_FILES['documents']) && !empty($_FILES['documents']['name'][0])) {
-            $validation_result = validate_files($_FILES['documents']);
-            if (isset($validation_result['error'])) {
-                $errors['documents'][] = $validation_result['error'];
-            }
-        }
-
-        // Si hay errores de validación, devolverlos
-        if (!empty($errors)) {
-            wp_send_json_error(['fields' => $errors]);
-            wp_die();
-        }
+        
 
         // Validar y manejar la carga de documentos si existen
         if (isset($_FILES['documents']) && !empty($_FILES['documents']['name'][0])) {
@@ -134,7 +138,7 @@ class Dispute
         $dispute_id = intval($_POST['dispute_id']);
 
         if (!$dispute_id) {
-            wp_send_json_error(['message' => 'You need a valid ID.']);
+            wp_send_json_error(['general' => 'You need a valid ID.']);
         }
 
         // Imprimir el ID para depuración
@@ -144,19 +148,19 @@ class Dispute
         $dispute = get_post($dispute_id);
 
         if (!$dispute || $dispute->post_type !== 'dispute') {
-            wp_send_json_error(['message' => 'Dispute not found']);
+            wp_send_json_error(['general' => 'Dispute not found']);
         }
 
         $commission_request_id = carbon_get_post_meta($dispute_id, 'commission_request_id');
 
         if (!$commission_request_id) {
-            wp_send_json_error(['message' => 'Post not found.']);
+            wp_send_json_error(['general' => 'Post not found.']);
         }
 
         $initiating_user_id = carbon_get_post_meta($dispute_id, 'initiating_user');
 
         if (get_current_user_id() != $initiating_user_id) {
-            wp_send_json_error(['message' => 'This dispute can only be deleted by the user who created it.']);
+            wp_send_json_error(['general' => 'This dispute can only be deleted by the user who created it.']);
         }
 
         // Actualizar el estado de la solicitud de comisión a 'pending'
@@ -167,13 +171,13 @@ class Dispute
         $dispute_id = wp_delete_post($dispute_id, true);
 
         if (is_wp_error($dispute_id)) {
-            wp_send_json_error(['message' => 'Error deleting the post. Try again later.']);
+            wp_send_json_error(['general' => 'Error deleting the post. Try again later.']);
         }
 
-        $this->send_dispute_deleted_email_to_agent($dispute_id);
-        $this->send_dispute_deleted_email_to_company($dispute_id);
+        //$this->send_dispute_deleted_email_to_agent($dispute_id);
+        //$this->send_dispute_deleted_email_to_company($dispute_id);
 
-        wp_send_json_success(['message' => 'Dispute successfully deleted!']);
+        wp_send_json_success(['Dispute successfully deleted!']);
         wp_die();
     }
     public function send_dispute_created_email_to_agent($dispute_id)
@@ -220,10 +224,9 @@ class Dispute
             foreach ($errors->get_error_messages() as $error_message) {
                 error_log('Error sending email to agent regarding dispute creation: ' . $error_message);
             }
-            return false; // Retorna false si el envío del correo falló
         }
     
-        return true; // Retorna true si el correo fue enviado correctamente
+        return $sent;
     }
     
     
@@ -271,10 +274,10 @@ class Dispute
                 foreach ($errors->get_error_messages() as $error_message) {
                     error_log('Error sending email: ' . $error_message);
                 }
-                return false;
+                
             }
     
-            return true;
+            return $sent;
     }
 
     public function send_dispute_approval_email_to_agent($dispute_id)
@@ -317,10 +320,9 @@ class Dispute
             foreach ($errors->get_error_messages() as $error_message) {
                 error_log('Error sending email: ' . $error_message);
             }
-            return false;
         }
 
-        return true;
+        return $sent;
     }
 
     public function send_dispute_approval_email_to_company($dispute_id)
@@ -361,10 +363,8 @@ class Dispute
             foreach ($errors->get_error_messages() as $error_message) {
                 error_log('Error sending email  ' . $error_message);
             }
-            return false;
         }
-
-        return true;
+        return $sent;
     }
     public function send_dispute_rejection_email_to_agent($dispute_id)
     {
@@ -404,10 +404,8 @@ class Dispute
             foreach ($errors->get_error_messages() as $error_message) {
                 error_log('Error sending email: ' . $error_message);
             }
-            return false;
         }
-
-        return true;
+        return $sent;
     }
 
     public function send_dispute_rejection_email_to_company($dispute_id)
@@ -448,10 +446,9 @@ class Dispute
             foreach ($errors->get_error_messages() as $error_message) {
                 error_log('Error sending email: ' . $error_message);
             }
-            return false;
         }
 
-        return true;
+        return $sent;
     }
 
     public function send_dispute_deleted_email_to_agent($dispute_id)
@@ -494,10 +491,9 @@ class Dispute
             foreach ($errors->get_error_messages() as $error_message) {
                 error_log('Error sending email: ' . $error_message);
             }
-            return false;
         }
 
-        return true;
+        return $sent;
     }
 
     public function send_dispute_deleted_email_to_company($dispute_id)
@@ -544,9 +540,8 @@ class Dispute
             foreach ($errors->get_error_messages() as $error_message) {
                 error_log('Error sending email: ' . $error_message);
             }
-            return false;
         }
 
-        return true;
+        return $sent;
     }
 }

@@ -11,55 +11,53 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
 	<?php wp_head(); ?>
 	<script>
-	
-	function displayFormErrors(form, data) {
-   // Clear previous error messages
-   jQuery(form).find(".error-message").empty();
-   jQuery(form).find(".general-errors").hide().empty();
+function displayFormErrors(form, data) {
+    // Clear previous error messages
+    jQuery(form).find(".error-message").empty();
+    jQuery(form).find(".general-errors").hide().empty();
 
-   var firstErrorElement = null;
+    var firstErrorElement = null;
 
-   // Display field-specific errors
-   if(data.fields){
-		jQuery.each(data.fields, function (fieldName, errorMessages) {
-		var field = jQuery(form).find("#" + fieldName);
-		if (field.length) {
-			// Display the first error message for the field
-			if (errorMessages.length > 0) {
-				field.next(".error-message").text(errorMessages[0]);
+    // Display field-specific errors
+    if (data.fields) {
+        jQuery.each(data.fields, function (fieldName, errorMessages) {
+            var field = jQuery(form).find("#" + fieldName);
+            if (field.length) {
+                // Display the first error message for the field
+                if (errorMessages.length > 0) {
+                    field.next(".error-message").text(errorMessages[0]);
 
-				// Set the first error element for scrolling
-				if (firstErrorElement === null) {
-				firstErrorElement = field;
-				}
-			}
-		}
-	});
-		
-		if (firstErrorElement) {
-			jQuery('html, body').animate({
-				scrollTop: firstErrorElement.offset().top - 100 // Adjust offset as needed
-			}, 500);
-		}
-   }
-  
+                    // Set the first error element for scrolling
+                    if (firstErrorElement === null) {
+                        firstErrorElement = field;
+                    }
+                }
+            }
+        });
 
-   // Display the first general error
-   if (data.general && data.general.length > 0) {
-     
+        if (firstErrorElement) {
+            jQuery('html, body').animate({
+                scrollTop: firstErrorElement.offset().top - 100 // Adjust offset as needed
+            }, 500);
+        }
+    }
 
-		 var errorElement = jQuery('<p class="text-danger"></p>').text(data.general);
-         Swal.fire(
-                "Error!",
-                data.general,
-                "error",
-              );
+    // Display the general errors
+    if (data.general && data.general.length > 0) {
+        var generalErrorsDiv = jQuery(form).find(".general-errors");
 
-         
-      
-   }
+        // Create a list of general errors
+        var errorList = jQuery('<ul></ul>');
+        jQuery.each(data.general, function (index, errorMessage) {
+            errorList.append('<li>' + errorMessage + '</li>');
+        });
 
- 
+        // Append the list to the general errors div
+        generalErrorsDiv.append(errorList);
+
+        // Show the general errors div
+        generalErrorsDiv.show();
+    }
 }
 
 </script>
