@@ -252,13 +252,12 @@ class Company extends Crud
 
     public function get_opportunities()
     {
-        $company = $this->get_company();
         $args = [
             'post_type' => 'opportunity',
             'meta_query' => [
                 [
                     'key' => 'company',
-                    'value' => $company->ID,
+                    'value' => $this->company->ID,
                     'compare' => '='
                 ]
             ],

@@ -16,8 +16,8 @@
 		<footer id="footer">
 			<div class="container">
 				<div class="row">
-					<div class="col-md-6">
-						<p><?php printf(esc_html__('&copy; %1$s %2$s. All rights reserved.', 'comission_crow'), wp_date('Y'), get_bloginfo('name', 'display')); ?></p>
+					<div class="col-md-12">
+						<p class="copy"><?php printf(esc_html__('&copy; %1$s %2$s. All rights reserved.', 'comission_crow'), wp_date('Y'), get_bloginfo('name', 'display')); ?></p>
 					</div>
 
 					<?php

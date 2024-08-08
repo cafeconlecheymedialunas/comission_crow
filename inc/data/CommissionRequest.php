@@ -1,5 +1,5 @@
 <?php
-class Commissionrequest
+class CommissionRequest
 {
 
     private function __construct()

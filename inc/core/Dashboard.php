@@ -28,7 +28,7 @@ class Dashboard
         $commercial_agent = CommercialAgent::get_instance();
         $profileUser = ProfileUser::get_instance();
         $contract = Contract::get_instance();
-        $commission_request = Commissionrequest::get_instance();
+        $commission_request = CommissionRequest::get_instance();
         $dispute = Dispute::get_instance();
         $opportunity = Opportunity::get_instance();
         $payment = Payment::get_instance();

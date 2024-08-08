@@ -2,14 +2,16 @@
 
 class PublicFront
 {
+    private $theme_version;
     public function __construct()
     {
         add_action('wp_enqueue_scripts', [$this, 'handle_scripts']);
+        $this->theme_version = wp_get_theme()->get('Version');
     }
 
     public function handle_scripts()
     {
-        $theme_version = wp_get_theme()->get('Version');
+        
 
         // Encolar jQuery si aún no está encolado.
         wp_enqueue_script('jquery');
@@ -35,7 +37,7 @@ class PublicFront
         wp_enqueue_style('fontawesomcss', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css', [], '6.5.2', 'all');
         wp_enqueue_style('quill-editorcss', 'https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css', [], '2.0.2', 'all');
         wp_enqueue_script('quill-editorjs', 'https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js', ['jquery'], '2.0.2', true);
-        wp_enqueue_style('select2bootstracss', 'https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css', [], $theme_version, 'all');
+        wp_enqueue_style('select2bootstracss', 'https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css', [], "1.3.0", 'all');
         wp_enqueue_script('jqueryvalidatejs', 'https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js', ['jquery'], '1.19.5', true);
 
         // Encolar los archivos JS y CSS generados por Webpack usando archivos .asset.php.
@@ -51,7 +53,7 @@ class PublicFront
         $this->enqueue_script_with_assets('find-opportunities');
 
         // Encolar los estilos usando archivos .asset.php.
-        wp_enqueue_style('style', get_theme_file_uri('style.css'), [], $theme_version, 'all');
+        wp_enqueue_style('style', get_theme_file_uri('style.css'), [], $this->theme_version, 'all');
         $this->enqueue_style_with_assets('main');
         $this->enqueue_style_with_assets('header');
         $this->enqueue_style_with_assets('auth');
@@ -71,15 +73,15 @@ class PublicFront
 
     private function enqueue_script_with_assets($handle)
     {
-        $asset_file = get_template_directory() . '/public/js/' . $handle . '.asset.php';
+      
 
    
-            $assets = include $asset_file;
+        
             wp_enqueue_script(
                 $handle,
-                get_template_directory_uri() . '/public/js/' . $handle . '.js',
-                $assets['dependencies'],
-                $assets['version'],
+                get_template_directory_uri() . '/dist/js/' . $handle . '.js',
+                ["jquery"],
+                $this->theme_version ,
                 true
             );
         
@@ -87,15 +89,12 @@ class PublicFront
 
     private function enqueue_style_with_assets($handle)
     {
-        $asset_file = get_template_directory() . '/public/css/' . $handle . '.asset.php';
-
        
-            $assets = include $asset_file;
             wp_enqueue_style(
                 $handle,
-                get_template_directory_uri() . '/public/css/' . $handle . '.css',
-                $assets['dependencies'],
-                $assets['version']
+                get_template_directory_uri() . '/dist/css/' . $handle . '.css',
+                [],
+                $this->theme_version
             );
         
     }

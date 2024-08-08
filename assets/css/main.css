@@ -67,3 +67,10 @@ input[type="number"].form-control {
 .total label {
   margin-bottom: 0;
 }
+footer .copy{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin:0;
+  padding: 20px 0;
+}

@@ -22,12 +22,10 @@
     "@wordpress/scripts": "^28.5.0",
     "clean-webpack-plugin": "^4.0.0",
     "css-minimizer-webpack-plugin": "^7.0.0",
+    "mini-css-extract-plugin": "^2.9.0",
     "path": "^0.12.7",
     "prettier": "3.3.3",
-    "webpack-remove-empty-scripts": "^1.0.4",
-       "style-loader": "^4.0.0"
-  },
-  "dependencies": {
- 
+    "style-loader": "^4.0.0",
+    "webpack-remove-empty-scripts": "^1.0.4"
   }
 }
