@@ -89,8 +89,16 @@ $status_classes = [
                 <tr>
                     <td><?php echo $commission_request->ID; ?></td>
                     <td><span class="txt-sm"><?php echo carbon_get_post_meta($contract_id, "sku"); ?></span></td>
-                    <td><a href=""><?php echo esc_html($another_user->data->display_name); ?></a></td>
-                    <td><a href=""><?php echo get_the_title($opportunity_id); ?></a></td>
+                    <td>
+                        <a href="<?php echo home_url()."/public-profile/?user_id=".$another_user->ID; ?>">
+                            <?php echo esc_html($another_user->data->display_name); ?>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="<?php echo home_url()."/opportunity-item/?opportunity_id=".get_the_ID(); ?>">
+                            <?php echo get_the_title($opportunity_id); ?>
+                        </a>
+                    </td>
                     <td><?php echo esc_html(Helper::format_price($total_cart_commission_request)); ?></td>
                     <td><?php echo esc_html(carbon_get_post_meta($contract_id, "commission") . "%"); ?></td>
                     <td><?php echo esc_html(Helper::format_price($total_agent_commission_request)); ?></td>

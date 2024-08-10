@@ -91,8 +91,8 @@ class ContainerCustomFields
         Container::make('post_meta', __('Oportunity Info'))
             ->add_tab(__('Info'), [
                 Field::make('select', 'company', __('Company'))
-                ->add_options([$this->admin,'get_companies'])
-
+                ->add_options([$this->admin,'get_companies']),
+                Field::make('date_time', 'date', 'Date'),
             ])
             ->add_tab(__('Pricing'), [
                 Field::make('text', 'price', __('Price')),
@@ -321,7 +321,7 @@ class ContainerCustomFields
             Field::make('text', 'billing_address_number', __('Billing Address Number')),
             Field::make('text', 'billing_address_city', __('Billing Address City')),
             Field::make('text', 'billing_address_state', __('Billing Address State')),
-            Field::make('text', 'billing_address_country', __('Billing Address Country')),
+            Field::make('text', 'billing_address_location', __('Billing Address Location')),
             Field::make('text', 'billing_address_postalcode', __('Billing Address Postal Code')),
             Field::make('text', 'billing_company_holder', __('Billing Company Holder')),
             Field::make('text', 'billing_company_name', __('Billing Company Name')),
@@ -372,6 +372,9 @@ class ContainerCustomFields
             ->add_fields([
                 Field::make('select', 'commercial_agent', __('Commercial Agent'))
                 ->add_options([$this->admin,'get_commercial_agents']),
+                Field::make('select', 'company', __('Company'))
+                ->add_options([$this->admin,'get_companies']),
+                Field::make('rich_text', 'content', __('Content')),
                 Field::make('select', 'score', __('Score'))
                     ->set_options([
                         "1" => 1,

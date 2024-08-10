@@ -37,12 +37,11 @@ $opportunities = $opportunities_query->posts;
       </div>
       <div class="modal-body">
         <form id="save-contract" enctype="multipart/form-data">
-          <h2>Add Contract</h2>
           <div class="row">
            
               <div class="col-md-6">
-                <label for="company" class="form-label">Company:</label>
-                <select name="company[]" id="company" class="form-select"
+                <label for="company_id" class="form-label">Company:</label>
+                <select name="company_id" id="company_id" class="form-select"
                   <?php echo ($associated_post && $associated_post->post_type === 'company') ? 'disabled' : ''; ?>>
                   <option value="">Select a Company</option>
                   <?php foreach ($companies as $company): ?>
@@ -52,14 +51,18 @@ $opportunities = $opportunities_query->posts;
                     </option>
                   <?php endforeach; ?>
                 </select>
+                
                 <div class="error-message"></div>
+                <?php if($associated_post->post_type === 'company' && $associated_post->ID):?>
+                <input type="hidden" name="company_id" id="company_id_hidden" value="<?php echo esc_attr($associated_post->ID); ?>">
+                <?php endif;?>
               </div>
             
 
            
               <div class="col-md-6">
-                <label for="commercial_agent" class="form-label">Commercial Agent:</label>
-                <select name="commercial_agent[]" id="commercial_agent" class="form-select"
+                <label for="commercial_agent_id" class="form-label">Commercial Agent:</label>
+                <select name="commercial_agent_id" id="commercial_agent_id" class="form-select"
                   <?php echo ($associated_post && $associated_post->post_type === 'commercial_agent') ? 'disabled' : ''; ?>>
                   <option value="">Select a Commercial Agent</option>
                   <?php foreach ($commercial_agents as $agent): ?>
@@ -69,14 +72,17 @@ $opportunities = $opportunities_query->posts;
                     </option>
                   <?php endforeach; ?>
                 </select>
+                <?php if($associated_post->post_type === 'commercial_agent' && $associated_post->ID):?>
+                <input type="hidden" name="commercial_agent_id" id="commercial_agent_id_hidden" value="<?php echo esc_attr($associated_post->ID); ?>">
+                <?php endif;?>
                 <div class="error-message"></div>
               </div>
             
 
          
               <div class="col-md-6">
-                <label for="opportunity" class="form-label">Opportunity:</label>
-                <select name="opportunity[]" id="opportunity" class="form-select">
+                <label for="opportunity_id" class="form-label">Opportunity:</label>
+                <select name="opportunity_id" id="opportunity_id" class="form-select">
                   <option value="">Select an Opportunity</option>
                   <?php foreach ($opportunities as $opportunity): ?>
                     <option value="<?php echo esc_attr($opportunity->ID); ?>">
@@ -109,8 +115,7 @@ $opportunities = $opportunities_query->posts;
           </div>
 
           <input type="hidden" name="security" value="<?php echo wp_create_nonce('create_contract_nonce'); ?>">
-          <input type="hidden" name="company_id" value="<?php echo $associated_post ? $associated_post->ID : ''; ?>">
-          <input type="hidden" name="entity_type" value="<?php echo $associated_post ? $associated_post->post_type : 'company'; ?>">
+          <input type="hidden" name="entity_type" value="<?php echo $associated_post->post_type; ?>">
 
           <div class="alert alert-warning general-errors" role="alert"></div>
         </form>

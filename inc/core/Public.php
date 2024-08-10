@@ -50,7 +50,13 @@ class PublicFront
         $this->enqueue_script_with_assets('dispute');
         $this->enqueue_script_with_assets('payment');
         $this->enqueue_script_with_assets('deposit');
-        $this->enqueue_script_with_assets('find-opportunities');
+        if (is_page_template('page-templates/find-opportunities.php')) {
+            $this->enqueue_script_with_assets('find-opportunities');
+        }
+
+        if (is_page_template('page-templates/find-commercial-agents.php')) {
+            $this->enqueue_script_with_assets('find-commercial-agents');
+        }
 
         // Encolar los estilos usando archivos .asset.php.
         wp_enqueue_style('style', get_theme_file_uri('style.css'), [], $this->theme_version, 'all');
@@ -69,6 +75,7 @@ class PublicFront
         $this->localize_script('payment', $ajax_data);
         $this->localize_script('deposit', $ajax_data);
         $this->localize_script('find-opportunities', $ajax_data);
+        $this->localize_script('find-commercial-agents', $ajax_data);
     }
 
     private function enqueue_script_with_assets($handle)

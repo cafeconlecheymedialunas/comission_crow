@@ -44,7 +44,7 @@ class Opportunity extends Crud
             'company_id' => isset($_POST["company_id"]) ? sanitize_text_field($_POST["company_id"]) : '',
             'videos' => isset($_POST['videos']) ? array_map('sanitize_text_field', $_POST['videos']) : [],
             'language' => isset($_POST["language"]) ? array_map('sanitize_text_field', $_POST["language"]) : [],
-            'country' => isset($_POST["country"]) ? array_map('sanitize_text_field', $_POST["country"]) : [],
+            'location' => isset($_POST["location"]) ? array_map('sanitize_text_field', $_POST["location"]) : [],
             'currency' => isset($_POST["currency"]) ? array_map('sanitize_text_field', $_POST["currency"]) : [],
             'industry' => isset($_POST["industry"]) ? array_map('sanitize_text_field', $_POST["industry"]) : [],
             'type_of_company' => isset($_POST["type_of_company"]) ? array_map('sanitize_text_field', $_POST["type_of_company"]) : [],
@@ -89,9 +89,9 @@ class Opportunity extends Crud
         $max_image_size = 5 * 1024 * 1024;
 
         if (isset($_FILES['images']) && !empty($_FILES['images']['name'][0])) {
-            $validation_result = validate_files($_FILES['images'], $allowed_image_types, $max_image_size);
-            if (isset($validation_result['error'])) {
-                $errors['images'][] = $validation_result['error'];
+            $validation_result = Helper::validate_files($_FILES['images'], $allowed_image_types, $max_image_size);
+            if (!$validation_result["success"]) {
+                $errors['images'][] = $validation_result["errors"][0];
             }
         }
 
@@ -99,9 +99,9 @@ class Opportunity extends Crud
         $max_supporting_size = 10 * 1024 * 1024;
 
         if (isset($_FILES['supporting_materials']) && !empty($_FILES['supporting_materials']['name'][0])) {
-            $validation_result = validate_files($_FILES['supporting_materials'], $allowed_supporting_types, $max_supporting_size);
-            if (isset($validation_result['error'])) {
-                $errors['supporting_materials'][] = $validation_result['error'];
+            $validation_result = Helper::validate_files($_FILES['supporting_materials'], $allowed_supporting_types, $max_supporting_size);
+            if (!$validation_result["success"]) {
+                $errors['supporting_materials'][] = $validation_result["errors"][0];
             }
         }
 
@@ -123,8 +123,8 @@ class Opportunity extends Crud
             wp_send_json_error(['fields' => $errors]);
         }
 
-        $uploaded_image_ids = handle_multiple_file_upload($_FILES['images']);
-        $uploaded_supporting_material_ids = handle_multiple_file_upload($_FILES['supporting_materials']);
+        $uploaded_image_ids = Helper::handle_multiple_file_upload($_FILES['images']);
+        $uploaded_supporting_material_ids = Helper::handle_multiple_file_upload($_FILES['supporting_materials']);
         $data["images"] = $uploaded_image_ids;
         $data["supporting_materials"] = $uploaded_supporting_material_ids;
 
@@ -160,8 +160,8 @@ class Opportunity extends Crud
             wp_set_post_terms($opportunity_id, $data['language'], 'language');
         }
 
-        if (!empty($data['country'])) {
-            wp_set_post_terms($opportunity_id, $data['country'], 'country');
+        if (!empty($data['location'])) {
+            wp_set_post_terms($opportunity_id, $data['location'], 'location');
         }
 
         if (!empty($data['currency'])) {
@@ -208,14 +208,14 @@ class Opportunity extends Crud
         }
 
         $contracts_query = new WP_Query([
-            'post_type'   => 'contract', // Update this to the post type used for contracts
-            'meta_query'  => [
+            'post_type' => 'contract', // Update this to the post type used for contracts
+            'meta_query' => [
                 [
-                    'key'     => 'opportunity', // Update this to the meta field that links contracts to opportunities
-                    'value'   => $opportunity_id,
-                    'compare' => '='
-                ]
-            ]
+                    'key' => 'opportunity', // Update this to the meta field that links contracts to opportunities
+                    'value' => $opportunity_id,
+                    'compare' => '=',
+                ],
+            ],
         ]);
 
         // Check if there are any active contracts associated
@@ -234,42 +234,240 @@ class Opportunity extends Crud
         wp_die();
     }
 
+    public function load_opportunities()
+    {
+        ob_start();
+
+        // Recuperar filtros de la solicitud AJAX
+        $industry_filter = isset($_GET['industry']) ? $_GET['industry'] : [];
+        $language_filter = isset($_GET['language']) ? $_GET['language'] : [];
+        $location_filter = isset($_GET['location']) ? $_GET['location'] : [];
+        $currency_filter = isset($_GET['currency']) ? $_GET['currency'] : [];
+        $target_audience_filter = isset($_GET['target_audience']) ? $_GET['target_audience'] : [];
+        $age_filter = isset($_GET['age']) ? $_GET['age'] : [];
+        $gender_filter = isset($_GET['gender']) ? $_GET['gender'] : [];
+        $type_of_company_filter = isset($_GET['type_of_company']) ? $_GET['type_of_company'] : [];
+        $deliver_leads_filter = isset($_GET['deliver_leads']) ? $_GET['deliver_leads'] : null;
+        $min_price = isset($_GET['minimum_price']) ? floatval($_GET['minimum_price']) : null;
+        $max_price = isset($_GET['maximum_price']) ? floatval($_GET['maximum_price']) : null;
+        $commission = isset($_GET['commission']) ? intval($_GET['commission']) : null;
+
+        // Configuración básica de la consulta
+        $query_args = array(
+            'post_type' => 'opportunity',
+            'posts_per_page' => -1,
+        );
+
+        // Agregar meta_query si se especifica
+        if ($min_price || $max_price || $commission) {
+            $meta_query = array('relation' => 'AND');
+
+            if ($min_price !== null) {
+                $meta_query[] = array(
+                    'key' => 'price',
+                    'value' => $min_price,
+                    'compare' => '>=',
+                    'type' => 'NUMERIC',
+                );
+            }
+
+            if ($max_price !== null) {
+                $meta_query[] = array(
+                    'key' => 'price',
+                    'value' => $max_price,
+                    'compare' => '<=',
+                    'type' => 'NUMERIC',
+                );
+            }
+
+            if (is_numeric($commission) && $commission > 0) {
+                $meta_query[] = array(
+                    'key' => 'commission',
+                    'value' => $commission,
+                    'compare' => '<=',
+                    'type' => 'NUMERIC',
+                );
+            }
+
+            $query_args['meta_query'] = $meta_query;
+        }
+
+        // Agregar tax_query si se especifica
+        if ($industry_filter || $language_filter || $location_filter || $currency_filter || $type_of_company_filter || $target_audience_filter || $age_filter || $gender_filter) {
+            $tax_query = array('relation' => 'AND');
+
+            if ($industry_filter) {
+                $tax_query[] = array(
+                    'taxonomy' => 'industry',
+                    'field' => 'term_id',
+                    'terms' => $industry_filter,
+                    'operator' => 'IN',
+                );
+            }
+            if ($language_filter) {
+                $tax_query[] = array(
+                    'taxonomy' => 'language',
+                    'field' => 'term_id',
+                    'terms' => $language_filter,
+                    'operator' => 'IN',
+                );
+            }
+
+            if ($location_filter) {
+                $tax_query[] = array(
+                    'taxonomy' => 'location',
+                    'field' => 'term_id',
+                    'terms' => $location_filter,
+                    'operator' => 'IN',
+                );
+            }
+
+            if ($currency_filter) {
+                $tax_query[] = array(
+                    'taxonomy' => 'currency',
+                    'field' => 'term_id',
+                    'terms' => $currency_filter,
+                    'operator' => 'IN',
+                );
+            }
+
+            if ($type_of_company_filter) {
+                $tax_query[] = array(
+                    'taxonomy' => 'type_of_company',
+                    'field' => 'term_id',
+                    'terms' => $type_of_company_filter,
+                    'operator' => 'IN',
+                );
+            }
+
+            if ($target_audience_filter) {
+                $tax_query[] = array(
+                    'taxonomy' => 'target_audience',
+                    'field' => 'term_id',
+                    'terms' => $target_audience_filter,
+                    'operator' => 'IN',
+                );
+            }
+
+            if ($gender_filter) {
+                $tax_query[] = array(
+                    'taxonomy' => 'gender',
+                    'field' => 'term_id',
+                    'terms' => $gender_filter,
+                    'operator' => 'IN',
+                );
+            }
+
+            if ($age_filter) {
+                $tax_query[] = array(
+                    'taxonomy' => 'age',
+                    'field' => 'term_id',
+                    'terms' => $age_filter,
+                    'operator' => 'IN',
+                );
+            }
+
+            $query_args['tax_query'] = $tax_query;
+        }
+
+        // Agregar meta_query para deliver_leads si se especifica
+        if ($deliver_leads_filter === 'yes') {
+            $meta_query = isset($query_args['meta_query']) ? $query_args['meta_query'] : array();
+            $meta_query[] = array(
+                'key' => 'deliver_leads',
+                'value' => 'yes',
+                'compare' => '=',
+            );
+            $query_args['meta_query'] = $meta_query;
+        }
+
+        $opportunities = new WP_Query($query_args);
+
+        // Preparar la respuesta
+        if ($opportunities->have_posts()) {
+            while ($opportunities->have_posts()): $opportunities->the_post();
+                $company_id = carbon_get_post_meta(get_the_ID(), "company");
+                $target_audience_terms = wp_get_post_terms(get_the_ID(), "target_audience");
+                $company_logo = get_the_post_thumbnail($company_id, [50, 50], [
+                    'class' => 'rounded-circle company-logo',
+                    'width' => '50',
+                    'height' => '50',
+                ]);
+                $industry_terms = wp_get_post_terms(get_the_ID(), "industry");
+                $industry_names = array_map(fn($term) => esc_html($term->name), $industry_terms);
+                $target_audience_names = array_map(fn($term) => esc_html($term->name), $target_audience_terms);
+                $price = carbon_get_post_meta(get_the_ID(), "price");
+                $commission_value = carbon_get_post_meta(get_the_ID(), "commission");
+
+                ?>
+		            <div class="card result-item d-flex flex-row align-items-center mb-4">
+		                <?php if ($company_logo): ?>
+		                    <?php echo $company_logo; ?>
+		                <?php endif;?>
+                <div class="detail">
+                    <h3 class="title"><?php the_title();?></h3>
+                    <?php if ($industry_names): ?>
+                        <p class="skill">Skills: <?php echo implode(', ', $industry_names); ?></p>
+                    <?php endif;?>
+                    <?php if ($target_audience_names): ?>
+                        <p class="category">Target Audience: <?php echo implode(', ', $target_audience_names); ?></p>
+                    <?php endif;?>
+                </div>
+                <div class="detail">
+                    <?php if ($price !== null): ?>
+                        <h5 class="price">Price: <?php echo Helper::format_price($price); ?></h5>
+                    <?php endif;?>
+                    <?php if ($commission_value !== null): ?>
+                        <p class="commissions">Commission: <?php echo esc_html($commission_value); ?> %</p>
+                    <?php endif;?>
+                </div>
+                <a href="<?php echo home_url() . "/opportunity-item/?opportunity_id=" . get_the_ID(); ?>" class="btn btn-primary">Detail</a>
+            </div>
+            <?php
+endwhile;
+            wp_reset_postdata();
+        } else {
+            echo '<p>No opportunities found.</p>';
+        }
+
+        wp_die(); // Termina la ejecución para solicitudes AJAX
+    }
+
     private function send_opportunity_created_email_to_company($opportunity_id)
     {
         $opportunity = get_post($opportunity_id);
         if (!$opportunity) {
             return;
         }
-    
+
         $company_id = get_post_meta($opportunity_id, 'company', true);
         $company = get_post($company_id);
         if (!$company) {
             return;
         }
-    
+
         $to = get_post_meta($company_id, 'company_email', true);
         $subject = 'New Opportunity Created';
         $message = "<p>Hello,</p>
             <p>A new opportunity titled \"{$opportunity->post_title}\" has been created.</p>
             <p>Check it out here: <a href=\"" . esc_url(get_permalink($opportunity_id)) . "\">View Opportunity</a></p>
             <p>If you have any questions, please contact us.</p>";
-    
+
         // Crear una instancia de la clase EmailSender
         $email_sender = new EmailSender();
-    
+
         // Enviar el correo electrónico
         $sent = $email_sender->send_email($to, $subject, $message);
-    
+
         if (!$sent) {
             $errors = $email_sender->get_error();
             foreach ($errors->get_error_messages() as $error_message) {
                 error_log('Error sending email: ' . $error_message);
             }
         }
-    
+
         return $sent;
     }
-    
 
     private function send_opportunity_deleted_email_to_company($opportunity_id)
     {
@@ -277,33 +475,33 @@ class Opportunity extends Crud
         if (!$opportunity) {
             return;
         }
-    
+
         $company_id = get_post_meta($opportunity_id, 'company', true);
         $company = get_post($company_id);
         if (!$company) {
             return;
         }
-    
+
         $to = get_post_meta($company_id, 'company_email', true);
         $subject = 'Opportunity Deleted';
         $message = "<p>Hello,</p>
             <p>The opportunity titled \"{$opportunity->post_title}\" has been deleted.</p>
             <p>If you have any questions, please contact us.</p>";
-    
+
         // Crear una instancia de la clase EmailSender
         $email_sender = new EmailSender();
-    
+
         // Enviar el correo electrónico
         $sent = $email_sender->send_email($to, $subject, $message);
-    
+
         if (!$sent) {
             $errors = $email_sender->get_error();
             foreach ($errors->get_error_messages() as $error_message) {
                 error_log('Error sending email: ' . $error_message);
             }
         }
-    
+
         return $sent;
     }
-    
+
 }

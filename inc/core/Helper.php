@@ -14,15 +14,14 @@ class Helper
         return self::$instance;
     }
 
-
     public static function format_price($amount, $currency = '$', $decimals = 2)
     {
         // Asegurarse de que $amount sea un número flotante
         $amount = floatval($amount);
-    
+
         // Formatear el precio con el número de decimales especificado
         $formatted_amount = number_format($amount, $decimals, '.', ',');
-    
+
         // Devolver el precio con el símbolo de la moneda
         return $currency . $formatted_amount;
     }
@@ -53,32 +52,31 @@ class Helper
     {
         $history_status = carbon_get_post_meta($post_id, "status_history");
         $history_end = end($history_status);
-    
+
         // Verificar que existan datos en el historial
         if ($history_end && isset($history_end["date_status"], $history_end["changed_by"])) {
             $last_update = $history_end["date_status"];
             $last_sender_history = $history_end["changed_by"];
-    
+
             // Obtener información del usuario
             $current_user_id = get_current_user_id();
             $user_display_name = ($last_sender_history == $current_user_id) ? "You" : null;
-    
+
             if (!$user_display_name) {
                 $user = get_user_by("ID", $last_sender_history);
                 $user_display_name = $user ? $user->first_name . " " . $user->last_name : null;
             }
-    
+
             $human_readable_date = $last_update ? self::get_human_time_diff($last_update) . " ago" : null;
-    
+
             // Construir el texto de salida
             $last_update_text = trim(($user_display_name ? $user_display_name : '') . ($user_display_name && $human_readable_date ? ' - ' : '') . ($human_readable_date ? $human_readable_date : ''));
-    
+
             return $last_update_text;
         }
-    
+
         return ''; // En caso de que no haya datos en el historial, devolver cadena vacía
     }
-    
 
     public static function add_item_to_status_history($post_id, $status = "pending")
     {
@@ -104,6 +102,93 @@ class Helper
 
         // Guardar el historial actualizado
         return $status_history;
+    }
+
+    public static function validate_files($files, $allowed_types = ['application/pdf', 'text/plain'], $max_size = 10485760) // 10MB
+    {
+        $errors = [];
+    
+        foreach ($files['name'] as $key => $value) {
+            if ($files['error'][$key] === UPLOAD_ERR_OK) {
+                $file_type = $files['type'][$key];
+                $file_size = $files['size'][$key];
+    
+                if (!in_array($file_type, $allowed_types)) {
+                    $errors[] = sprintf('File type %s is not allowed. Allowed types are: %s.', $file_type, implode(', ', $allowed_types));
+                }
+    
+                if ($file_size > $max_size) {
+                    $errors[] = sprintf('File size of %s exceeds the maximum limit of %sMB. Your file size is %sMB.', 
+                                        $files['name'][$key], 
+                                        $max_size / 1048576, 
+                                        $file_size / 1048576);
+                }
+            } else {
+                $errors[] = sprintf('Error uploading file %s: %s', $files['name'][$key], self::get_upload_error_message($files['error'][$key]));
+            }
+        }
+    
+        if (!empty($errors)) {
+            return [
+                "success" => false,
+                "errors" => $errors,
+            ];
+        }
+    
+        return [
+            "success" => true,
+        ];
+    }
+    
+    private static function get_upload_error_message($error_code)
+    {
+        $messages = [
+            UPLOAD_ERR_INI_SIZE => 'The uploaded file exceeds the upload_max_filesize directive in php.ini.',
+            UPLOAD_ERR_FORM_SIZE => 'The uploaded file exceeds the MAX_FILE_SIZE directive specified in the HTML form.',
+            UPLOAD_ERR_PARTIAL => 'The uploaded file was only partially uploaded.',
+            UPLOAD_ERR_NO_FILE => 'No file was uploaded.',
+            UPLOAD_ERR_NO_TMP_DIR => 'Missing a temporary folder.',
+            UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk.',
+            UPLOAD_ERR_EXTENSION => 'A PHP extension stopped the file upload.',
+        ];
+    
+        return isset($messages[$error_code]) ? $messages[$error_code] : 'Unknown upload error.';
+    }
+    
+    public static function handle_multiple_file_upload($files)
+    {
+        $uploads = [];
+        foreach ($files['name'] as $key => $value) {
+            if ($files['error'][$key] === UPLOAD_ERR_OK) {
+                $file = [
+                    'name' => $files['name'][$key],
+                    'type' => $files['type'][$key],
+                    'tmp_name' => $files['tmp_name'][$key],
+                    'error' => $files['error'][$key],
+                    'size' => $files['size'][$key],
+                ];
+
+                $upload = wp_handle_upload($file, ['test_form' => false]);
+                if ($upload && !isset($upload['error'])) {
+                    $attachment_id = wp_insert_attachment([
+                        'guid' => $upload['url'],
+                        'post_mime_type' => $upload['type'],
+                        'post_title' => sanitize_file_name($upload['file']),
+                        'post_content' => '',
+                        'post_status' => 'inherit',
+                    ], $upload['file']);
+
+                    require_once ABSPATH . 'wp-admin/includes/image.php';
+                    $attach_data = wp_generate_attachment_metadata($attachment_id, $upload['file']);
+                    wp_update_attachment_metadata($attachment_id, $attach_data);
+
+                    $uploads[] = $attachment_id;
+                } else {
+                    return ['error' => 'File upload error: ' . $upload['error']];
+                }
+            }
+        }
+        return $uploads;
     }
 
 }

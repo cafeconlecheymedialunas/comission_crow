@@ -37,9 +37,9 @@ class Dispute
         }
 
         if (isset($_FILES['documents']) && !empty($_FILES['documents']['name'][0])) {
-            $validation_result = validate_files($_FILES['documents']);
-            if (isset($validation_result['error'])) {
-                $errors['documents'][] = $validation_result['error'];
+            $validation_result = Helper::validate_files($_FILES['documents']);
+            if (!$validation_result["success"]) {
+                $errors['documents'][] = $validation_result["errors"][0];
             }
         }
          // Validar commission_request_id
@@ -82,7 +82,7 @@ class Dispute
 
         // Validar y manejar la carga de documentos si existen
         if (isset($_FILES['documents']) && !empty($_FILES['documents']['name'][0])) {
-            $uploads = handle_multiple_file_upload($_FILES['documents']);
+            $uploads = Helper::handle_multiple_file_upload($_FILES['documents']);
             if (isset($uploads['error'])) {
                 $general_errors[] = $uploads['error'];
                 wp_send_json_error(['general' => $errors]);

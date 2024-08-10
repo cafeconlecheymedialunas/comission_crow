@@ -8,8 +8,8 @@ $industry_terms = get_terms([
     "hide_empty" => false,
 ]);
 ;
-$country_terms = get_terms([
-    "taxonomy" => "country",
+$location_terms = get_terms([
+    "taxonomy" => "location",
     "hide_empty" => false,
 ]);
 $currency_terms = get_terms([
@@ -59,7 +59,7 @@ $tips = isset($opportunity_post) ? carbon_get_post_meta($opportunity_post->ID, '
 $deliver_leads = isset($opportunity_post)? carbon_get_post_meta($opportunity_post->ID, 'deliver_leads') : 'no';
 $industry = isset($opportunity_post) ?  wp_get_post_terms($opportunity_post->ID, 'industry', ['fields' => 'ids']): [];
 $language = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 'language', ['fields' => 'ids']):[];
-$country =isset($opportunity_post) ?  wp_get_post_terms($opportunity_post->ID, 'country', ['fields' => 'ids']):[];
+$location =isset($opportunity_post) ?  wp_get_post_terms($opportunity_post->ID, 'location', ['fields' => 'ids']):[];
 $type_of_company = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 'type_of_company', ['fields' => 'ids']):[];
 $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 'currency', ['fields' => 'ids']):[];
 ?>
@@ -104,15 +104,15 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
         <div class="error-message"></div>
     </div>
     <?php endif;?>
-    <?php if($country_terms):?>
+    <?php if($location_terms):?>
     <div class="col-md-6">
-        <label for="country" class="form-label">Country:</label>
-        <select name="country[]" class="form-select">
+        <label for="location" class="form-label">Location:</label>
+        <select name="location[]" class="form-select">
             <option value="">Select an option</option>
-            <?php foreach ($country_terms as $term): ?>
+            <?php foreach ($location_terms as $term): ?>
                 <option 
                     value="<?php echo esc_attr($term->term_id); ?>" 
-                    <?php echo in_array($term->term_id, $country) ? 'selected' : ''; ?>
+                    <?php echo in_array($term->term_id, $location) ? 'selected' : ''; ?>
                 >
                     <?php echo esc_html($term->name); ?>
                 </option>
@@ -247,7 +247,7 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
     <div class="col-md-6">
         <label for="images" class="form-label">Images</label>
         <input class="form-control" type="file" name="images[]" id="images" multiple accept="image/*">
-
+        <div class="error-message"></div>
     </div>
     <?php } else {
         $template_path = 'templates/dashboard/dropzone.php';

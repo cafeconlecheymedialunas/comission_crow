@@ -322,3 +322,19 @@ i.operation {
   z-index: 1;
 }
 
+.rating-stars {
+  display: flex;
+  cursor: pointer;
+  font-size: 2rem;
+  color: #ddd;
+}
+
+.rating-stars .star {
+  margin-right: 5px;
+}
+
+.rating-stars .star:hover,
+.rating-stars .star.hover,
+.rating-stars .star.selected {
+  color: #ffcc00;
+}

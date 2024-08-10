@@ -285,7 +285,7 @@ class Payment
         $platform_billing_address_number = carbon_get_theme_option("billing_address_number");
         $platform_billing_address_city = carbon_get_theme_option("billing_address_city");
         $platform_billing_address_state = carbon_get_theme_option("billing_address_state");
-        $platform_billing_address_country = carbon_get_theme_option("billing_address_country");
+        $platform_billing_address_location = carbon_get_theme_option("billing_address_location");
         $platform_billing_address_postalcode = carbon_get_theme_option("billing_address_postalcode");
         $platform_billing_company_holder = carbon_get_theme_option("billing_company_holder");
         $platform_billing_company_name = carbon_get_theme_option("billing_company_name");

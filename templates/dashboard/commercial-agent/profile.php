@@ -7,8 +7,8 @@ $language_terms = get_terms([
     "hide_empty" => false,
 ]);
 
-$country_terms = get_terms([
-    "taxonomy" => "country",
+$location_terms = get_terms([
+    "taxonomy" => "location",
     "hide_empty" => false,
 ]);
 $industry_terms = get_terms([
@@ -38,7 +38,7 @@ $profile_image = isset($commercial_agent_post) ? [get_post_thumbnail_id($commerc
 $selected_years_of_experience = isset($commercial_agent_post) ? carbon_get_post_meta($commercial_agent_post->ID, 'years_of_experience') : '';
 
 $selected_languages = wp_get_post_terms($commercial_agent_post->ID, 'language', ['fields' => 'ids']);
-$selected_country = wp_get_post_terms($commercial_agent_post->ID, 'country', ['fields' => 'ids']);
+$selected_location = wp_get_post_terms($commercial_agent_post->ID, 'location', ['fields' => 'ids']);
 $selected_skills = wp_get_post_terms($commercial_agent_post->ID, 'skill', ['fields' => 'ids']);
 $selected_industry = wp_get_post_terms($commercial_agent_post->ID, 'industry', ['fields' => 'ids']);
 $selected_selling_method = wp_get_post_terms($commercial_agent_post->ID, 'selling_method', ['fields' => 'ids']);
@@ -82,15 +82,15 @@ $selected_seller_type = wp_get_post_terms($commercial_agent_post->ID, 'seller_ty
                         <div class="error-message"></div>
                     </div>
                     <?php endif;?>
-                    <?php if($country_terms):?>
+                    <?php if($location_terms):?>
                         <div class="col-md-6">
-                            <label for="country" class="form-label">Country:</label>
-                            <select name="country[]" id="country" class="form-select">
+                            <label for="location" class="form-label">Location:</label>
+                            <select name="location[]" id="location" class="form-select">
                                 <option value="">Select an option</option>
-                                <?php foreach ($country_terms as $term): ?>
+                                <?php foreach ($location_terms as $term): ?>
                                     <option 
                                         value="<?php echo esc_attr($term->term_id); ?>" 
-                                        <?php selected($selected_country[0], $term->term_id); ?>>
+                                        <?php selected($selected_location[0], $term->term_id); ?>>
                                         <?php echo esc_html($term->name); ?>
                                     </option>
                                 <?php endforeach;?>

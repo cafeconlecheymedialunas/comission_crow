@@ -23,22 +23,22 @@ class Contract
 
         $entity_type = sanitize_text_field($_POST["entity_type"]);
 
-        $company = sanitize_text_field($entity_type == "company" ? $_POST['company_id'] : $_POST['company'][0]);
-        $commercial_agent = sanitize_text_field($entity_type == "commercial_agent" ? $_POST['commercial_agent_id'] : $_POST['commercial_agent'][0]);
-        $opportunity = sanitize_text_field($_POST['opportunity'][0]);
+        $company_id = sanitize_text_field($_POST['company_id']);
+        $commercial_agent_id = sanitize_text_field($_POST['commercial_agent_id']);
+        $opportunity_id = sanitize_text_field($_POST['opportunity_id']);
         $minimal_price = sanitize_text_field($_POST['minimal_price']);
         $commission = sanitize_text_field($_POST['commission']);
         $content = wp_kses_post($_POST['content']);
-
+        
         // Validations
-        if (empty($company)) {
-            $errors['company'][] = 'Company is required.';
+        if (empty($company_id)) {
+            $errors['company_id'][] = 'Company is required.';
         }
-        if (empty($commercial_agent)) {
-            $errors['commercial_agent'][] = 'Commercial Agent is required.';
+        if (empty($commercial_agent_id)) {
+            $errors['commercial_agent_id'][] = 'Commercial Agent is required.';
         }
-        if (empty($opportunity)) {
-            $errors['opportunity'][] = 'Opportunity is required.';
+        if (empty($opportunity_id)) {
+            $errors['opportunity_id'][] = 'Opportunity is required.';
         }
         if (empty($minimal_price)) {
             $errors['minimal_price'][] = 'Minimal Price is required.';
@@ -64,19 +64,19 @@ class Contract
             ]);
         }
 
-        $opportunity_post = get_post($opportunity);
-        $company_post = get_post($company);
-        $commercial_agent_post = get_post($commercial_agent);
+        $opportunity = get_post($opportunity_id);
+        $company = get_post($company_id);
+        $commercial_agent = get_post($commercial_agent_id);
 
-        if (!$opportunity_post) {
+        if (!$opportunity) {
             $general_errors[] = 'Opportunity not found.';
         }
 
-        if (!$company_post) {
+        if (!$company) {
             $general_errors[] = 'Company not found.';
         }
 
-        if (!$commercial_agent_post) {
+        if (!$commercial_agent) {
             $general_errors[] = 'Commercial Agent not found.';
         }
 
@@ -93,17 +93,17 @@ class Contract
                 'relation' => 'AND',
                 [
                     'key' => 'opportunity',
-                    'value' => $opportunity_post->ID,
+                    'value' => $opportunity->ID,
                     'compare' => '=',
                 ],
                 [
                     'key' => 'company',
-                    'value' => $company_post->ID,
+                    'value' => $company->ID,
                     'compare' => '=',
                 ],
                 [
                     'key' => 'commercial_agent',
-                    'value' => $commercial_agent_post->ID,
+                    'value' => $commercial_agent->ID,
                     'compare' => '=',
                 ],
             ],
@@ -139,7 +139,7 @@ class Contract
             ]);
         }
         $timestamp = current_time('timestamp'); // Obtiene el timestamp actual en segundos
-        $sku = $opportunity_post->ID . "-" . $company_post->ID . "-" . $commercial_agent_post->ID . "-" . $timestamp;
+        $sku = $opportunity->ID . "-" . $company->ID . "-" . $commercial_agent->ID . "-" . $timestamp;
         $contract_data = [
             'post_title' => "Sku: #" . $sku,
             'post_content' => $content,
@@ -158,9 +158,9 @@ class Contract
 
         $status_history = Helper::add_item_to_status_history($contract_id);
 
-        carbon_set_post_meta($contract_id, 'company', $company_post->ID);
-        carbon_set_post_meta($contract_id, 'commercial_agent', $commercial_agent_post->ID);
-        carbon_set_post_meta($contract_id, 'opportunity', $opportunity_post->ID);
+        carbon_set_post_meta($contract_id, 'company', $company->ID);
+        carbon_set_post_meta($contract_id, 'commercial_agent', $commercial_agent->ID);
+        carbon_set_post_meta($contract_id, 'opportunity', $opportunity->ID);
         carbon_set_post_meta($contract_id, 'minimal_price', $minimal_price);
         carbon_set_post_meta($contract_id, 'commission', $commission);
         carbon_set_post_meta($contract_id, 'date', current_time("mysql"));

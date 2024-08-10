@@ -20,8 +20,8 @@ $industry_terms = get_terms([
     "taxonomy" => "industry",
     "hide_empty" => false,
 ]);
-$country_terms = get_terms([
-    "taxonomy" => "country",
+$location_terms = get_terms([
+    "taxonomy" => "location",
     "hide_empty" => false,
 ]);
 $currency_terms = get_terms([
@@ -48,8 +48,6 @@ $gender_terms = get_terms([
     "taxonomy" => "gender",
     "hide_empty" => false,
 ]);
-
-
 
 get_header("dashboard");
 
@@ -86,6 +84,7 @@ get_header("dashboard");
                     <div class="mb-3">
                         <button type="button" id="clear-filters" class="btn btn-secondary">Limpiar Filtros</button>
                     </div>
+
                     <?php if ($industry_terms): ?>
                     <div class="mb-3 filter-container">
                         <label class="form-label">Industry:</label>
@@ -102,7 +101,7 @@ get_header("dashboard");
                     <div class="mb-3 filter-container">
                         <label class="form-label">Languages:</label>
                         <?php foreach ($language_terms as $term): ?>
-                            <div class="form-check">
+                            <div class="form-check form-switch">
                                 <input type="checkbox" class="form-check-input filter" name="language[]" value="<?php echo esc_attr($term->term_id); ?>">
                                 <label class="form-check-label"><?php echo esc_html($term->name); ?></label>
                             </div>
@@ -110,12 +109,12 @@ get_header("dashboard");
                     </div>
                     <?php endif; ?>
 
-                    <?php if ($country_terms): ?>
+                    <?php if ($location_terms): ?>
                     <div class="mb-3 filter-container">
-                        <label class="form-label">Country:</label>
-                        <?php foreach ($country_terms as $term): ?>
+                        <label class="form-label">Location:</label>
+                        <?php foreach ($location_terms as $term): ?>
                             <div class="form-check">
-                                <input type="radio" class="form-check-input filter" name="country" value="<?php echo esc_attr($term->term_id); ?>">
+                                <input type="radio" class="form-check-input filter" name="location" value="<?php echo esc_attr($term->term_id); ?>">
                                 <label class="form-check-label"><?php echo esc_html($term->name); ?></label>
                             </div>
                         <?php endforeach; ?>
@@ -181,33 +180,24 @@ get_header("dashboard");
                     </div>
                     <?php endif; ?>
 
-                   
-                    <div class="mb-3 filter-container">
+                    <div class="mb-3">
                         <label class="form-label">Deliver Leads?:</label>
-                        <div class="form-check">
+                        <div class="form-check form-switch">
                             <input type="checkbox" class="form-check-input filter" name="deliver_leads" value="yes">
                             <label class="form-check-label">Yes</label>
                         </div>
                     </div>
-                   
-                    <div class="range_container">
-                        <div class="sliders_control">
-                            <input id="fromSlider" class="filter" type="range" value="10" min="0" max="100"/>
-                            <input id="toSlider" class="filter" type="range" value="40" min="0" max="100"/>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="minimum_price" class="form-label">Minimum price</label>
+                            <input type="number" class="form-control filter" name="minimum_price" id="minimum_price" placeholder="Ej. $0 - $1000">
                         </div>
-                        <div class="form_control">
-                            <div class="form_control_container">
-                                <div class="form_control_container__time">Min</div>
-                                <input class=" form_control_container__time__input" type="number" name="minimum_price" id="fromInput"  min="0" max="100"/>
-                            </div>
-                            <div class="form_control_container">
-                                <div class="form_control_container__time">Max</div>
-                                <input class="form_control_container__time__input" type="number" name="maximum_price" id="toInput" min="0" max="100"/>
-                            </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="maximum_price" class="form-label">Maximum price</label>
+                            <input type="number" class="form-control filter" name="maximum_price" id="maximum_price" placeholder="Ej. $0 - $1000">
                         </div>
                     </div>
 
-                   
                     <div class="mb-3">
                         <label for="commission" class="form-label">Commission</label>
                         <input type="number" class="form-control filter" name="commission" id="commission" placeholder="Ej. 1 - 100%">
@@ -219,7 +209,6 @@ get_header("dashboard");
 </div>
 
 <?php
-// Flush the output buffer and send everything to the browser
 ob_end_flush();
 get_footer();
 ?>

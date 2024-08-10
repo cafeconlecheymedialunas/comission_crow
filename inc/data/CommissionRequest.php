@@ -77,13 +77,13 @@ class CommissionRequest
         $max_supporting_size = 10 * 1024 * 1024; // 10 MB
 
         if (isset($_FILES['general_invoice']) && !empty($_FILES['general_invoice']['name'][0])) {
-            $validation_result = validate_files($_FILES['general_invoice'], $allowed_supporting_types, $max_supporting_size);
-            if (isset($validation_result['error'])) {
-                $errors['general_invoice'][] = $validation_result['error'];
+            $validation_result = Helper::validate_files($_FILES['general_invoice'], $allowed_supporting_types, $max_supporting_size);
+            if (!$validation_result["success"] ) {
+                $errors['general_invoice'][] = $validation_result["errors"][0];
             }
         }
 
-        $general_invoice_ids = handle_multiple_file_upload($_FILES['general_invoice']);
+        $general_invoice_ids = Helper::handle_multiple_file_upload($_FILES['general_invoice']);
 
         // Prepare and update Carbon Fields
         $items = [];
@@ -115,15 +115,15 @@ class CommissionRequest
                 }
 
                 if (isset($_FILES['invoice']) && !empty($_FILES['invoice']['name'][0])) {
-                    $validation_result = validate_files($_FILES['invoice']);
-                    if (isset($validation_result['error'])) {
-                        $error = $validation_result['error'];
+                    $validation_result = Helper::validate_files($_FILES['invoice']);
+                    if (!$validation_result['success']) {
+                        $error = $validation_result['errors'][0];
                         wp_send_json_error(["general" => "In row $row_number the file has this error: $error"]);
                         wp_die();
                     }
                 }
 
-                $invoices_ids = handle_multiple_file_upload($_FILES['invoice']);
+                $invoices_ids = Helper::handle_multiple_file_upload($_FILES['invoice']);
 
                 if ($quantity >= 0 && $price_paid >= 0) {
                     $subtotal = $price_paid * $quantity;

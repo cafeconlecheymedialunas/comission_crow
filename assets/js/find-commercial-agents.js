@@ -1,4 +1,5 @@
 jQuery(document).ready(function($) {
+    
     function fetchResults() {
         var form = $('#filters-form');
         var formData = form.serialize(); // Serializa los datos del formulario
@@ -9,7 +10,7 @@ jQuery(document).ready(function($) {
         $.ajax({
             url: ajax_object.ajax_url,
             type: 'GET',
-            data: formData + '&action=load_opportunities',
+            data: formData + '&action=load_commercial_agents',
             success: function(response) {
                 // Reemplazar el contenido de la sección de resultados con la respuesta de AJAX
                 $('#results-section').html(response);
@@ -41,7 +42,4 @@ jQuery(document).ready(function($) {
         // Ejecutar fetchResults sin filtros
         fetchResults();
     });
-
-    
 });
-

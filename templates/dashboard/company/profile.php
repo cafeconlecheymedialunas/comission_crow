@@ -15,8 +15,8 @@ $type_of_company_terms = get_terms([
     "hide_empty" => false,
 ]);
 
-$country_terms = get_terms([
-    "taxonomy" => "country",
+$location_terms = get_terms([
+    "taxonomy" => "location",
     "hide_empty" => false,
 ]);
 
@@ -28,7 +28,7 @@ $profile_image = isset($company_post) ? [get_post_thumbnail_id($company_post->ID
 $industry = wp_get_post_terms($company_post->ID, 'industry', ['fields' => 'ids']) ?? [];
 $activity = wp_get_post_terms($company_post->ID, 'activity', ['fields' => 'ids']) ?? [];
 $type_of_company = wp_get_post_terms($company_post->ID, 'type_of_company', ['fields' => 'ids']) ?? [];
-$country = wp_get_post_terms($company_post->ID, 'country', ['fields' => 'ids']) ?? [];
+$location = wp_get_post_terms($company_post->ID, 'location', ['fields' => 'ids']) ?? [];
 
 
 $company_name = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'company_name') : '';
@@ -127,15 +127,15 @@ $youtube_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'y
                         <div class="error-message"></div>
                     </div>
                     <?php endif;?>
-                    <?php if ($country_terms): ?>
+                    <?php if ($location_terms): ?>
                         <div class="col-md-6">
-                            <label for="country" class="form-label">Country:</label>
-                            <select name="country[]" class="form-select">
+                            <label for="location" class="form-label">Location:</label>
+                            <select name="location[]" class="form-select">
                                 <option value="">Select an option</option>
-                                <?php foreach ($country_terms as $term): ?>
+                                <?php foreach ($location_terms as $term): ?>
                                     <option
                                         value="<?php echo esc_attr($term->term_id); ?>"
-                                        <?php echo in_array($term->term_id, $country) ? 'selected' : ''; ?>
+                                        <?php echo in_array($term->term_id, $location) ? 'selected' : ''; ?>
                                         >
                                         <?php echo esc_html($term->name); ?>
                                     </option>

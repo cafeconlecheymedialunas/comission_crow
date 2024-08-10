@@ -415,5 +415,4 @@ class Auth
 
 
 new Auth();
-// Iniciar sesión por AJAX
-// Iniciar sesión por AJAX
+

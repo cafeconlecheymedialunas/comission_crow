@@ -33,14 +33,22 @@ class Dashboard
         $opportunity = Opportunity::get_instance();
         $payment = Payment::get_instance();
         $deposit = Deposit::get_instance();
+        $rating = Rating::get_instance();
 
         add_action('wp_ajax_create_opportunity', [$opportunity, 'save_opportunity']);
         add_action('wp_ajax_nopriv_create_opportunity', [$opportunity, 'save_opportunity']);
 
         add_action('wp_ajax_delete_opportunity', [$opportunity, 'delete_opportunity']);
         add_action('wp_ajax_nopriv_delete_opportunity', [$opportunity, 'delete_opportunity']);
+
+        add_action('wp_ajax_load_opportunities', [$opportunity, 'load_opportunities']);
+        add_action('wp_ajax_nopriv_load_opportunities', [$opportunity, 'load_opportunities']);
+
         add_action('wp_ajax_save_agent_profile', [$commercial_agent, 'save_agent_profile']);
         add_action('wp_ajax_nopriv_save_agent_profile', [$commercial_agent, 'save_agent_profile']);
+
+        add_action('wp_ajax_load_commercial_agents', [$commercial_agent, 'load_commercial_agents']);
+        add_action('wp_ajax_nopriv_load_commercial_agents', [$commercial_agent, 'load_commercial_agents']);
 
         add_action('wp_ajax_save_company_profile', [$company, 'save_company_profile']);
         add_action('wp_ajax_nopriv_save_company_profile', [$company, 'save_company_profile']);
@@ -48,8 +56,7 @@ class Dashboard
         add_action('wp_ajax_update_user_data', [$profileUser, 'update_user_data']);
         add_action('wp_ajax_nopriv_update_user_data', [$profileUser, 'update_user_data']);
 
-        
-        add_action('wp_ajax_update_stripe_email', [$profileUser,  'update_stripe_email']);
+        add_action('wp_ajax_update_stripe_email', [$profileUser, 'update_stripe_email']);
         add_action('wp_ajax_nopriv_update_stripe_email', [$profileUser, 'update_stripe_email']);
 
         add_action('wp_ajax_create_contract', [$contract, 'create_contract']);
@@ -64,20 +71,18 @@ class Dashboard
         add_action('wp_ajax_delete_commission_request', [$commission_request, 'delete_commission_request']);
         add_action('wp_ajax_nopriv_delete_commission_request', [$commission_request, 'delete_commission_request']);
 
-
-        add_action('wp_ajax_withdraw_funds', [$deposit,'withdraw_funds']);
-
-        //TO DO
+        add_action('wp_ajax_withdraw_funds', [$deposit, 'withdraw_funds']);
 
         add_action('wp_ajax_create_dispute', [$dispute, 'handle_create_dispute']);
         add_action('wp_ajax_nopriv_create_dispute', [$dispute, 'handle_create_dispute']);
         add_action('wp_ajax_delete_dispute', [$dispute, 'delete_dispute']);
         add_action('wp_ajax_nopriv_delete_dispute', [$dispute, 'delete_dispute']);
-        
-        add_action('admin_post_nopriv_create_payment', [$payment , 'create_payment']);
-        add_action('admin_post_create_payment', [$payment ,'create_payment']);
-       
-      
+
+        add_action('admin_post_nopriv_create_payment', [$payment, 'create_payment']);
+        add_action('admin_post_create_payment', [$payment, 'create_payment']);
+
+        add_action('wp_ajax_submit_rating', [$rating, 'create_rating']);
+        add_action('wp_ajax_nopriv_submit_rating', [$rating, 'create_rating']);
 
     }
 
@@ -131,7 +136,7 @@ class Dashboard
             "payment_show" => [
                 "company" => "dashboard/company/payment/show",
             ],
-            "deposit_list" =>[
+            "deposit_list" => [
                 "commercial_agent" => "dashboard/commercial-agent/deposit/all",
             ],
             "disputes" => [

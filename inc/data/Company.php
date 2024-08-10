@@ -132,7 +132,7 @@ class Company extends Crud
         $tiktok_url = esc_url_raw($_POST["tiktok_url"]);
         $youtube_url = esc_url_raw($_POST["youtube_url"]);
         $industry = isset($_POST["industry"]) ? array_map('sanitize_text_field', $_POST["industry"]) : [];
-        $country = isset($_POST["country"]) ? array_map('sanitize_text_field', $_POST["country"]) : [];
+        $location = isset($_POST["location"]) ? array_map('sanitize_text_field', $_POST["location"]) : [];
         $type_of_company = isset($_POST["type_of_company"]) ? array_map('sanitize_text_field', $_POST["type_of_company"]) : [];
         $activity = isset($_POST["activity"]) ? array_map('sanitize_text_field', $_POST["activity"]) : [];
         $employees_number = sanitize_text_field($_POST["employees_number"]);
@@ -205,8 +205,8 @@ class Company extends Crud
         if (!empty($activity)) {
             wp_set_post_terms($company_id, $activity, 'activity', false);
         }
-        if (!empty($country)) {
-            wp_set_post_terms($company_id, $country, 'country', false);
+        if (!empty($location)) {
+            wp_set_post_terms($company_id, $location, 'location', false);
         }
         if (!empty($type_of_company)) {
             wp_set_post_terms($company_id, $type_of_company, 'type_of_company', false);
