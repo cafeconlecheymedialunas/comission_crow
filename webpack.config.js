@@ -20,13 +20,15 @@ module.exports = {
       'js/find-commercial-agents': path.resolve(process.cwd(), 'assets/js/find-commercial-agents.js'),
       'js/main': path.resolve(process.cwd(), 'assets/js/main.js'),
       'js/opportunity': path.resolve(process.cwd(), 'assets/js/opportunity.js'),
-      'js/rating': path.resolve(process.cwd(), 'assets/js/rating.js'),
       'js/payment': path.resolve(process.cwd(), 'assets/js/payment.js'),
       'js/profile': path.resolve(process.cwd(), 'assets/js/profile.js'),
+      'css/main': path.resolve(process.cwd(), 'assets/css/main.css'),
       'css/auth': path.resolve(process.cwd(), 'assets/css/auth.css'),
       'css/admin-dashboard': path.resolve(process.cwd(), 'assets/css/admin-dashboard.css'),
       'css/header': path.resolve(process.cwd(), 'assets/css/header.css'),
-      'css/main': path.resolve(process.cwd(), 'assets/css/main.css'),
+      'css/frontend': path.resolve(process.cwd(), 'assets/css/frontend.css'),
+      'css/home': path.resolve(process.cwd(), 'assets/css/home.css'),
+     
     },
     output: {
         path: path.resolve(process.cwd(), 'dist'),

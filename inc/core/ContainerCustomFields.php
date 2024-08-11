@@ -28,6 +28,8 @@ class ContainerCustomFields
         $this->register_payment_fields();
         $this->register_deposit_fields();
         $this->register_theme_options();
+        $this->register_home_fields();
+        $this->register_taxonomy_industry_fields();
     }
 
     public function register_company_fields()
@@ -384,5 +386,102 @@ class ContainerCustomFields
                         "5" => 5,
                     ]),
             ])->where('post_type', '=', 'review');
+    }
+
+    public function register_taxonomy_industry_fields(){
+        
+    
+        // Registra los campos personalizados solo si estamos en la página de inicio
+        Container::make('term_meta', __('Review'))
+          
+            ->where('term_taxonomy', '=', 'industry') // Solo para el tipo de post 'page'
+            ->add_fields([
+                Field::make('file', 'cover_image', 'Cover Image'),
+            ]); 
+     
+
+    }
+    public function register_home_fields(){
+        $front_page_id = get_option('page_on_front');
+    
+        // Registra los campos personalizados solo si estamos en la página de inicio
+        Container::make('post_meta', __('Review'))
+          
+            ->where('post_type', '=', 'page') // Solo para el tipo de post 'page'
+            ->where('post_id', '=', $front_page_id)
+            ->add_tab( __( 'Hero Section' ), array(
+                Field::make( 'text', 'hero_title', __( 'Title' ) ),
+                Field::make( 'rich_text', 'hero_description', __( 'Description' ) ),
+                Field::make( 'file', 'hero_image', __( 'Image' ) )
+            ) )->add_tab( __( 'Features' ), array(
+                Field::make( 'complex', 'features', __( 'Features' ) )
+                ->add_fields( array(
+                    Field::make( 'text', 'feature_title', __( 'Title' ) ),
+                    Field::make( 'rich_text', 'feature_description', __( 'Description' ) ),
+                    Field::make( 'file', 'feature_image', __( 'Image' ) )
+                ) ) ->set_layout('tabbed-horizontal')
+                
+            ) )->add_tab( __( 'Selected Opportunities' ), array(
+                Field::make( 'text', 'opportunities_title', __( 'Title' ) ),
+                Field::make( 'rich_text', 'opportunities_description', __( 'Description' ) ),
+                Field::make( 'association', 'opportunities_select', __( 'Select Opportunities' ) )
+                ->set_types( array(
+                    array(
+                        'type'      => 'post',
+                        'post_type' => 'opportunity',
+                    )
+                ) )
+            ) )
+            ->add_tab( __( 'Selected Taxonomy' ), array(
+                Field::make( 'text', 'industry_title', __( 'Title' ) ),
+                Field::make( 'rich_text', 'industry_description', __( 'Description' ) ),
+                Field::make( 'association', 'industry_select', __( 'Select Opportunities' ) )
+                ->set_types( array(
+                    array(
+                        'type'      => 'term',
+                        'taxonomy' => 'industry',
+                    )
+                ) )
+            ) )->add_tab( __( 'Selected agents' ), array(
+                Field::make( 'text', 'selected_agents_title', __( 'Title' ) ),
+                Field::make( 'rich_text', 'selected_agents_description', __( 'Description' ) ),
+                Field::make( 'association', 'selected_agents', __( 'Select Agents' ) )
+                ->set_types( array(
+                    array(
+                        'type'      => 'post',
+                        'post_type' => 'commercial_agent',
+                    )
+                ) )
+            ) )
+            ->add_tab( __( 'Counters' ), array(
+                Field::make( 'complex', 'counters', __( 'Counters' ) )
+                ->add_fields( array(
+                    Field::make( 'text', 'title', __( 'Title' ) ),
+                    Field::make( 'text', 'counter', __( 'Counter' ) ),
+                    Field::make( 'text', 'counter_unit', __( 'Counter Unit' ) ),
+                    Field::make( 'image', 'icon', __( 'Icon' ) ),
+                ) ) ->set_layout('tabbed-horizontal')
+            ) )
+            ->add_tab( __( 'Blog' ), array(
+                Field::make( 'text', 'blog_title', __( 'Title' ) ),
+                Field::make( 'rich_text', 'blog_description', __( 'Description' ) ),
+                Field::make( 'text', 'blog_quantity', __( 'Quantity' ) ),
+            ) )
+            ->add_tab( __( 'Hero Section with button' ), array(
+                Field::make( 'text', 'hero_button__title', __( 'Title' ) ),
+                Field::make( 'rich_text', 'hero_button_description', __( 'Description' ) ),
+                Field::make( 'file', 'hero_button_image', __( 'Image' ) ),
+                Field::make( 'text', 'hero_button_button_text', __( 'Button Text' ) ),
+                Field::make( 'text', 'hero_button_button_link', __( 'Button Link' ) )
+            ) )
+            ->add_tab( __( 'Brands' ), array(
+                Field::make( 'complex', 'brands', __( 'Brands' ) )
+                ->add_fields( array(
+                    Field::make( 'text', 'brand_title', __( 'Title' ) ),
+                    Field::make( 'image', 'brand_image', __( 'Image' ) )
+                ) )->set_layout('tabbed-horizontal')
+            ) ); 
+     
+
     }
 }

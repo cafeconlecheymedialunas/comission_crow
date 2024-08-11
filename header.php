@@ -1,97 +1,136 @@
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
 <head>
-	<meta charset="<?php bloginfo('charset'); ?>">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
-	<?php wp_head(); ?>
+    <meta charset="<?php bloginfo('charset'); ?>">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+    <?php wp_head(); ?>
 </head>
-
-<?php
-    $navbar_scheme   = get_theme_mod('navbar_scheme', 'navbar-light bg-light'); // Get custom meta-value.
-$navbar_position = get_theme_mod('navbar_position', 'static'); // Get custom meta-value.
-
-$search_enabled  = get_theme_mod('search_enabled', '1'); // Get custom meta-value.
-?>
 
 <body <?php body_class(); ?>>
 
 <?php wp_body_open(); ?>
 
+<?php 
+$current_user = wp_get_current_user();
+?>
+
 <a href="#main" class="visually-hidden-focusable"><?php esc_html_e('Skip to main content', 'comission_crow'); ?></a>
 
 <div id="wrapper">
-	<header>
-		<nav id="header" class="navbar navbar-expand-md <?php echo esc_attr($navbar_scheme);
-if (isset($navbar_position) && 'fixed_top' === $navbar_position) : echo ' fixed-top';
-elseif (isset($navbar_position) && 'fixed_bottom' === $navbar_position) : echo ' fixed-bottom'; endif;
-if (is_home() || is_front_page()) : echo ' home'; endif; ?>">
-			<div class="container">
-				<a class="navbar-brand" href="<?php echo esc_url(home_url()); ?>" title="<?php echo esc_attr(get_bloginfo('name', 'display')); ?>" rel="home">
-					<?php
-                        $header_logo = get_theme_mod('header_logo'); // Get custom meta-value.
+    <header class="desktop-header d-none d-md-block">
+        <nav id="header" class="navbar navbar-expand-md <?php echo esc_attr($navbar_scheme); 
+        if (isset($navbar_position) && 'fixed_top' === $navbar_position) echo ' fixed-top'; 
+        elseif (isset($navbar_position) && 'fixed_bottom' === $navbar_position) echo ' fixed-bottom'; ?>">
+            <div class="container d-flex justify-content-between align-items-center">
+                <a class="navbar-brand" href="<?php echo esc_url(home_url()); ?>" title="<?php echo esc_attr(get_bloginfo('name', 'display')); ?>" rel="home">
+                    <?php
+                    if (has_custom_logo()) {
+                        $image = wp_get_attachment_image_src(get_theme_mod('custom_logo'), 'full');
+                        ?>
+                        <img src="<?php echo $image[0]; ?>" alt="Brand" class="site-logo img-fluid">
+                        <?php
+                    } else {
+                        echo esc_attr(get_bloginfo('name', 'display'));
+                    }
+                    ?>
+                </a>
 
-if (! empty($header_logo)) :
-    ?>
-						<img src="<?php echo esc_url($header_logo); ?>" alt="<?php echo esc_attr(get_bloginfo('name', 'display')); ?>" />
-					<?php
-else :
-    echo esc_attr(get_bloginfo('name', 'display'));
-endif;
-?>
-				</a>
+                <div class="mx-auto">
+                    <?php
+                    wp_nav_menu([
+                        'menu_class' => 'navbar-nav',
+                        'container' => '',
+                        'fallback_cb' => 'WP_Bootstrap_Navwalker::fallback',
+                        'walker' => new WP_Bootstrap_Navwalker(),
+                        'theme_location' => 'main-menu',
+                    ]);
+                    ?>
+                </div>
 
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="<?php esc_attr_e('Toggle navigation', 'comission_crow'); ?>">
-					<span class="navbar-toggler-icon"></span>
-				</button>
+                <div class="dropdown">
+                    <?php if (!is_user_logged_in()): ?>
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                            Login / Register
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                            <li><a class="dropdown-item" href="<?php echo esc_url(home_url("/auth?action=login")); ?>">Login</a></li>
+                            <li><a class="dropdown-item" href="<?php echo esc_url(home_url("/auth?action=register&role=commercial_agent")); ?>">Register as an Agent</a></li>
+                            <li><a class="dropdown-item" href="<?php echo esc_url(home_url("/auth?action=register&role=company")); ?>">Register as a Company</a></li>
+                        </ul>
+                    <?php else: ?>
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                            Dashboard
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                            <li><a class="dropdown-item" href="<?php echo wp_logout_url(home_url()); ?>">Logout</a></li>
+                            <?php $role_url = in_array("commercial_agent", $current_user->roles) ? "commercial-agent" : "company"; ?>
+                            <li><a class="dropdown-item" href="<?php echo home_url() . "/dashboard/$role_url/profile"; ?>">Profile</a></li>
+                        </ul>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </nav>
+    </header>
 
-				<div id="navbar" class="collapse navbar-collapse">
-					<?php
-    // Loading WordPress Custom Menu (theme_location).
-    wp_nav_menu(
-        [
-            'menu_class'     => 'navbar-nav me-auto',
-            'container'      => '',
-            'fallback_cb'    => 'WP_Bootstrap_Navwalker::fallback',
-            'walker'         => new WP_Bootstrap_Navwalker(),
-            'theme_location' => 'main-menu',
-        ]
-    );
+    <header class="offcanvas-menu d-block d-md-none">
+        <div class="header-nav-default">
+            <a class="navbar-brand" href="<?php echo esc_url(home_url()); ?>" title="<?php echo esc_attr(get_bloginfo('name', 'display')); ?>" rel="home">
+                <?php
+                if (has_custom_logo()) {
+                    $image = wp_get_attachment_image_src(get_theme_mod('custom_logo'), 'full');
+                    ?>
+                    <img src="<?php echo $image[0]; ?>" alt="Brand" class="site-logo img-fluid">
+                    <?php
+                } else {
+                    echo esc_attr(get_bloginfo('name', 'display'));
+                }
+                ?>
+            </a>
+        </div>
+        <input type="checkbox" id="toogle-menu" />
+        <label for="toogle-menu" class="toogle-open"><span></span></label>
 
+        <nav>
+            <div>
+                <?php
+                if (has_custom_logo()) {
+                    $image = wp_get_attachment_image_src(get_theme_mod('custom_logo'), 'full');
+                    ?>
+                    <img src="<?php echo $image[0]; ?>" alt="Brand" class="site-logo img-fluid">
+                    <?php
+                } else {
+                    echo esc_attr(get_bloginfo('name', 'display'));
+                }
+                ?>
+                <label for="toogle-menu" class="toogle-close">
+                    <span></span>
+                </label>
+            </div>
+            <ul>
+                <?php
+                wp_nav_menu([
+                    'menu_class' => 'navbar-nav',
+                    'container' => '',
+                    'fallback_cb' => 'WP_Bootstrap_Navwalker::fallback',
+                    'walker' => new WP_Bootstrap_Navwalker(),
+                    'theme_location' => 'main-menu',
+                ]);
+                ?>
+            </ul>
+        </nav>
+    </header>
 
-?>
-							 
-								<ul class="navbar-nav">
-									<?php if (!is_user_logged_in()): ?>
-										<a class="nav-link" href="<?php echo esc_url(home_url("/auth?action=login")); ?>">Login</a>
-										<a class="nav-link" href="<?php echo esc_url(home_url("/auth?action=register&role=commercial_agent")); ?>">Register as a Agent</a>
-										<a class="nav-link" href="<?php echo esc_url(home_url("/auth?action=register&role=company")); ?>">Register as a Company</a>
-									<?php else: ?>
-										<li class="nav-item"><a class="nav-link" href="<?php echo wp_logout_url(home_url()); ?>">Logout</a></li>
-									<?php endif; ?>
-								</ul>
-							
-					<?php
-
-?>
-				</div><!-- /.navbar-collapse -->
-			</div><!-- /.container -->
-		</nav><!-- /#header -->
-	</header>
-
-	<main id="main" class="container"<?php if (isset($navbar_position) && 'fixed_top' === $navbar_position) : echo ' style="padding-top: 100px;"';
-	elseif (isset($navbar_position) && 'fixed_bottom' === $navbar_position) : echo ' style="padding-bottom: 100px;"'; endif; ?>>
-		<?php
-	        // If Single or Archive (Category, Tag, Author or a Date based page).
-	        if (is_single() || is_archive()) :
-	            ?>
-			<div class="row">
-				<div class="col-md-8 col-sm-12">
-		<?php
-	        endif;
-?>
+    <main id="main" <?php if (isset($navbar_position) && 'fixed_top' === $navbar_position): echo ' style="padding-top: 100px;"';
+    elseif (isset($navbar_position) && 'fixed_bottom' === $navbar_position): echo ' style="padding-bottom: 100px;"'; endif; ?>>
+        <?php
+        if (is_single() || is_archive()):
+        ?>
+        <div class="row">
+            <div class="col-md-8 col-sm-12">
+                <?php endif; ?>
