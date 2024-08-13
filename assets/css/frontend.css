@@ -1,14 +1,109 @@
-/*--------------------------------------------------------------
-# Desktop Movile
---------------------------------------------------------------*/
+.input-text, select, input[type=email], input[type=password], input[type=search], input[type=text], input[type=url], input[type=number], textarea {
+    width: 100%;
+    border: 1px solid #dfdfdf;
+    height: 60px;
+    border-radius: 50px;
+    padding: 0 15px;
+    -webkit-transition: .3s linear;
+    -o-transition: .3s linear;
+    transition: .3s linear;
+}
+.btn{
+	border-radius:50px;
+	padding:0 20px;
+}
+.btn.btn-secondary{
+	color: #6787FE;
+	background-color: white;
+	border-color: #6787FE!important;
+}
+.btn.btn-primary{
+	color: white;
+	background-color:#6787FE;
+	border-color: #6787FE!important;
+}
+.btn-check:checked+.btn, .btn.active, .btn.show, .btn:first-child:active, :not(.btn-check)+.btn:active {
+	color: #6787FE;
+	background-color: white;
+	border-color: #6787FE;
+}
+.section{
+	min-height:600px;
+	display:flex;
+	flex-direction: column;
+	justify-content: center;
+}
 .navbar-brand{
-    max-width:150px;
+    max-width:80px;
     display: block;
 }
 
+
+
+
+@media(min-width:768px){
+	.desktop-header .btn.btn-primary {
+		padding: 10px 30px;
+		display: inline-block;
+		border: 2px solid;
+		border-radius: 50px;
+		background:transparent;
+		color:white;
+		border-color:white!important;
+	}
+	
+	.desktop-header {
+		background-color: transparent;
+		background-image: linear-gradient(280deg, #6787FE 0%, #0F1B63 100%);;
+	}
+	.desktop-header ul li>a{
+		color: white;
+	}
+	.desktop-header.sticky {
+		background-color: white;
+		position:fixed;
+		top:0;
+		left:0;
+		z-index: 100;
+		width:100%;
+	}
+	
+	
+	.desktop-header.sticky ul li>a{
+		color: rgb(74, 99, 117);
+	}
+	
+	.desktop-header .navbar-nav .nav-link.active,.desktop-header .navbar-nav .nav-link.show {
+		color: white;
+		font-weight: bold;
+	}
+	.desktop-header.sticky .navbar-nav .nav-link.active,.desktop-header.sticky .navbar-nav .nav-link.show {
+		color: rgb(74, 99, 117);
+		
+	}
+
+	.desktop-header.sticky .btn.btn-secondary {
+		padding: 10px 30px;
+		display: inline-block;
+		border: 2px solid;
+		border-radius: 50px;
+		background:transparent;
+		color:#6787FE;
+		border-color:#6787FE!important;
+	}
+	.navbar-brand{
+		max-width:80px;
+		display: block;
+	}
+}
+
 /*--------------------------------------------------------------
-# Off canvas menu mobile menu
+# Desktop Movile
 --------------------------------------------------------------*/
+
+
+
+
 /*--------------------------------------------------------------
 # Off canvas menu mobile menu (Right Slide)
 --------------------------------------------------------------*/
@@ -19,11 +114,13 @@
 }
 
 .offcanvas-menu {
-    position: relative;
+    position: sticky;
+    top: 0;
+    background: white;
 }
 
 .offcanvas-menu > label {
-	top: 62px;
+	top: 38px;
 	right: 30px;
 	left: auto; /* Ajuste para la posición desde la derecha */
 	position: fixed;
@@ -47,9 +144,9 @@
 .offcanvas-menu label span::after {
 	content: "";
 	position: absolute;
-	height: 4px;
-	width: 40px;
-	background: #b3b3b3; /* darken(#fff, 30%) */
+	height: 2px;
+	width: 35px;
+	background: rgb(74, 99, 117); /* darken(#fff, 30%) */
 }
 
 .offcanvas-menu label span::before {
@@ -68,34 +165,39 @@
 	right: -350px; /* Cambio para deslizar desde la derecha */
 	left: auto; /* Ajuste para la posición desde la derecha */
 	overflow: hidden;
-	background: #bdddff;
+	background: white;
 	transition: 0.3s ease;
 	padding: 40px 30px;
 }
-
-.offcanvas-menu nav > div {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
+.offcanvas-menu .toogle-close{
+	position:absolute;
+	top:30px;
+	right:60px;
+	cursor:pointer;
+	
 }
 
-.offcanvas-menu nav > div a {
-	font-size: 2.5rem;
-	font-weight: 500;
-	display: flex;
-	align-items: center;
-	font-family: "Monoton", cursive;
-	background: linear-gradient(-90deg, #49a4ed 30%, #3d00a9 110%);
-	-webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
+.offcanvas-menu .toogle-close span{
+	width:25px;
+	
 }
 
-.offcanvas-menu nav > div i {
-	font-size: 4rem;
-	background: linear-gradient(120deg, #49a4ed 30%, #3d00a9 110%);
-	-webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
+.offcanvas-menu nav img{
+	width:80px;
+	margin:0 auto;
+	display:block;
 }
+
+.offcanvas-menu nav .nav-link{
+	position: relative;
+    display: block;
+    line-height: 24px;
+    padding: 10px 20px;
+    font-size: 15px;
+    text-transform: capitalize;
+    color: #4A6375!important;
+}
+
 
 .offcanvas-menu nav > div label {
 	width: 30px;
@@ -146,7 +248,12 @@
 .offcanvas-menu input[type="checkbox"] {
 	display: none;
 }
-
+.offcanvas-menu .dropdown{
+	display:flex;
+	justify-content: center;
+	align-items:center;
+	margin-top:20px;
+}
 .offcanvas-menu input[type="checkbox"]:checked ~ label {
 	opacity: 0;
 	pointer-events: none;

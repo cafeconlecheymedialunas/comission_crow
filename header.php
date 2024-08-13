@@ -23,23 +23,31 @@ $current_user = wp_get_current_user();
 <a href="#main" class="visually-hidden-focusable"><?php esc_html_e('Skip to main content', 'comission_crow'); ?></a>
 
 <div id="wrapper">
-    <header class="desktop-header d-none d-md-block">
+    <header class="desktop-header d-none d-md-block" id="desktop-header">
         <nav id="header" class="navbar navbar-expand-md <?php echo esc_attr($navbar_scheme); 
         if (isset($navbar_position) && 'fixed_top' === $navbar_position) echo ' fixed-top'; 
         elseif (isset($navbar_position) && 'fixed_bottom' === $navbar_position) echo ' fixed-bottom'; ?>">
             <div class="container d-flex justify-content-between align-items-center">
-                <a class="navbar-brand" href="<?php echo esc_url(home_url()); ?>" title="<?php echo esc_attr(get_bloginfo('name', 'display')); ?>" rel="home">
-                    <?php
-                    if (has_custom_logo()) {
-                        $image = wp_get_attachment_image_src(get_theme_mod('custom_logo'), 'full');
-                        ?>
-                        <img src="<?php echo $image[0]; ?>" alt="Brand" class="site-logo img-fluid">
-                        <?php
-                    } else {
-                        echo esc_attr(get_bloginfo('name', 'display'));
-                    }
-                    ?>
-                </a>
+			<a class="navbar-brand" href="<?php echo esc_url(home_url()); ?>" title="<?php echo esc_attr(get_bloginfo('name', 'display')); ?>" rel="home">
+				<?php
+				$image = carbon_get_theme_option("site_header_logo");
+				$image_url = wp_get_attachment_image_src($image);
+				$image_sticky = carbon_get_theme_option("site_header_sticky_logo");
+				$image_sticky_url = wp_get_attachment_image_src($image_sticky);
+
+				if (isset($image_url[0])) {
+					?>
+					<img src="<?php echo esc_url($image_url[0]); ?>" alt="Brand" class="site-logo img-fluid default-logo">
+					<?php if (isset($image_sticky_url[0])): ?>
+						<img src="<?php echo esc_url($image_sticky_url[0]); ?>" alt="Brand" class="site-logo img-fluid sticky-logo">
+					<?php endif; ?>
+					<?php
+				} else {
+					echo esc_attr(get_bloginfo('name', 'display'));
+				}
+				?>
+			</a>
+
 
                 <div class="mx-auto">
                     <?php
@@ -55,7 +63,7 @@ $current_user = wp_get_current_user();
 
                 <div class="dropdown">
                     <?php if (!is_user_logged_in()): ?>
-                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                             Login / Register
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
@@ -64,7 +72,7 @@ $current_user = wp_get_current_user();
                             <li><a class="dropdown-item" href="<?php echo esc_url(home_url("/auth?action=register&role=company")); ?>">Register as a Company</a></li>
                         </ul>
                     <?php else: ?>
-                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                             Dashboard
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
@@ -97,7 +105,11 @@ $current_user = wp_get_current_user();
         <label for="toogle-menu" class="toogle-open"><span></span></label>
 
         <nav>
-            <div>
+			<div>
+			<label for="toogle-menu" class="toogle-close">
+                    <span></span>
+            </label>
+            <div class="image">
                 <?php
                 if (has_custom_logo()) {
                     $image = wp_get_attachment_image_src(get_theme_mod('custom_logo'), 'full');
@@ -108,11 +120,9 @@ $current_user = wp_get_current_user();
                     echo esc_attr(get_bloginfo('name', 'display'));
                 }
                 ?>
-                <label for="toogle-menu" class="toogle-close">
-                    <span></span>
-                </label>
+              
             </div>
-            <ul>
+            <div class="mobile-nav">
                 <?php
                 wp_nav_menu([
                     'menu_class' => 'navbar-nav',
@@ -122,7 +132,31 @@ $current_user = wp_get_current_user();
                     'theme_location' => 'main-menu',
                 ]);
                 ?>
-            </ul>
+				
+                <div class="dropdown">
+                    <?php if (!is_user_logged_in()): ?>
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                            Login / Register
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                            <li><a class="dropdown-item" href="<?php echo esc_url(home_url("/auth?action=login")); ?>">Login</a></li>
+                            <li><a class="dropdown-item" href="<?php echo esc_url(home_url("/auth?action=register&role=commercial_agent")); ?>">Register as an Agent</a></li>
+                            <li><a class="dropdown-item" href="<?php echo esc_url(home_url("/auth?action=register&role=company")); ?>">Register as a Company</a></li>
+                        </ul>
+                    <?php else: ?>
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                            Dashboard
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                            <li><a class="dropdown-item" href="<?php echo wp_logout_url(home_url()); ?>">Logout</a></li>
+                            <?php $role_url = in_array("commercial_agent", $current_user->roles) ? "commercial-agent" : "company"; ?>
+                            <li><a class="dropdown-item" href="<?php echo home_url() . "/dashboard/$role_url/profile"; ?>">Profile</a></li>
+                        </ul>
+                    <?php endif; ?>
+                </div>
+			</div>
+			
+            </div>
         </nav>
     </header>
 

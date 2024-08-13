@@ -26,9 +26,10 @@ module.exports = {
       'css/auth': path.resolve(process.cwd(), 'assets/css/auth.css'),
       'css/admin-dashboard': path.resolve(process.cwd(), 'assets/css/admin-dashboard.css'),
       'css/header': path.resolve(process.cwd(), 'assets/css/header.css'),
-      'css/frontend': path.resolve(process.cwd(), 'assets/css/frontend.css'),
+      'js/home': path.resolve(process.cwd(), 'assets/js/home.js'),
       'css/home': path.resolve(process.cwd(), 'assets/css/home.css'),
-     
+      'js/frontend': path.resolve(process.cwd(), 'assets/js/frontend.js'),
+      'css/frontend': path.resolve(process.cwd(), 'assets/css/frontend.css'),
     },
     output: {
         path: path.resolve(process.cwd(), 'dist'),

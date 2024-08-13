@@ -54,16 +54,32 @@ class PublicFront
             $this->enqueue_script_with_assets('dispute');
             $this->enqueue_script_with_assets('payment');
             $this->enqueue_script_with_assets('deposit');
+          
+        }
+        if (
+            is_page_template('page-templates/page-dashboard.php') || 
+            is_page_template('page-templates/page-auth.php') || 
+            is_page_template('page-templates/find-commercial-agents.php') || 
+            is_page_template('page-templates/find-opportunities.php') 
+        ) {
             $this->enqueue_style_with_assets('main');
             $this->enqueue_style_with_assets('header');
             $this->enqueue_style_with_assets('auth');
             $this->enqueue_style_with_assets('admin-dashboard');
-        }else{
+        }
+        if(is_front_page()){
+            
+            wp_enqueue_script('slickjs', 'https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js', ['jquery'], '1.9.0', true);
+            wp_enqueue_style('slickcss', 'https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css', [], '1.9.0', 'all');
+            wp_enqueue_style('slickthemecss', 'https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css', [], '1.9.0', 'all');
+            $this->enqueue_script_with_assets("frontend");
             $this->enqueue_style_with_assets('frontend');
+            $this->enqueue_script_with_assets("home");
             $this->enqueue_style_with_assets('home');
+           
         }
 
-        if (is_page_template('page-templates/find-opportunities.php')) {
+        if (is_page_template('page-templates/find-opportunities.php') ) {
             $this->enqueue_script_with_assets('find-opportunities');
         }
 
@@ -78,6 +94,7 @@ class PublicFront
         // Localizar scripts con datos AJAX.
         $ajax_data = [
             'ajax_url' => admin_url('admin-ajax.php'),
+            "home_url" => home_url()
         ];
         $this->localize_script('opportunity', $ajax_data);
         $this->localize_script('profile', $ajax_data);
@@ -86,6 +103,7 @@ class PublicFront
         $this->localize_script('deposit', $ajax_data);
         $this->localize_script('find-opportunities', $ajax_data);
         $this->localize_script('find-commercial-agents', $ajax_data);
+        $this->localize_script('home', $ajax_data);
     }
 
     private function enqueue_script_with_assets($handle)

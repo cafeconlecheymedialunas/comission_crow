@@ -317,6 +317,8 @@ class ContainerCustomFields
     {
         Container::make('theme_options', __('Nexfy Options'))
         ->add_fields([
+            Field::make('file', 'site_header_logo', __('Site Logo')),
+            Field::make('file', 'site_header_sticky_logo', __('Site Sticky Logo')),
             Field::make('textarea', 'stripe_secret_key', __('Stripe Secret Key')),
             Field::make('textarea', 'stripe_publishable_key', __('Stripe Publishable key')),
             Field::make('text', 'billing_address_street', __('Billing Address Street')),
@@ -459,7 +461,8 @@ class ContainerCustomFields
                     Field::make( 'text', 'title', __( 'Title' ) ),
                     Field::make( 'text', 'counter', __( 'Counter' ) ),
                     Field::make( 'text', 'counter_unit', __( 'Counter Unit' ) ),
-                    Field::make( 'image', 'icon', __( 'Icon' ) ),
+                    Field::make( 'textarea', 'icon', __( 'Icon' ) )
+                    ->set_help_text(__( '<a href="https://fontawesome.com/search">See Font Awesome icons or paste anyway svg</a>' ) )
                 ) ) ->set_layout('tabbed-horizontal')
             ) )
             ->add_tab( __( 'Blog' ), array(
@@ -468,11 +471,12 @@ class ContainerCustomFields
                 Field::make( 'text', 'blog_quantity', __( 'Quantity' ) ),
             ) )
             ->add_tab( __( 'Hero Section with button' ), array(
-                Field::make( 'text', 'hero_button__title', __( 'Title' ) ),
+                Field::make( 'text', 'hero_button_title', __( 'Title' ) ),
                 Field::make( 'rich_text', 'hero_button_description', __( 'Description' ) ),
                 Field::make( 'file', 'hero_button_image', __( 'Image' ) ),
                 Field::make( 'text', 'hero_button_button_text', __( 'Button Text' ) ),
-                Field::make( 'text', 'hero_button_button_link', __( 'Button Link' ) )
+                Field::make( 'text', 'hero_button_button_link', __( 'Button Link' ) ),
+               
             ) )
             ->add_tab( __( 'Brands' ), array(
                 Field::make( 'complex', 'brands', __( 'Brands' ) )

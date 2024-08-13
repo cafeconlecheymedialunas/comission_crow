@@ -237,8 +237,7 @@ class Opportunity extends Crud
     public function load_opportunities()
     {
         ob_start();
-
-        // Recuperar filtros de la solicitud AJAX
+    
         $industry_filter = isset($_GET['industry']) ? $_GET['industry'] : [];
         $language_filter = isset($_GET['language']) ? $_GET['language'] : [];
         $location_filter = isset($_GET['location']) ? $_GET['location'] : [];
@@ -251,17 +250,20 @@ class Opportunity extends Crud
         $min_price = isset($_GET['minimum_price']) ? floatval($_GET['minimum_price']) : null;
         $max_price = isset($_GET['maximum_price']) ? floatval($_GET['maximum_price']) : null;
         $commission = isset($_GET['commission']) ? intval($_GET['commission']) : null;
-
-        // Configuración básica de la consulta
+        $search_term = isset($_GET['s']) && $_GET["post_type"] === "opportunity" ? sanitize_text_field($_POST['search_term']) : '';
+    
         $query_args = array(
             'post_type' => 'opportunity',
             'posts_per_page' => -1,
         );
-
-        // Agregar meta_query si se especifica
+    
+        if (!empty($search_term)) {
+            $query_args['s'] = $search_term;
+        }
+    
         if ($min_price || $max_price || $commission) {
             $meta_query = array('relation' => 'AND');
-
+    
             if ($min_price !== null) {
                 $meta_query[] = array(
                     'key' => 'price',
@@ -270,7 +272,7 @@ class Opportunity extends Crud
                     'type' => 'NUMERIC',
                 );
             }
-
+    
             if ($max_price !== null) {
                 $meta_query[] = array(
                     'key' => 'price',
@@ -279,7 +281,7 @@ class Opportunity extends Crud
                     'type' => 'NUMERIC',
                 );
             }
-
+    
             if (is_numeric($commission) && $commission > 0) {
                 $meta_query[] = array(
                     'key' => 'commission',
@@ -288,14 +290,13 @@ class Opportunity extends Crud
                     'type' => 'NUMERIC',
                 );
             }
-
+    
             $query_args['meta_query'] = $meta_query;
         }
-
-        // Agregar tax_query si se especifica
+    
         if ($industry_filter || $language_filter || $location_filter || $currency_filter || $type_of_company_filter || $target_audience_filter || $age_filter || $gender_filter) {
             $tax_query = array('relation' => 'AND');
-
+    
             if ($industry_filter) {
                 $tax_query[] = array(
                     'taxonomy' => 'industry',
@@ -312,7 +313,7 @@ class Opportunity extends Crud
                     'operator' => 'IN',
                 );
             }
-
+    
             if ($location_filter) {
                 $tax_query[] = array(
                     'taxonomy' => 'location',
@@ -321,7 +322,7 @@ class Opportunity extends Crud
                     'operator' => 'IN',
                 );
             }
-
+    
             if ($currency_filter) {
                 $tax_query[] = array(
                     'taxonomy' => 'currency',
@@ -330,7 +331,7 @@ class Opportunity extends Crud
                     'operator' => 'IN',
                 );
             }
-
+    
             if ($type_of_company_filter) {
                 $tax_query[] = array(
                     'taxonomy' => 'type_of_company',
@@ -339,7 +340,7 @@ class Opportunity extends Crud
                     'operator' => 'IN',
                 );
             }
-
+    
             if ($target_audience_filter) {
                 $tax_query[] = array(
                     'taxonomy' => 'target_audience',
@@ -348,7 +349,7 @@ class Opportunity extends Crud
                     'operator' => 'IN',
                 );
             }
-
+    
             if ($gender_filter) {
                 $tax_query[] = array(
                     'taxonomy' => 'gender',
@@ -357,7 +358,7 @@ class Opportunity extends Crud
                     'operator' => 'IN',
                 );
             }
-
+    
             if ($age_filter) {
                 $tax_query[] = array(
                     'taxonomy' => 'age',
@@ -366,11 +367,10 @@ class Opportunity extends Crud
                     'operator' => 'IN',
                 );
             }
-
+    
             $query_args['tax_query'] = $tax_query;
         }
-
-        // Agregar meta_query para deliver_leads si se especifica
+    
         if ($deliver_leads_filter === 'yes') {
             $meta_query = isset($query_args['meta_query']) ? $query_args['meta_query'] : array();
             $meta_query[] = array(
@@ -380,10 +380,9 @@ class Opportunity extends Crud
             );
             $query_args['meta_query'] = $meta_query;
         }
-
+    
         $opportunities = new WP_Query($query_args);
-
-        // Preparar la respuesta
+    
         if ($opportunities->have_posts()) {
             while ($opportunities->have_posts()): $opportunities->the_post();
                 $company_id = carbon_get_post_meta(get_the_ID(), "company");
@@ -398,40 +397,41 @@ class Opportunity extends Crud
                 $target_audience_names = array_map(fn($term) => esc_html($term->name), $target_audience_terms);
                 $price = carbon_get_post_meta(get_the_ID(), "price");
                 $commission_value = carbon_get_post_meta(get_the_ID(), "commission");
-
+    
                 ?>
-		            <div class="card result-item d-flex flex-row align-items-center mb-4">
-		                <?php if ($company_logo): ?>
-		                    <?php echo $company_logo; ?>
-		                <?php endif;?>
-                <div class="detail">
-                    <h3 class="title"><?php the_title();?></h3>
-                    <?php if ($industry_names): ?>
-                        <p class="skill">Skills: <?php echo implode(', ', $industry_names); ?></p>
+                <div class="card result-item d-flex flex-row align-items-center mb-4">
+                    <?php if ($company_logo): ?>
+                        <?php echo $company_logo; ?>
                     <?php endif;?>
-                    <?php if ($target_audience_names): ?>
-                        <p class="category">Target Audience: <?php echo implode(', ', $target_audience_names); ?></p>
-                    <?php endif;?>
+                    <div class="detail">
+                        <h3 class="title"><?php the_title();?></h3>
+                        <?php if ($industry_names): ?>
+                            <p class="skill">Skills: <?php echo implode(', ', $industry_names); ?></p>
+                        <?php endif;?>
+                        <?php if ($target_audience_names): ?>
+                            <p class="category">Target Audience: <?php echo implode(', ', $target_audience_names); ?></p>
+                        <?php endif;?>
+                    </div>
+                    <div class="detail">
+                        <?php if ($price !== null): ?>
+                            <h5 class="price">Price: <?php echo Helper::format_price($price); ?></h5>
+                        <?php endif;?>
+                        <?php if ($commission_value !== null): ?>
+                            <p class="commissions">Commission: <?php echo esc_html($commission_value); ?> %</p>
+                        <?php endif;?>
+                    </div>
+                    <a href="<?php echo home_url() . "/opportunity-item/?opportunity_id=" . get_the_ID(); ?>" class="btn btn-primary">Detail</a>
                 </div>
-                <div class="detail">
-                    <?php if ($price !== null): ?>
-                        <h5 class="price">Price: <?php echo Helper::format_price($price); ?></h5>
-                    <?php endif;?>
-                    <?php if ($commission_value !== null): ?>
-                        <p class="commissions">Commission: <?php echo esc_html($commission_value); ?> %</p>
-                    <?php endif;?>
-                </div>
-                <a href="<?php echo home_url() . "/opportunity-item/?opportunity_id=" . get_the_ID(); ?>" class="btn btn-primary">Detail</a>
-            </div>
-            <?php
-endwhile;
+                <?php
+            endwhile;
             wp_reset_postdata();
         } else {
             echo '<p>No opportunities found.</p>';
         }
-
-        wp_die(); // Termina la ejecución para solicitudes AJAX
+    
+        wp_die();
     }
+    
 
     private function send_opportunity_created_email_to_company($opportunity_id)
     {

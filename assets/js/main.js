@@ -34,4 +34,18 @@ jQuery(document).ready(function ($) {
       $inputHidden.val(html);
     });
   });
+
+  window.onscroll = function() {stickyMenu()};
+
+  var menu = document.getElementById("dashboard-header");
+  var sticky = menu.offsetTop;
+
+  function stickyMenu() {
+      if (window.pageYOffset > sticky) {
+          menu.classList.add("sticky");
+      } else {
+          menu.classList.remove("sticky");
+      }
+  }
+
 });

@@ -72,7 +72,7 @@ $current_user = wp_get_current_user();
 <body <?php body_class();?>>
 
 <?php wp_body_open();?>
-<header class="dashboard-header">
+<header class="dashboard-header" id="dashboard-header">
 		<div class="container-fluid">
 			<div class="d-flex justify-content-between align-items-center">
 				<div class="site-link">

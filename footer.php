@@ -16,9 +16,7 @@
 		<footer id="footer">
 			<div class="container">
 				<div class="row">
-					<div class="col-md-12">
-						<p class="copy"><?php printf(esc_html__('&copy; %1$s %2$s. All rights reserved.', 'comission_crow'), wp_date('Y'), get_bloginfo('name', 'display')); ?></p>
-					</div>
+					
 
 					<?php
             if (has_nav_menu('footer-menu')) : // See function register_nav_menus() in functions.php
@@ -56,7 +54,11 @@ if (is_active_sidebar('third_widget_area')) :
 endif;
 ?>
 				</div><!-- /.row -->
+                <div class="row">
+						<p class="copy"><?php printf(esc_html__('&copy; %1$s %2$s. All rights reserved.', 'comission_crow'), wp_date('Y'), get_bloginfo('name', 'display')); ?></p>
+					</div>
 			</div><!-- /.container -->
+
 		</footer><!-- /#footer -->
 	</div><!-- /#wrapper -->
 	<?php
