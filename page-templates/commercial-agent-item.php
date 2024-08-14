@@ -12,6 +12,19 @@ if (!is_user_logged_in()) {
     exit;
 }
 
+$current_user = wp_get_current_user();
+$allowed_roles = ["commercial_agent", "company"];
+
+// Check if user has a permitted role
+if (!in_array($current_user->roles[0], $allowed_roles)) {
+    get_header();
+    echo '<div class="alert alert-danger">Access denied. You do not have permission to access this page.</div>';
+    get_footer();
+    ob_end_flush();
+    exit;
+}
+
+
 $commercial_agent_id = isset($_GET['commercial_agent_id']) ? intval($_GET['commercial_agent_id']) : 0;
 
 $commercial_agent = new WP_Query([

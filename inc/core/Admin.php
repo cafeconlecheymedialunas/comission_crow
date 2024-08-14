@@ -193,7 +193,7 @@ class Admin
 
     public function get_users()
     {
-        $users = get_users(['role__in' => ['commercial_agent', 'company',"administrator"],]);
+        $users = get_users(['role__in' => ['commercial_agent', 'company'],]);
     
         $options = [""=>"Select an User"];
     

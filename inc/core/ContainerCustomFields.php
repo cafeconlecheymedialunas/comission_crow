@@ -461,6 +461,7 @@ class ContainerCustomFields
                     Field::make( 'text', 'title', __( 'Title' ) ),
                     Field::make( 'text', 'counter', __( 'Counter' ) ),
                     Field::make( 'text', 'counter_unit', __( 'Counter Unit' ) ),
+                    Field::make( 'text', 'counter_color', __( 'Counter Hexadecimal code color' ) ),
                     Field::make( 'textarea', 'icon', __( 'Icon' ) )
                     ->set_help_text(__( '<a href="https://fontawesome.com/search">See Font Awesome icons or paste anyway svg</a>' ) )
                 ) ) ->set_layout('tabbed-horizontal')

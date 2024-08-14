@@ -74,3 +74,40 @@ footer .copy{
   margin:0;
   padding: 20px 0;
 }
+
+.star-rating {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  /* Tamaño de las estrellas */
+  color: #ffc000;
+  /* Color dorado para las estrellas llenas */
+}
+
+/* Estrella llena */
+.star-rating .fa-star.filled {
+  color: #ffc000;
+  /* Color dorado */
+}
+
+/* Estrella parcial */
+.star-rating .fa-star-half-o.filled {
+  color: #ffc000;
+  /* Color dorado */
+}
+
+/* Estrella vacía */
+.star-rating .fa-star.empty {
+  color: #ddd;
+  /* Color gris para las estrellas vacías */
+}
+
+/* Estilo para el texto del promedio */
+.star-rating .average-score {
+  margin-left: 0.5rem;
+  /* Espacio entre las estrellas y el promedio */
+  font-size: 1rem;
+  color: #333;
+  /* Color del texto del promedio */
+}

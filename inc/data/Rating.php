@@ -131,4 +131,48 @@ class Rating
         return $sent;
     }
 
+
+    public function calculate_average_rating($commercial_agent_id){
+        // Consultar todas las reseñas para el agente comercial dado
+        $reviews_query = new WP_Query([
+            'post_type'  => 'review',
+            'meta_query' => [
+                [
+                    'key'   => 'commercial_agent',
+                    'value' => $commercial_agent_id,
+                    'compare' => '='
+                ]
+            ]
+        ]);
+    
+        // Inicializar variables para la suma de los puntajes y el número de reseñas
+        $total_score = 0;
+        $review_count = 0;
+    
+        // Recorrer las reseñas y sumar los puntajes
+        if ($reviews_query->have_posts()) {
+            while ($reviews_query->have_posts()) {
+                $reviews_query->the_post();
+                $score = carbon_get_post_meta(get_the_ID(), "score");
+    
+                // Asegurarse de que $score es un número antes de sumarlo
+                if (is_numeric($score)) {
+                    $total_score += $score;
+                    $review_count++;
+                }
+            }
+            wp_reset_postdata();
+        }
+    
+        // Calcular el promedio
+        if ($review_count > 0) {
+            $average_score = $total_score / $review_count;
+        } else {
+            $average_score = 0; // Si no hay reseñas, el promedio es 0 o un valor que decidas
+        }
+    
+        return $average_score;
+    }
+    
+
 }

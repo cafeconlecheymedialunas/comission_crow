@@ -1,3 +1,10 @@
+<?php
+$query = new WP_Query(array(
+    'post_type' => 'post',
+    'posts_per_page' => 5
+));
+
+if ($query->have_posts()): ?>
 <div class="blog">
             <div class="container">
                 <?php if ($blog_title): ?>
@@ -12,38 +19,37 @@
                     </div>
                 <?php endif;?>
                 <div class="blog-posts">
-                    <?php
-$query = new WP_Query(array(
-    'post_type' => 'post',
-    'posts_per_page' => 5
-));
-
-if ($query->have_posts()): ?>
+        
                         <div class="row posts-list">
                             <?php while ($query->have_posts()): $query->the_post(); ?>
-                                <div class="col-md-4 post-item">
+                                <div class="col-sm-6 col-md-4">
+                                    <div class="post-item">
                                     <?php if (has_post_thumbnail()): ?>
                                         <a href="<?php the_permalink();?>">
-                                            <?php the_post_thumbnail('medium'); ?>
+                                            <?php the_post_thumbnail('full'); ?>
                                         </a>
                                     <?php endif;?>
                                     <div class="post-content">
-                                        <h3 class="post-title"><a href="<?php the_permalink();?>"><?php the_title(); ?></a></h3>
-                                        <div class="post-meta d-flex">
+                                    <div class="post-meta d-flex">
                                         <p class="post-author">
-                                            <?php echo get_avatar(get_the_author_meta('ID'), 32); ?>
-                                            <?php echo get_the_author(); ?>
+                                            <?php echo get_avatar(get_the_author_meta('ID'), 40); ?>
+                                           <span class="name"> <?php echo get_the_author(); ?></span>
                                         </p>
+                                        |
                                         <p class="post-category">
                                             <?php echo get_the_category_list(', '); ?>
                                         </p>
                                         </div>
+                                        <h3 class="post-title"><a href="<?php the_permalink();?>"><?php the_title(); ?></a></h3>
+                                       
+                                    </div>
                                     </div>
                                 </div>
                             <?php endwhile;?>
                         </div>
-                    <?php endif;?>
+                   
                     <?php wp_reset_postdata(); ?>
                 </div>
             </div>
         </div>
+        <?php endif;?>

@@ -158,7 +158,7 @@ class CommercialAgent
 
     public function load_commercial_agents()
     {
-        // Recuperar filtros de la solicitud AJAX
+
         $industry_filter = isset($_GET['industry']) ? $_GET['industry'] : [];
         $language_filter = isset($_GET['language']) ? $_GET['language'] : [];
         $location_filter = isset($_GET['location']) ? $_GET['location'] : [];
@@ -174,7 +174,7 @@ class CommercialAgent
 
         if ($industry_filter || $language_filter || $location_filter || $seller_type_filter || $selling_method_filter) {
             $tax_query = array('relation' => 'AND');
-            // Filtros con múltiples valores
+
             if ($language_filter) {
                 $tax_query['tax_query'][] = [
                     'taxonomy' => 'language',
@@ -193,7 +193,6 @@ class CommercialAgent
                 ];
             }
 
-            // Filtros con un solo valor
             if ($industry_filter) {
                 $tax_query['tax_query'][] = [
                     'taxonomy' => 'industry',
@@ -241,11 +240,12 @@ class CommercialAgent
         // Preparar la respuesta
         if ($commercial_agents->have_posts()) {
             foreach ($commercial_agents->posts as $commercial_agent):
+                $user_id = get_post_meta($commercial_agent->ID, '_user_id',true);
+                $user = get_user_by("ID",$user_id);
+            
                 $years_of_experience = get_post_meta($commercial_agent->ID, 'years_of_experience', true);
-                $profile_image = get_the_post_thumbnail($commercial_agent->ID, [50, 50], [
-                    'class' => 'rounded-circle profile_image',
-                    'width' => '50',
-                    'height' => '50',
+                $profile_image = get_the_post_thumbnail($commercial_agent->ID, "thumbnail", [
+                    'class' => 'profile-image',
                 ]);
                 $industry_terms = wp_get_post_terms($commercial_agent->ID, 'industry');
                 $selling_method_terms = wp_get_post_terms($commercial_agent->ID, 'selling_method');
@@ -259,34 +259,51 @@ class CommercialAgent
                 $location_names = array_map(fn($term) => esc_html($term->name), $location_terms);
                 $language_names = array_map(fn($term) => esc_html($term->name), $language_terms);
                 ?>
-		            <div class="card result-item d-flex flex-row align-items-center mb-4">
-		                <?php if ($profile_image): ?>
-		                    <?php echo $profile_image; ?>
-		                <?php endif;?>
-                <div class="detail">
-                    <h3 class="title"><?php echo esc_html($commercial_agent->post_title); ?></h3>
-                    <?php if ($industry_names): ?>
-                        <p class="industry">Industry: <?php echo implode(', ', $industry_names); ?></p>
-                    <?php endif;?>
-                    <?php if ($years_of_experience): ?>
-                        <p class="years-of-experience"><?php echo esc_html($years_of_experience); ?> years of experience</p>
-                    <?php endif;?>
-                    <?php if ($location_names): ?>
-                        <p class="location">Location: <?php echo implode(', ', $location_names); ?></p>
-                    <?php endif;?>
-                    <?php if ($language_names): ?>
-                        <div class="language">Languages: <?php echo implode(', ', $language_names); ?></div>
-                    <?php endif;?>
+				            <div class="result-item row">
+		                        <div class="col-md-3">
+		                        <?php if ($profile_image): ?>
+				                    <?php echo $profile_image; ?>
+				                <?php endif;
+                                $agent_id = $commercial_agent->ID;
+                                $avg_rating_template = 'templates/avg-rating.php';
+                                if (locate_template($avg_rating_template)) {
+                                    include locate_template($avg_rating_template);
+                                }
+                                ?>
+                            <a href="<?php echo home_url('/commercial-agent-item/?commercial_agent_id=' . $commercial_agent->ID); ?>" class="btn btn-primary">Detail</a>
+                        </div>
+
+                <div class="info col-md-9">
+                    <div class="meta">
+                        <h3 class="title"><?php echo esc_html($commercial_agent->post_title); ?></h3>
+                        <?php if($user && $user->user_registered):?>
+                        <p>Member since <?php echo $user->user_registered; ?></p>
+                        <?php endif;?>
+                        <ul class="list-inline">
+
+
+                        <?php if ($industry_names): ?>
+                            <li class="industry list-inline-item"><i class="fa-solid fa-list"></i><?php echo implode(', ', $industry_names); ?></li>
+                        <?php endif;?>
+                        <?php if ($location_names): ?>
+                            <li class="location list-inline-item"><i class="fa-solid fa-location-crosshairs"></i><?php echo implode(', ', $location_names); ?></li>
+                        <?php endif;?>
+                        <?php if ($language_names): ?>
+                            <li class="language list-inline-item"><i class="fa-solid fa-language"></i><?php echo implode(', ', $language_names); ?></li>
+                        <?php endif;?>
+                        </ul>
+                    </div>
+                    <div class="type">
+                        <?php if ($selling_method_names): ?>
+                            <p class="selling-methods">Selling methods: <?php echo implode(', ', $selling_method_names); ?></p>
+                        <?php endif;?>
+                        <?php if ($seller_type_names): ?>
+                            <p class="seller-type">Seller Type: <?php echo implode(', ', $seller_type_names); ?></p>
+                        <?php endif;?>
+                    </div>
                 </div>
-                <div class="detail">
-                    <?php if ($selling_method_names): ?>
-                        <p class="selling-methods">Selling methods: <?php echo implode(', ', $selling_method_names); ?></p>
-                    <?php endif;?>
-                    <?php if ($seller_type_names): ?>
-                        <p class="seller-type">Seller Type: <?php echo implode(', ', $seller_type_names); ?></p>
-                    <?php endif;?>
-                </div>
-                <a href="<?php echo home_url('/commercial-agent-item/?commercial_agent_id=' . $commercial_agent->ID); ?>" class="btn btn-primary">Detail</a>
+
+
             </div>
             <?php
 endforeach;

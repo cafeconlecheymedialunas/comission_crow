@@ -85,10 +85,10 @@ get_header("dashboard");
             </div>
 
             <div class="col-md-3 filter-section">
-                <h4>Filtros</h4>
+                <h4>Filter by attributes</h4>
                 <form id="filters-form">
                     <div class="mb-3">
-                        <button type="button" id="clear-filters" class="btn btn-secondary">Limpiar Filtros</button>
+                        <button type="button" id="clear-filters" class="btn btn-secondary">Clear Filters</button>
                     </div>
 
                     <?php if ($industry_terms): ?>

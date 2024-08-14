@@ -9,7 +9,7 @@
         <li>
             <a href="<?php echo esc_url($dasboard->get_role_url_link_dashboard_page('chat')); ?>"><i class="fa fa-fw fa-comments"></i>Messages</a>
         </li>
-        <?php if (in_array("company", $current_user->roles) || in_array("administrator", $current_user->roles)): ?>
+        <?php if (in_array("company", $current_user->roles) ): ?>
         <li class="nav-item">
             <a class="" data-bs-toggle="collapse" href="#collapseopportunity" role="button" aria-expanded="false" aria-controls="collapseopportunity">
                 <i class="fa fa-fw fa-briefcase"></i>

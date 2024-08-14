@@ -3,6 +3,7 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 700;
     font-style: normal;
     color: #333333;
+	font-family: "Poppins", Sans-serif;
 }
 
 .input-text, select, input[type=email], input[type=password], input[type=search], input[type=text], input[type=url], input[type=number], textarea {
@@ -17,7 +18,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 .btn{
 	border-radius:50px;
-	padding:0 20px;
+	padding:20px 50px;
 }
 .btn.btn-secondary{
 	color: #6787FE;
@@ -51,7 +52,23 @@ h1, h2, h3, h4, h5, h6 {
     display: block;
 }
 
+.sticky-logo {
+    display: block;
+}
 
+/* Mostrar el logo sticky cuando el menú tiene la clase 'sticky' */
+.sticky .sticky-logo {
+    display: none;
+}
+
+/* Mostrar el logo estándar cuando el menú no tiene la clase 'sticky' */
+.default-logo {
+    display:  none;
+}
+
+.sticky .default-logo {
+    display: block;
+}
 
 
 @media(min-width:768px){
@@ -65,14 +82,10 @@ h1, h2, h3, h4, h5, h6 {
 		border-color:white!important;
 	}
 	
-	.desktop-header {
-		background-color: transparent;
-		background-image: linear-gradient(280deg, #6787FE 0%, #0F1B63 100%);;
-	}
 	.desktop-header ul li>a{
 		color: white;
 	}
-	.desktop-header.sticky {
+	.desktop-header {
 		background-color: white;
 		position:fixed;
 		top:0;
@@ -82,20 +95,17 @@ h1, h2, h3, h4, h5, h6 {
 	}
 	
 	
-	.desktop-header.sticky ul li>a{
+	.desktop-header ul li>a{
 		color: rgb(74, 99, 117);
 	}
 	
+	
 	.desktop-header .navbar-nav .nav-link.active,.desktop-header .navbar-nav .nav-link.show {
-		color: white;
-		font-weight: bold;
-	}
-	.desktop-header.sticky .navbar-nav .nav-link.active,.desktop-header.sticky .navbar-nav .nav-link.show {
 		color: rgb(74, 99, 117);
 		
 	}
 
-	.desktop-header.sticky .btn.btn-secondary {
+	.desktop-header .btn.btn-secondary {
 		padding: 10px 30px;
 		display: inline-block;
 		border: 2px solid;
@@ -325,4 +335,52 @@ h1, h2, h3, h4, h5, h6 {
 
 .offcanvas-menu input[type="checkbox"]:checked ~ nav ul li:nth-child(7) {
 	transition-delay: 0.7s;
+}
+
+
+/*--------------------------------------------------------------
+# Footer
+--------------------------------------------------------------*/
+.form-subscribe-container{
+	border: 1px solid #dfdfdf;
+	border-radius: 50px;
+	height: 70px;
+	padding-right:4px;
+	padding-left: 4px;
+}
+#footer{
+	border-style: solid;
+    border-width: 1px 0px 0px 0px;
+    border-color: #F1F1F1;
+    transition: background 0.3s, border 0.3s, border-radius 0.3s, box-shadow 0.3s;
+    padding-top: 100px;
+}
+footer .wp-block-column > p{
+	margin-bottom:20px;
+	color: #333333;
+    font-family: "Rubik", Sans-serif;
+    font-weight: normal;
+    line-height: 28px;
+}
+.form-subscribe-container p{
+margin-bottom:0;
+}
+#footer img{
+	max-width:140px;
+	margin-bottom: 0;
+}
+#footer ul{
+	list-style: none;
+}
+#footer .menu li a{
+	color:#333333;
+	font-family: "Rubik", Sans-serif;
+    font-weight: 400;
+	font-size:16px;
+}
+
+.copy{
+	display:flex;
+	justify-content: center;
+	align-items: center;
 }

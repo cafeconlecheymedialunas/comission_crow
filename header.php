@@ -24,7 +24,7 @@ $current_user = wp_get_current_user();
 
 <div id="wrapper">
     <header class="desktop-header d-none d-md-block" id="desktop-header">
-        <nav id="header" class="navbar navbar-expand-md <?php echo esc_attr($navbar_scheme); 
+        <nav id="header" class="navbar navbar-expand-md <?php 
         if (isset($navbar_position) && 'fixed_top' === $navbar_position) echo ' fixed-top'; 
         elseif (isset($navbar_position) && 'fixed_bottom' === $navbar_position) echo ' fixed-bottom'; ?>">
             <div class="container d-flex justify-content-between align-items-center">

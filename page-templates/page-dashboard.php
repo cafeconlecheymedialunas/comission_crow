@@ -33,10 +33,7 @@ function user_has_role($roles)
     if (empty($user->roles)) {
         return false;
     }
-    // Verifica si el usuario es un administrador
-    if (in_array('administrator', $user->roles)) {
-        return true;
-    }
+   
     foreach ($roles as $role) {
         if (in_array($role, $user->roles)) {
             return true;
@@ -86,12 +83,9 @@ $associated_post = ProfileUser::get_instance()->get_user_associated_post_type();
                 // Verifica si el usuario tiene el rol apropiado y si la URL role coincide con el rol del usuario
                 if (user_has_role([$key_role])) {
                     // Si el usuario es un administrador, permite el acceso a todas las plantillas
-                    if (in_array('administrator', $current_user->roles)) {
-                        $template_path = get_template_for_role($key_role, $subpages);
-                    } else {
-                        // Obtiene la plantilla apropiada para el rol y las subpáginas
-                        $template_path = get_template_for_role($role, $subpages);
-                    }
+                    
+                    $template_path = get_template_for_role($role, $subpages);
+                    
 
                     if ($template_path) {
                         include $template_path;

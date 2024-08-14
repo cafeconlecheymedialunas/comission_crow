@@ -29,6 +29,18 @@ if (!$opportunity->posts) {
     exit;
 }
 
+$current_user = wp_get_current_user();
+$allowed_roles = ["commercial_agent", "company"];
+
+// Check if user has a permitted role
+if (!in_array($current_user->roles[0], $allowed_roles)) {
+    get_header();
+    echo '<div class="alert alert-danger">Access denied. You do not have permission to access this page.</div>';
+    get_footer();
+    ob_end_flush();
+    exit;
+}
+
 $opportunity = $opportunity->posts[0];
 $company = carbon_get_post_meta($opportunity->ID, "company");
 $company_industry = wp_get_post_terms($company, 'industry');

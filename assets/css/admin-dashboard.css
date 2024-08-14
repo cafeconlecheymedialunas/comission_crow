@@ -237,12 +237,6 @@ i.operation {
 }
 
 
-/*Find Opportunities*/
-.filter-container{
-  max-height:300px;
-  overflow-y: scroll;
-}
-
 .range_container {
   display: flex;
   flex-direction: column;
@@ -337,4 +331,163 @@ i.operation {
 .rating-stars .star.hover,
 .rating-stars .star.selected {
   color: #ffcc00;
+}
+
+.header-page-title{
+  background: #333;
+  overflow: hidden;
+  padding: 100px 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.header-page-title h1{
+  font-size: 48px;
+    margin-bottom: 0;
+    font-weight: 700;
+    color: #fff;
+}
+
+/*--------------------------------------------------------------
+# Find Opportunity Agents
+--------------------------------------------------------------*/
+
+.find-opportunities .result-item{
+  position: relative;
+    background: #fff;
+    padding: 30px 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    overflow: hidden;
+    display:flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+.find-agents{
+  background-color:rgb(255, 255, 255);
+}
+
+.find-agents .result-item{
+  background: rgb(248, 250, 251);
+  padding: 20px;
+  border-radius: 20px;
+  margin-bottom: 50px;
+
+}
+.find-agents .result-item:hover,
+.find-opportunities .result-item:hover{
+  border-color: #6787FE !important;
+}
+.find-opportunities .result-item h3{
+ max-width: 100%;
+ font-weight: 500;
+ font-size: 20px;
+ font-family: Poppins;
+    color: #333333;
+margin-bottom:15px;
+}
+.find-opportunities .result-item .pricing{
+  width:auto;
+  margin-left:20px;
+}
+.find-opportunities .result-item .price{
+  font-weight: 500;
+    font-size: 24px;
+}
+.find-agents .result-item .list-inline,
+.find-opportunities .result-item .list-inline{
+  max-width:60%;
+  margin-bottom:0;
+}
+.find-agents .result-item .list-inline,
+.find-opportunities .result-item .list-inline-item{
+  font-size: 14px;
+  line-height: 22px;
+  color:rgb(74, 99, 117);
+
+}
+.find-agents .result-item .list-inline i,
+.find-opportunities .result-item .list-inline-item i{
+  margin-right:5px;
+  display:inline-block;
+}
+.find-opportunities .result-item .commissions{
+  color:rgb(74, 99, 117);
+  font-size: 16px;
+  margin-bottom:0;
+}
+
+.find-opportunities .result-item .detail{
+  width:50%;
+  margin-left:20px;
+}
+.find-opportunities .result-item .btn{
+  max-width:120px;
+  margin-left:auto;
+}
+.find-opportunities .result-item img{
+  width:53px;
+  height:53px;
+  padding:0;
+}
+
+/* Filters */
+
+.filter-title{
+  font-size: 28px;
+  font-weight: 700;
+  position: relative;
+  padding-bottom: 15px;
+}
+.filter{
+  display: inline;
+    font-weight: 400;
+    margin-left: 0.5rem;
+}
+.find-agents .form-label,
+.find-opportunities .form-label{
+  font-size: 18px;
+  font-weight: 500;
+  color: #4A6375;
+  margin-bottom: 20px;
+}
+.find-agents .filter-container,
+.find-opportunities .filter-container{
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 231px;
+}
+.find-agents .filter-container::-webkit-scrollbar ,
+.find-opportunities .filter-container::-webkit-scrollbar {
+  width: 10px;
+}
+.find-agents .filter-container::-webkit-scrollbar-track ,
+.find-opportunities .filter-container::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgb(0 0 0 / 5%);
+  border-radius: 6px;
+}
+.find-agents .filter-container::-webkit-scrollbar-thumb
+.find-opportunities .filter-container::-webkit-scrollbar-thumb {
+  background-color: rgb(169 169 169 / 18%);
+  border-radius: 6px;
+}
+
+
+
+.find-agents .title{
+  font-size: 1.75rem;
+}
+.find-agents .type{
+  margin-top:1rem;
+  
+}
+.find-agents .type p{
+  margin-bottom:0;
+  
+}
+.find-agents .star-rating{
+  margin-top:10px;
 }
