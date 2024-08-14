@@ -51,11 +51,11 @@ get_header("dashboard");
 
 <div class="dashboard find-agents">
 <?php
-    $spinner_template = 'templates/page-header-title.php';
-    if (locate_template($spinner_template)) {
-        include locate_template($spinner_template);
-    }
-    ?>
+$spinner_template = 'templates/page-header-title.php';
+if (locate_template($spinner_template)) {
+    include locate_template($spinner_template);
+}
+?>
 
     <div class="container pt-5 pb-5">
         <div class="row">
@@ -81,67 +81,67 @@ get_header("dashboard");
     <?php if ($language_terms): ?>
         <label class="form-label">Languages:</label>
     <div class="mb-3 filter-container">
-        
+
         <?php foreach ($language_terms as $term): ?>
             <div class="form-check form-switch">
                 <input class="form-check-input filter" type="checkbox" name="language[]" id="language-<?php echo esc_attr($term->term_id); ?>" value="<?php echo esc_attr($term->term_id); ?>">
                 <label class="form-check-label" for="language-<?php echo esc_attr($term->term_id); ?>"><?php echo esc_html($term->name); ?></label>
             </div>
-        <?php endforeach; ?>
+        <?php endforeach;?>
     </div>
-    <?php endif; ?>
+    <?php endif;?>
 
     <?php if ($industry_terms): ?>
         <label class="form-label">Industry:</label>
     <div class="mb-3 filter-container">
-       
+
         <?php foreach ($industry_terms as $term): ?>
             <div class="form-check form-switch">
                 <input class="form-check-input filter" type="checkbox" name="industry[]" id="industry-<?php echo esc_attr($term->term_id); ?>" value="<?php echo esc_attr($term->term_id); ?>">
                 <label class="form-check-label" for="industry-<?php echo esc_attr($term->term_id); ?>"><?php echo esc_html($term->name); ?></label>
             </div>
-        <?php endforeach; ?>
+        <?php endforeach;?>
     </div>
-    <?php endif; ?>
+    <?php endif;?>
 
     <?php if ($location_terms): ?>
         <label class="form-label">Location:</label>
     <div class="mb-3 filter-container">
-       
+
         <?php foreach ($location_terms as $term): ?>
             <div class="form-check form-switch">
                 <input class="form-check-input filter" type="checkbox" name="location[]" id="location-<?php echo esc_attr($term->term_id); ?>" value="<?php echo esc_attr($term->term_id); ?>">
                 <label class="form-check-label" for="location-<?php echo esc_attr($term->term_id); ?>"><?php echo esc_html($term->name); ?></label>
             </div>
-        <?php endforeach; ?>
+        <?php endforeach;?>
     </div>
-    <?php endif; ?>
+    <?php endif;?>
 
     <?php if ($selling_method_terms): ?>
         <label class="form-label">Selling Methods:</label>
     <div class="mb-3 filter-container">
-        
+
         <?php foreach ($selling_method_terms as $item): ?>
             <div class="form-check form-switch">
                 <input class="form-check-input filter" type="checkbox" name="selling_method[]" id="selling_method-<?php echo esc_attr($item->term_id); ?>" value="<?php echo esc_attr($item->term_id); ?>">
                 <label class="form-check-label" for="selling_method-<?php echo esc_attr($item->term_id); ?>"><?php echo esc_html($item->name); ?></label>
             </div>
-        <?php endforeach; ?>
+        <?php endforeach;?>
     </div>
-    <?php endif; ?>
+    <?php endif;?>
 
     <?php if ($seller_type_terms): ?>
         <label class="form-label">Seller Type:</label>
     <div class="mb-3 filter-container">
-        
+
         <?php foreach ($seller_type_terms as $item): ?>
             <div class="form-check form-switch">
                 <input class="form-check-input filter" type="checkbox" name="seller_type[]" id="seller_type-<?php echo esc_attr($item->term_id); ?>" value="<?php echo esc_attr($item->term_id); ?>">
                 <label class="form-check-label" for="seller_type-<?php echo esc_attr($item->term_id); ?>"><?php echo esc_html($item->name); ?></label>
             </div>
-        <?php endforeach; ?>
+        <?php endforeach;?>
     </div>
-    <?php endif; ?>
+    <?php endif;?>
 
     <div class="mb-3">
         <label for="years_of_experience" class="form-label">Years of experience</label>
@@ -149,7 +149,7 @@ get_header("dashboard");
     </div>
 </form>
                 </div>
-                
+
             </div>
         </div>
     </div>
