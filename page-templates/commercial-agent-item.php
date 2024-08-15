@@ -288,7 +288,7 @@ $years_of_experience = carbon_get_post_meta($commercial_agent->ID, "years_of_exp
 
 <?php
 ob_end_flush();
-get_footer();
+get_footer("dashboard");
 ?>
 
 

@@ -23,6 +23,8 @@ class Deposit
         }
     
         $commercial_agent_id = isset($_POST['commercial_agent_id']) ? intval($_POST['commercial_agent_id']) : 0;
+
+      
         $current_user_id = get_current_user_id();
     
         if ($current_user_id <= 0 || $commercial_agent_id <= 0) {
@@ -30,6 +32,11 @@ class Deposit
             return;
         }
     
+          // Verificar si el agente comercial es válido
+          if (!get_post( $commercial_agent_id)) {
+            wp_send_json_error(['general' => 'Commercial Agent Not Found.']);
+            return;
+        }
         // Verifica si hay algún pedido de retiro abierto para el usuario
         $open_withdrawals = get_posts([
             'post_type' => 'deposit',
@@ -66,11 +73,7 @@ class Deposit
             return;
         }
     
-        // Verificar si el agente comercial es válido
-        if (!get_user_by('ID', $commercial_agent_id)) {
-            wp_send_json_error(['general' => 'Invalid commercial agent ID.']);
-            return;
-        }
+      
     
         $post_data = [
             'post_title'    => 'Withdraw Fund Request for User ' . $current_user_id,

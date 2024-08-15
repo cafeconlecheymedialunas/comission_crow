@@ -105,5 +105,5 @@ $associated_post = ProfileUser::get_instance()->get_user_associated_post_type();
 <?php
 // Flush the output buffer and send everything to the browser
 ob_end_flush();
-get_footer();
+get_footer("dashboard");
 ?>

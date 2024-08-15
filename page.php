@@ -9,6 +9,12 @@ get_header();
 
 the_post();
 ?>
+<?php
+$spinner_template = 'templates/page-header-title.php';
+if (locate_template($spinner_template)) {
+    include locate_template($spinner_template);
+}
+?>
 
 <div class="row">
 	<div class="col-md-8 order-md-2 col-sm-12">

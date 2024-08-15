@@ -159,8 +159,16 @@ $current_user = wp_get_current_user();
             </div>
         </nav>
     </header>
-
-    <main id="main" <?php if (isset($navbar_position) && 'fixed_top' === $navbar_position): echo ' style="padding-top: 100px;"';
+	<?php
+	if(!is_front_page()){
+$template = 'templates/page-header-title.php';
+if (locate_template($template)) {
+    include locate_template($template);
+}
+}
+?>
+    <main id="main" class="<?php echo is_front_page()?"":"pt-5 pb-5";?>"
+	<?php if (isset($navbar_position) && 'fixed_top' === $navbar_position): echo ' style="padding-top: 100px;"';
     elseif (isset($navbar_position) && 'fixed_bottom' === $navbar_position): echo ' style="padding-bottom: 100px;"'; endif; ?>>
         <?php
         if (is_single() || is_archive()):

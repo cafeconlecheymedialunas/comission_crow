@@ -13,7 +13,9 @@
 .desktop-header ul li>a {
     color: white;
 }
-
+.desktop-header ul li .dropdown-item {
+    color: rgb(74, 99, 117);
+}
 .desktop-header .btn.btn-secondary{
     color: white;
 	background-color:transparent;

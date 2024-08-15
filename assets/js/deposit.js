@@ -21,7 +21,7 @@ jQuery(document).ready(function ($) {
         console.log(response);
         if (response.success) {
           Swal.fire({
-            title: "The Dispute has been saved.",
+            title: "Your withdrawal request was successfully completed.",
             icon: "success",
             showConfirmButton: false,
             timer: 2000,

@@ -17,7 +17,7 @@ $allowed_roles = ["commercial_agent", "company"];
 // Check if user has a permitted role
 if (!in_array($current_user->roles[0], $allowed_roles)) {
     get_header();
-    echo '<div class="container alert alert-danger" style="margin-top:200px;">Access denied. You do not have permission to access this page.</div>';
+    echo '<div class="container alert alert-danger">Access denied. You do not have permission to access this page.</div>';
     get_footer();
     ob_end_flush(); // Flush output buffer
     exit;
@@ -222,6 +222,6 @@ get_header("dashboard");
 </div>
 
 <?php
-get_footer();
+get_footer("dashboard");
 ob_end_flush(); // Flush output buffer
 ?>

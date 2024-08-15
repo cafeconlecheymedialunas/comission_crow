@@ -50,12 +50,6 @@ get_header("dashboard");
 ?>
 
 <div class="dashboard find-agents">
-<?php
-$spinner_template = 'templates/page-header-title.php';
-if (locate_template($spinner_template)) {
-    include locate_template($spinner_template);
-}
-?>
 
     <div class="container pt-5 pb-5">
         <div class="row">
@@ -158,5 +152,5 @@ if (locate_template($spinner_template)) {
 <?php
 // Flush the output buffer and send everything to the browser
 ob_end_flush();
-get_footer();
+get_footer("dashboard");
 ?>

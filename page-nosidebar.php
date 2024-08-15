@@ -9,8 +9,7 @@ get_header();
 
 the_post();
 ?>
-<div id="post-<?php the_ID(); ?>" <?php post_class('content'); ?>>
-	<h1 class="entry-title"><?php the_title(); ?></h1>
+<div id="post-<?php the_ID(); ?>" <?php post_class('content container pt-5 pb-5'); ?>>
 	<?php
         the_content();
 

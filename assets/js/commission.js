@@ -96,23 +96,22 @@ jQuery(document).ready(function ($) {
   $("#modal-dispute").on("show.bs.modal", function (e) {
     // Obtén el botón que abrió el modal desde el evento relatedTarget
     const button = $(e.relatedTarget);
-
-    console.log(button);
-
+  
     // Obtén el valor del data-attribute del botón
     const commissionRequestId = button.data("commission-request");
-
-    console.log(commissionRequestId);
-
-    if (commissionRequestId !== undefined) {
-      $("#commission_request_id").val(commissionRequestId).change();
-      $("#commission_request_id").attr("disabled", true);
-    } else {
-      $("#commission_request_id").val("").change();
-      $("#commission_request_id").attr("disabled", false);
-    }
   
+    if (commissionRequestId !== undefined) {
+      const $commissionRequestIdField = $("#commission_request_id");
+      $commissionRequestIdField.val(commissionRequestId).change();
+  
+      // Evita que se seleccione otra opción sin deshabilitar el campo
+      $commissionRequestIdField.attr("readonly", true);
+  
+      // Opcional: Si es un select, puedes bloquear la selección de otras opciones
+      $commissionRequestIdField.find("option").not(":selected").prop("disabled", true);
+    }
   });
+  
 
 
   // Form submission handling

@@ -7,7 +7,7 @@ comission_crow_content_nav('nav-above');
 
 if (have_posts()) :
     ?>
-	<div class="row">
+	<div class="posts <?php echo is_home()?"col-md-8":"";?>">
 	<?php
             while (have_posts()) :
                 the_post();

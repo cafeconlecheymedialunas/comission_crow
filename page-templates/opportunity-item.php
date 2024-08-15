@@ -80,17 +80,12 @@ $gender = wp_get_post_terms($opportunity->ID, 'gender');
 get_header("dashboard");
 ?>
 
-<section style="background-image:url(<?php echo get_template_directory_uri() . "/assets/img/breadcrumb-bg.jpg"; ?>);">
-    <div class="breadcrumbs">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12 my-auto">
-                    <h1 class="text-white"><?php echo esc_html($opportunity->post_title); ?></h1>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+<?php
+    $spinner_template = 'templates/page-header-title.php';
+    if (locate_template($spinner_template)) {
+        include locate_template($spinner_template);
+    }
+    ?>
 
 <section class="pt-120 pb-95">
     <div class="container">
@@ -392,4 +387,4 @@ get_header("dashboard");
     </div>
 </section>
 
-<?php get_footer();?>
+<?php get_footer("dashboard");?>

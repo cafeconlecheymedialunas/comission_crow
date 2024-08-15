@@ -68,13 +68,15 @@ class PublicFront
             $this->enqueue_style_with_assets('header');
             $this->enqueue_style_with_assets('auth');
             $this->enqueue_style_with_assets('admin-dashboard');
+        }else{
+            $this->enqueue_script_with_assets("frontend");
+            $this->enqueue_style_with_assets('frontend');
         }
 
         wp_enqueue_script('slickjs', 'https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js', ['jquery'], '1.9.0', true);
         wp_enqueue_style('slickcss', 'https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css', [], '1.9.0', 'all');
         wp_enqueue_style('slickthemecss', 'https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css', [], '1.9.0', 'all');
-        $this->enqueue_script_with_assets("frontend");
-        $this->enqueue_style_with_assets('frontend');
+    
 
         if(is_front_page()){
             
@@ -82,6 +84,10 @@ class PublicFront
             $this->enqueue_script_with_assets("home");
             $this->enqueue_style_with_assets('home');
            
+        }
+
+        if(is_home()){
+            $this->enqueue_style_with_assets('blog');
         }
 
         if (is_page_template('page-templates/find-opportunities.php') ) {
