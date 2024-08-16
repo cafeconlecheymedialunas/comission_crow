@@ -17,10 +17,7 @@ $currency_terms = get_terms([
     "hide_empty" => false,
 ]);
 
-$type_of_company_terms = get_terms([
-    "taxonomy" => "type_of_company",
-    "hide_empty" => false,
-]);
+
 
 $age_terms = get_terms([
     "taxonomy" => "age",
@@ -60,7 +57,6 @@ $deliver_leads = isset($opportunity_post)? carbon_get_post_meta($opportunity_pos
 $industry = isset($opportunity_post) ?  wp_get_post_terms($opportunity_post->ID, 'industry', ['fields' => 'ids']): [];
 $language = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 'language', ['fields' => 'ids']):[];
 $location =isset($opportunity_post) ?  wp_get_post_terms($opportunity_post->ID, 'location', ['fields' => 'ids']):[];
-$type_of_company = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 'type_of_company', ['fields' => 'ids']):[];
 $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 'currency', ['fields' => 'ids']):[];
 ?>
 <form id="opportunity-form" enctype="multipart/form-data" class="row g-3">
@@ -155,22 +151,7 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
         <div class="error-message"></div>
     </div>
     <?php endif;?>
-    <?php if($type_of_company_terms):?>
-    <div class="col-md-6">
-        <label for="type_of_company" class="form-label">Company Type:</label>
-        <select name="type_of_company[]" class="form-select">
-            <option value="">Select an option</option>
-            <?php foreach ($type_of_company_terms as $term): ?>
-                <option value="<?php echo esc_attr($term->term_id); ?>" 
-                <?php echo in_array($term->term_id, $type_of_company) ? 'selected' : ''; ?>
-            >
-            <?php echo esc_html($term->name); ?>
-                </option>
-            <?php endforeach;?>
-        </select>
-        <div class="error-message"></div>
-    </div>
-    <?php endif;?>
+
     <div class="col-md-12">
             <label for="post_content" class="form-label">Content:</label>
             <div class="editor-container" data-target="post_content"></div>

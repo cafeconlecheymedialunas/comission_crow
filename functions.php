@@ -121,16 +121,63 @@ function handle_multiple_file_upload($files)
 
 
 
+add_filter('better_messages_search_user_sql_condition', 'only_users_with_contract_search', 10, 4);
+
+function only_users_with_contract_search($sql_array, $user_ids, $search, $user_id) {
+    // Obtener IDs de usuarios con los que el usuario actual tiene un contrato activo
+    $valid_user_ids = get_users_with_active_contract($user_id);
+
+    if (!empty($valid_user_ids)) {
+        $valid_user_ids_string = implode(',', $valid_user_ids);
+        $sql_array[] = "AND `ID` IN ($valid_user_ids_string)";
+    } else {
+        // Si no tiene contratos activos con nadie, excluye a todos
+        $sql_array[] = "AND `ID` IN (0)";
+    }
+
+    return $sql_array;
+}
+
+// Función para obtener los IDs de usuarios con los que se tiene un contrato activo
+function get_users_with_active_contract($user_id) {
+    // Buscar contratos activos donde el usuario actual es parte
+    $post_type = ProfileUser::get_instance()->get_user_associated_post_type();
+
+    $user = get_user_by("ID",$user_id);
 
 
 
+    $args = [
+        'post_type'   => 'contract',
+        'meta_query'  => [
+            [
+                'key'     => $user->roles[0],
+                'value'   => $post_type->ID,
+                'compare' => '=',
+            ],
+        ],
+    ];
+    $query = new Wp_Query($args);
+    
+    $contracts = $query->posts;
+    
 
+    foreach ($contracts as $contract) {
+        $company_id = carbon_get_post_meta($contract->ID, 'company');
+     
+        $user_company_id = carbon_get_post_meta($company_id ,"user_id");
+        $commercial_agent_id = carbon_get_post_meta($contract->ID, 'commercial_agent');
+        $user_commercial_agent_id = carbon_get_post_meta($commercial_agent_id ,"user_id");
+        if ($user_company_id && $user_company_id != $user_id) {
+            $user_ids[] = $user_company_id;
+        }
 
+        if ($user_commercial_agent_id  && $user_commercial_agent_id  != $user_id) {
+            $user_ids[] = $commercial_agent_id;
+        }
+    }
 
-
-
-
-
-
+    return $user_ids;
+}
 
 

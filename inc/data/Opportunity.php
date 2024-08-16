@@ -47,7 +47,6 @@ class Opportunity extends Crud
             'location' => isset($_POST["location"]) ? array_map('sanitize_text_field', $_POST["location"]) : [],
             'currency' => isset($_POST["currency"]) ? array_map('sanitize_text_field', $_POST["currency"]) : [],
             'industry' => isset($_POST["industry"]) ? array_map('sanitize_text_field', $_POST["industry"]) : [],
-            'type_of_company' => isset($_POST["type_of_company"]) ? array_map('sanitize_text_field', $_POST["type_of_company"]) : [],
             'post_author' => $current_user->ID,
             'opportunity_id' => isset($_POST['opportunity_id']) ? (int) $_POST['opportunity_id'] : null,
         ];
@@ -172,10 +171,7 @@ class Opportunity extends Crud
             wp_set_post_terms($opportunity_id, $data['industry'], 'industry');
         }
 
-        if (!empty($data['type_of_company'])) {
-            wp_set_post_terms($opportunity_id, $data['type_of_company'], 'type_of_company');
-        }
-
+       
         if (!empty($data['target_audience'])) {
             wp_set_post_terms($opportunity_id, $data['target_audience'], 'target_audience');
         }
@@ -245,7 +241,6 @@ class Opportunity extends Crud
         $target_audience_filter = isset($_GET['target_audience']) ? $_GET['target_audience'] : [];
         $age_filter = isset($_GET['age']) ? $_GET['age'] : [];
         $gender_filter = isset($_GET['gender']) ? $_GET['gender'] : [];
-        $type_of_company_filter = isset($_GET['type_of_company']) ? $_GET['type_of_company'] : [];
         $deliver_leads_filter = isset($_GET['deliver_leads']) ? $_GET['deliver_leads'] : null;
         $min_price = isset($_GET['minimum_price']) ? floatval($_GET['minimum_price']) : null;
         $max_price = isset($_GET['maximum_price']) ? floatval($_GET['maximum_price']) : null;
@@ -294,7 +289,7 @@ class Opportunity extends Crud
             $query_args['meta_query'] = $meta_query;
         }
     
-        if ($industry_filter || $language_filter || $location_filter || $currency_filter || $type_of_company_filter || $target_audience_filter || $age_filter || $gender_filter) {
+        if ($industry_filter || $language_filter || $location_filter || $currency_filter || $target_audience_filter || $age_filter || $gender_filter) {
             $tax_query = array('relation' => 'AND');
     
             if ($industry_filter) {
@@ -332,14 +327,6 @@ class Opportunity extends Crud
                 );
             }
     
-            if ($type_of_company_filter) {
-                $tax_query[] = array(
-                    'taxonomy' => 'type_of_company',
-                    'field' => 'term_id',
-                    'terms' => $type_of_company_filter,
-                    'operator' => 'IN',
-                );
-            }
     
             if ($target_audience_filter) {
                 $tax_query[] = array(

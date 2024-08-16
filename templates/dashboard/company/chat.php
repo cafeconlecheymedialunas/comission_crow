@@ -5,7 +5,7 @@
     <div class="col-md-12">
        
 <div class="card">
-    <?php echo do_shortcode('[better_messages]'); ?>
+    <?php echo do_shortcode('[better_messages user_ids="78"]]'); ?>
 </div>
 </div>
 </div>

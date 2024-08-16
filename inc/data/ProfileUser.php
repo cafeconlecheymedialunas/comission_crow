@@ -393,9 +393,11 @@ class ProfileUser
         return $dispute_query->posts;
     }
 
-    public function get_user_associated_post_type()
+    public function get_user_associated_post_type($user_id = null )
     {
-        $current_user = wp_get_current_user();
+        $current_user = !$user_id?wp_get_current_user():get_user_by("ID",$user_id);
+
+       
 
         $query = new WP_Query([
             'post_type' => $current_user->roles[0],

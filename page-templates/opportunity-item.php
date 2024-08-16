@@ -47,6 +47,47 @@ $company_industry = wp_get_post_terms($company, 'industry');
 $company_activity = wp_get_post_terms($company, 'activity');
 $company_location = wp_get_post_terms($company, 'location');
 $company_employees_number = carbon_get_post_meta($company, 'employees_number');
+$company_type_of_company = wp_get_post_terms($company, 'type_of_company');
+
+$company_street = carbon_get_post_meta($company, 'company_street');
+$company_number = carbon_get_post_meta($company, 'company_number');
+$company_street = carbon_get_post_meta($company, 'company_street');
+$company_street = carbon_get_post_meta($company, 'company_street');
+$company_city = carbon_get_post_meta($company, 'company_city');
+$company_postalcode = carbon_get_post_meta($company, 'company_postalcode');
+$company_country = carbon_get_post_meta($company, 'company_country');
+
+$company_website_url = carbon_get_post_meta($company, 'website_url');
+$company_facebook_url = carbon_get_post_meta($company, 'facebook_url');
+$company_instagram_url = carbon_get_post_meta($company, 'instagram_url');
+$company_twitter_url = carbon_get_post_meta($company, 'twitter_url');
+$company_linkedin_url = carbon_get_post_meta($company, 'linkedin_url');
+$company_tiktok_url = carbon_get_post_meta($company, 'tiktok_url');
+$company_youtube_url = carbon_get_post_meta($company, 'youtube_url');
+$address_parts = [];
+
+// Agregar partes de la dirección solo si existen
+if (!empty($company_street)) {
+    $address_parts[] = $company_street;
+}
+if (!empty($company_number)) {
+    $address_parts[] = $company_number;
+}
+if (!empty($company_city)) {
+    $address_parts[] = $company_city;
+}
+if (!empty($company_postalcode)) {
+    $address_parts[] = $company_postalcode;
+}
+if (!empty($company_country)) {
+    $address_parts[] = $company_country;
+}
+
+// Unir las partes con comas
+$company_full_address = implode(', ', $address_parts);
+
+
+   
 
 $sales_cycle_estimation = carbon_get_post_meta($opportunity->ID, "sales_cycle_estimation");
 $price = carbon_get_post_meta($opportunity->ID, "price");
@@ -71,142 +112,132 @@ $languages = !empty($language) ? array_map(function ($lang) {
     return esc_html($lang->name);
 }, $language) : [];
 $location = wp_get_post_terms($opportunity->ID, 'location');
-$type_of_company = wp_get_post_terms($opportunity->ID, 'type_of_company');
 $currency = wp_get_post_terms($opportunity->ID, 'currency');
 $target_audience = wp_get_post_terms($opportunity->ID, 'target_audience');
 $age = wp_get_post_terms($opportunity->ID, 'age');
 $gender = wp_get_post_terms($opportunity->ID, 'gender');
 
 get_header("dashboard");
+
+$template = 'templates/page-header-title.php';
+$page_custom_title = get_the_title($opportunity->ID);
+
+if (locate_template($template)) {
+    include locate_template($template);
+}
+
 ?>
 
-<?php
-    $spinner_template = 'templates/page-header-title.php';
-    if (locate_template($spinner_template)) {
-        include locate_template($spinner_template);
-    }
-    ?>
 
-<section class="pt-120 pb-95">
+<section class="pt-5 pb-5">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <div class="row project-meta-cards mb-3">
-                    <!-- Display meta information -->
-                    <?php if (!empty($type_of_company)): ?>
-                        <div class="col-xl-4 col-md-6">
-                            <div class="project-meta">
-                                <div class="my-auto">
-                                    <i class="fa fa-id-card-alt"></i>
-                                </div>
-                                <div class="my-auto">
-                                    <span>Type of Company</span>
-                                    <h6><?php echo esc_html($type_of_company[0]->name); ?></h6>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endif;?>
+                <div class="row opportunity-meta-cards mb-3">
+                
 
-                    <?php if (!empty($target_audience)): ?>
-                        <div class="col-xl-4 col-md-6">
-                            <div class="project-meta">
+                   
+                        <div class="col-xl-4 col-md-6 target-audience">
+                            <div class="opportunity-meta">
                                 <div class="my-auto">
                                     <i class="fa-solid fa-bullseye"></i>
                                 </div>
                                 <div class="my-auto">
                                     <span>Target Audience</span>
-                                    <h6><?php echo esc_html($target_audience[0]->name); ?></h6>
+                                    <h6><?php echo $target_audience[0]? esc_html($target_audience[0]->name):"Not especified"; ?></h6>
                                 </div>
                             </div>
                         </div>
-                    <?php endif;?>
+                  
 
-                    <?php if (!empty($sales_cycle_estimation)): ?>
-                        <div class="col-xl-4 col-md-6">
-                            <div class="project-meta">
+                   
+                        <div class="col-xl-4 col-md-6 industry">
+                            <div class="opportunity-meta">
                                 <div class="my-auto">
                                     <i class="fa fa-clock"></i>
                                 </div>
                                 <div class="my-auto">
-                                    <span>Sales Cycle Estimation</span>
-                                    <h6><?php echo esc_html($sales_cycle_estimation); ?> Days</h6>
+                                    <span>Industry</span>
+                                    <h6><?php echo $industry[0]? esc_html($industry[0]->name):"Not especified"; ?> </h6>
                                 </div>
                             </div>
                         </div>
-                    <?php endif;?>
+                  
 
-                    <?php if (!empty($currency)): ?>
-                        <div class="col-xl-4 col-md-6">
-                            <div class="project-meta">
+                   
+                        <div class="col-xl-4 col-md-6 currency">
+                            <div class="opportunity-meta">
                                 <div class="my-auto">
                                     <i class="fa fa-dollar-sign"></i>
                                 </div>
                                 <div class="my-auto">
                                     <span>Currency</span>
-                                    <h6><?php echo esc_html($currency[0]->name); ?></h6>
+                                    <h6><?php echo $currency[0]? esc_html($currency[0]->name):"Not especified"; ?></h6>
                                 </div>
                             </div>
                         </div>
-                    <?php endif;?>
+                  
 
-                    <?php if (!empty($age)): ?>
-                        <div class="col-xl-4 col-md-6">
-                            <div class="project-meta">
+                        <div class="col-xl-4 col-md-6 age">
+                            <div class="opportunity-meta">
                                 <div class="my-auto">
                                     <i class="fa fa-calendar-alt"></i>
                                 </div>
                                 <div class="my-auto">
                                     <span>Age Range</span>
-                                    <h6><?php echo esc_html($age[0]->name); ?></h6>
+                                    <h6><?php echo $age[0]? esc_html($age[0]->name):"Not especified"; ?></h6>
                                 </div>
                             </div>
                         </div>
-                    <?php endif;?>
+                    
 
-                    <?php if (!empty($gender)): ?>
-                        <div class="col-xl-4 col-md-6">
-                            <div class="project-meta">
+                    
+                   
+                        <div class="col-xl-4 col-md-6 location">
+                            <div class="opportunity-meta">
+                                <div class="my-auto">
+                                    <i class="fa fa-calendar-alt"></i>
+                                </div>
+                                <div class="my-auto">
+                                    <span>Location</span>
+                                    <h6><?php echo $location[0]? esc_html($location[0]->name):"Not especified"; ?></h6>
+                                </div>
+                            </div>
+                        </div>
+                
+
+                    
+                        <div class="col-xl-4 col-md-6 gender">
+                            <div class="opportunity-meta">
                                 <div class="my-auto">
                                     <i class="fa fa-venus-mars"></i>
                                 </div>
                                 <div class="my-auto">
                                     <span>Gender</span>
-                                    <h6><?php echo esc_html($gender[0]->name); ?></h6>
+                                    <h6><?php echo $gender[0]? esc_html($gender[0]->name):"Not especified"; ?></h6>
                                 </div>
                             </div>
                         </div>
-                    <?php endif;?>
+                    
 
-                    <div class="col-xl-4 col-md-6">
-                        <div class="project-meta">
-                            <div class="my-auto">
-                                <i class="fa fa-shield-alt"></i>
-                            </div>
-                            <div class="my-auto">
-                                <span>Project Level</span>
-                                <h6>Expensive</h6>
-                            </div>
-                        </div>
-                    </div>
 
                     <?php if (!empty($languages)): ?>
-                        <div class="col-xl-4 col-md-6">
-                            <div class="project-meta">
+                        <div class="col-xl-4 col-md-6 language">
+                            <div class="opportunity-meta">
                                 <div class="my-auto">
                                     <i class="fa fa-globe-asia"></i>
                                 </div>
                                 <div class="my-auto">
                                     <span>Languages</span>
-                                    <h6><?php echo implode(', ', $languages); ?></h6>
+                                    <h6><?php echo $languages ? esc_html(implode(', ', $languages)):"Not especified"; ?></h6>
                                 </div>
                             </div>
                         </div>
                     <?php endif;?>
                 </div>
 
-                <div class="project-entry-content mb-3">
-                    <h4>Description</h4>
-                    <?php echo wp_kses_post($opportunity->post_content); ?>
+                <div class="opportunity-entry-content mb-3">
+                    <?php echo$opportunity->post_content; ?>
                 </div>
 
                 <?php if (!empty($images)): ?>
@@ -226,45 +257,69 @@ get_header("dashboard");
 
 
                 <?php if (!empty($videos)): ?>
-                    <div class="project-videos mb-3">
-                        <h4>Videos</h4>
-                        <div class="row">
-                            <?php foreach ($videos as $video_data): ?>
-                                <?php
-                                    if (isset($video_data["video"]) && !empty($video_data["video"])):
-                                        $video_url = $video_data["video"];
+    <div class="opportunity-videos mb-3">
+        <h4>Videos</h4>
+        <div class="row">
+            <?php foreach ($videos as $video_data): ?>
+                <?php
+                    if (isset($video_data["video"]) && !empty($video_data["video"])):
+                        $video_url = $video_data["video"];
 
-                                        // Analiza la URL y extrae el ID del video
-                                        $parsed_url = parse_url($video_url);
-                                        $video_id = '';
+                        // Analiza la URL y extrae el ID del video
+                        $parsed_url = parse_url($video_url);
+                        $video_id = '';
 
-                                        if (isset($parsed_url['query'])) {
-                                            parse_str($parsed_url['query'], $query_params);
-                                            $video_id = $query_params['v'] ?? '';
-                                        } elseif (isset($parsed_url['path'])) {
-                                        // Manejar URLs cortas (youtu.be)
-                                        $path_parts = explode('/', trim($parsed_url['path'], '/'));
-                                        $video_id = $path_parts[0] ?? '';
-                                    }
+                        if (isset($parsed_url['query'])) {
+                            parse_str($parsed_url['query'], $query_params);
+                            $video_id = $query_params['v'] ?? '';
+                        } elseif (isset($parsed_url['path'])) {
+                            // Manejar URLs cortas (youtu.be)
+                            $path_parts = explode('/', trim($parsed_url['path'], '/'));
+                            $video_id = $path_parts[0] ?? '';
+                        }
 
-                                    if (!empty($video_id)): ?>
-                                        <div class="col-md-6 mb-3">
-                                            <div class="embed-responsive embed-responsive-16by9">
-                                                <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/<?php echo esc_attr($video_id); ?>" allowfullscreen></iframe>
-                                            </div>
-                                        </div>
-                                    <?php endif;?>
-                                <?php endif;?>
-                            <?php endforeach;?>
-                        </div>
-                    </div>
-                <?php endif;?>
+                        if (!empty($video_id)): ?>
+                            <div class="col-sm-6 mb-3">
+                                <div class="embed-responsive embed-responsive-16by9">
+                                    <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/<?php echo esc_attr($video_id); ?>" allowfullscreen></iframe>
+                                </div>
+                            </div>
+                        <?php endif;?>
+                    <?php endif;?>
+            <?php endforeach;?>
+        </div>
+    </div>
+<?php endif;?>
+
+<style>
+    .embed-responsive {
+        overflow: hidden;
+        padding-bottom: 56.25%; /* 16:9 aspect ratio */
+        position: relative;
+        height: 0;
+    }
+
+    .embed-responsive-item {
+        border: 0;
+        height: 100%;
+        left: 0;
+        position: absolute;
+        top: 0;
+        width: 100%;
+    }
+
+    .col-md-4, .col-sm-6 {
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+</style>
+
 
 
 
                 <?php if (!empty($supporting_materials)): ?>
                     <div class="supporting-materials mb-3">
-                        <h4>Supporting Materials</h4>
+                        <h6>Supporting Materials</h6>
                         <ul class="list-group">
                             <?php foreach ($supporting_materials as $material):
                             $material_src = wp_get_attachment_url($material); // URL completa del archivo
@@ -285,42 +340,42 @@ get_header("dashboard");
                 <?php endif;?>
 
 
-                <div class="project-entry-content mb-3">
+                <div class="opportunity-entry-content mb-3">
                     <h6>Tips</h6>
                     <?php echo wp_kses_post($tips); ?>
                 </div>
                 <?php if (!empty($question_1)): ?>
-                    <div class="project-entry-content mb-3">
+                    <div class="opportunity-entry-content mb-3">
                         <h6>What is your company’s elevator pitch?</h6>
                         <?php echo wp_kses_post($question_1); ?>
                     </div>
                 <?php endif;?>
                 <?php if (!empty($question_2)): ?>
-                    <div class="project-entry-content mb-3">
+                    <div class="opportunity-entry-content mb-3">
                         <h6>Please complete the below value statement: Example: "We help (XXX) in the (XXX) industry (XXX) WITHOUT (XXX) & WITHOUT (XXX).</h6>
                         <?php echo wp_kses_post($question_2); ?>
                     </div>
                 <?php endif;?>
                 <?php if (!empty($question_3)): ?>
-                    <div class="project-entry-content mb-3">
+                    <div class="opportunity-entry-content mb-3">
                         <h6>How do you currently pitch your company to a prospect?</h6>
                         <?php echo wp_kses_post($question_3); ?>
                     </div>
                 <?php endif;?>
                 <?php if (!empty($question_4)): ?>
-                    <div class="project-entry-content mb-3">
+                    <div class="opportunity-entry-content mb-3">
                         <h6>What are the most common objections you face within your current sales cycle?</h6>
                         <?php echo wp_kses_post($question_4); ?>
                     </div>
                 <?php endif;?>
                 <?php if (!empty($question_5)): ?>
-                    <div class="project-entry-content mb-3">
+                    <div class="opportunity-entry-content mb-3">
                         <h6>What strategies do you employ to overcome the objections specified?</h6>
                         <?php echo wp_kses_post($question_5); ?>
                     </div>
                 <?php endif;?>
                 <?php if (!empty($question_6)): ?>
-                    <div class="project-entry-content mb-3">
+                    <div class="opportunity-entry-content mb-3">
                         <h6>Please give an overview of what company challenges you help your clients overcome?</h6>
                         <?php echo wp_kses_post($question_6); ?>
                     </div>
@@ -329,58 +384,107 @@ get_header("dashboard");
 
             <div class="col-lg-4 position-relative">
                 <div class="widget-area">
-                    <div class="project-widget">
+                    <div class="opportunity-widget">
                         <div class="text-center">
-                            <h5>Price</h5>
-                            <h1>
-                                <span class="woocommerce-Price-amount amount">
-                                    <bdi><?php echo Helper::format_price($price); ?></bdi>
+                            <h5>Average deal value</h5>
+                            
+                                <span class="price">
+                                    <?php echo Helper::format_price($price); ?>
                                 </span>
-                            </h1>
-                            <p>Commission: <?php echo esc_html($commission); ?>%</p>
-                            <p>Deliver Leads?: <span><?php echo esc_html($deliver_leads === 'yes' ? "Yes" : "No"); ?></span></p>
-                            <p>Sales Cycle Estimation: <span><?php echo esc_html($sales_cycle_estimation); ?> Days</span></p>
+                            
+                            <p>Commission: <strong><?php echo esc_html($commission); ?>%</strong></p>
+                            <p>Deliver Leads?: <strong><?php echo esc_html($deliver_leads === 'yes' ? "Yes" : "No"); ?></strong></p>
+                            <p>Sales Cycle Estimation: <strong><?php echo esc_html($sales_cycle_estimation); ?> Days</strong></p>
+                            <p><i class="fa fa-calendar"></i> <span>Posted <?php echo esc_html(Helper::get_human_time_diff($date) . " ago."); ?></span></p>
+                            <p><i class="fa fa-user"></i> <span>Posted By: <?php echo esc_html(get_the_title($company)); ?></span></p>
                         </div>
-                        <ul class="list-unstyled">
-                            <li><i class="fa fa-calendar"></i> <span>Posted <?php echo esc_html(Helper::get_human_time_diff($date) . " ago."); ?></span></li>
-                            <li><i class="fa fa-user"></i> <span>Posted By: <?php echo esc_html(get_the_title($company)); ?></span></li>
-                            <li><i class="fa fa-map-marker-alt"></i> <span>Location: <a href="#"><?php echo esc_html($location[0]->name ?? "Not Specified"); ?></a></span></li>
-                            <li><i class="fa fa-briefcase"></i> <span>Industry: <a href="#"><?php echo esc_html($industry[0]->name ?? 'Not Specified'); ?></a></span></li>
-                        </ul>
+                       
                     </div>
-                    <div class="project-widget">
-                        <div class="text-center">
-                            <h3 class="project-widget-title">About Company</h3>
-                            <a href="https://nexfyapp-cp167.wordpresstemporal.com/subcarpeta/buyers/nicoreyes7/">
-                                <?php
-                                if ($company) {
-                                    $post_thumbnail = get_the_post_thumbnail($company, [100, 100], ['class' => 'rounded-circle']);
-                                    $default = get_template_directory_uri() . "/assets/img/placeholder.png";
-                                    if ($post_thumbnail) {
-                                        echo $post_thumbnail;
-                                    } else {
-                                        echo '<img class="rounded-circle" width="100" height="100" src="' . esc_url($default) . '"/>';
-                                    }
-                                }
-                                ?>
-                            </a>
-                            <a href="https://nexfyapp-cp167.wordpresstemporal.com/subcarpeta/buyers/nicoreyes7/" target="_blank">
-                                <h4><?php echo esc_html(get_the_title($company)); ?></h4>
-                            </a>
-                            <p>Industry: <?php echo esc_html($company_industry[0]->name ?? 'Not Specified'); ?></p>
-                            <p>Activity: <?php echo esc_html($company_activity[0]->name ?? 'Not Specified'); ?></p>
-                            <p>Number of Employees: <?php echo esc_html($company_employees_number[0]->name ?? 'Not Specified'); ?></p>
-                        </div>
+                    <div class="opportunity-widget">
+    <div class="text-center">
+        <a href="https://nexfyapp-cp167.wordpresstemporal.com/subcarpeta/buyers/nicoreyes7/">
+            <?php
+            if ($company) {
+                $post_thumbnail = get_the_post_thumbnail($company, [100, 100], ['class' => 'rounded-circle']);
+                $default = get_template_directory_uri() . "/assets/img/placeholder.png";
+                if ($post_thumbnail) {
+                    echo $post_thumbnail;
+                } else {
+                    echo '<img class="rounded-circle" width="100" height="100" src="' . esc_url($default) . '"/>';
+                }
+            }
+            ?>
+        </a>
+      
+        <h4 class="company-name"><?php echo esc_html(get_the_title($company)); ?></h4>
+    
 
-                        <ul class="list-unstyled mt-4 meta">
-                            <!-- Add any additional meta items here if needed -->
-                        </ul>
-                        <div class="text-center">
-                            <a href="#" class="btn btn-primary mt-5" data-bs-toggle="modal" data-bs-target="#message69">
-                                Contact Company
-                            </a>
-                        </div>
-                    </div>
+        <p>Industry: <strong><?php echo esc_html($company_industry[0]->name ?? 'Not Specified'); ?></strong></p>
+        <p>Activity: <strong><?php echo esc_html($company_activity[0]->name ?? 'Not Specified'); ?></strong></p>
+        <p>Location: <strong><?php echo esc_html($company_location[0]->name ?? 'Not Specified'); ?></strong></p>
+        <p>Type of Company: <strong><?php echo esc_html($company_type_of_company[0]->name ?? 'Not Specified'); ?></strong></p>
+        <p>Number of Employees: <strong><?php echo esc_html($company_employees_number ?? 'Not Specified'); ?></strong></p>
+
+        <?php if (!empty($company_full_address)): ?>
+            <p><?php echo esc_html($company_full_address); ?></p>
+        <?php endif; ?>
+
+        <div class="company-social-links">
+      
+            <ul class="list-inline">
+                <?php if (!empty($company_website_url)): ?>
+                    <li class="list-inline-item">
+                        <a href="<?php echo esc_url($company_website_url); ?>" target="_blank">
+                            <i class="fas fa-globe"></i>
+                        </a>
+                    </li>
+                <?php endif; ?>
+                <?php if (!empty($company_facebook_url)): ?>
+                    <li class="list-inline-item">
+                        <a href="<?php echo esc_url($company_facebook_url); ?>" target="_blank">
+                            <i class="fab fa-facebook-f"></i> 
+                        </a>
+                    </li>
+                <?php endif; ?>
+                <?php if (!empty($company_instagram_url)): ?>
+                    <li class="list-inline-item">
+                        <a href="<?php echo esc_url($company_instagram_url); ?>" target="_blank">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </li>
+                <?php endif; ?>
+                <?php if (!empty($company_twitter_url)): ?>
+                    <li class="list-inline-item">
+                        <a href="<?php echo esc_url($company_twitter_url); ?>" target="_blank">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                    </li>
+                <?php endif; ?>
+                <?php if (!empty($company_linkedin_url)): ?>
+                    <li class="list-inline-item">
+                        <a href="<?php echo esc_url($company_linkedin_url); ?>" target="_blank">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </li>
+                <?php endif; ?>
+                <?php if (!empty($company_tiktok_url)): ?>
+                    <li class="list-inline-item">
+                        <a href="<?php echo esc_url($company_tiktok_url); ?>" target="_blank">
+                            <i class="fab fa-tiktok"></i> 
+                        </a>
+                    </li>
+                <?php endif; ?>
+                <?php if (!empty($company_youtube_url)): ?>
+                    <li class="list-inline-item">
+                        <a href="<?php echo esc_url($company_youtube_url); ?>" target="_blank">
+                            <i class="fab fa-youtube"></i> 
+                        </a>
+                    </li>
+                <?php endif; ?>
+            </ul>
+        </div>
+    </div>
+</div>
                 </div>
                 </div>
         </div>

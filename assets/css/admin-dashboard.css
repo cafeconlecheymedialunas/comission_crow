@@ -491,3 +491,85 @@ margin-bottom:15px;
 .find-agents .star-rating{
   margin-top:10px;
 }
+
+/* Single Opportunity*/
+.opportunity-meta{
+  border-radius: 10px;
+    padding: 15px;
+    background: #fff;
+    display: flex;
+    margin-bottom: 15px;
+}
+.opportunity-meta i{
+      font-size: 36px;
+    margin-right: 15px;
+}
+.opportunity-meta >span{
+  font-family: Rubik;
+  line-height: 28px;
+  font-weight: normal;
+  font-style: normal;
+  color: #4A6375;
+  font-size: 16px;
+}
+.opportunity-meta-cards .target-audience .opportunity-meta{
+  background: rgb(103 135 254 / 20%);
+}
+.opportunity-meta-cards .industry .opportunity-meta{
+  background: rgb(0 233 185 / 20%);
+}
+
+.opportunity-meta-cards .currency .opportunity-meta{
+  background: rgb(255 187 0 / 20%);
+}
+.opportunity-meta-cards .age .opportunity-meta{
+  background: rgb(255 0 122 / 20%);
+}
+
+.opportunity-meta-cards .location .opportunity-meta{
+  background: rgb(153 129 251 / 20%);
+}
+
+.opportunity-meta-cards .gender .opportunity-meta{
+  background: rgb(129 215 66 / 20%);
+}
+
+.opportunity-meta-cards .language .opportunity-meta{
+  background: rgb(255 187 0 / 20%);
+}
+.opportunity-widget{
+  padding: 30px;
+  background: #F8FAFB;
+  border-radius: 20px;
+  margin-bottom:30px;
+}
+
+body p{
+  font-family: Rubik;
+    line-height: 28px;
+    font-weight: normal;
+    font-style: normal;
+    color: #4A6375;
+    font-size: 16px;
+}
+
+.opportunity-widget .price{
+  font-size: calc(1.375rem + 1.5vw);
+  margin:20px 0;
+  display: block;
+}
+
+.opportunity-widget p{
+  margin-bottom:0;
+}
+.opportunity-widget .company-social-links{
+  margin-top:20px;
+}
+.opportunity-widget .list-unstyled{
+  border-radius: 20px;
+  background: #fff;
+  padding: 20px;
+}
+.opportunity-widget .company-name{
+  margin-top:20px;
+}

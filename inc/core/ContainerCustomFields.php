@@ -46,6 +46,7 @@ class ContainerCustomFields
                 Field::make('text', 'company_number', __('Company Number')),
                 Field::make('text', 'company_city', __('Company City')),
                 Field::make('text', 'company_state', __('Company State')),
+                Field::make('text', 'company_country', __('Company Country')),
                 Field::make('text', 'company_postalcode', __('Company Postal Code')),
                 Field::make('text', 'employees_number', __('Number of Employees')),
                 Field::make('text', 'website_url', __('website Profile')),
@@ -109,16 +110,16 @@ class ContainerCustomFields
                 ->add_fields([
                     Field::make('oembed', 'video', __('Url Video')),
                 ]),
-            Field::make('textarea', 'tips', __('Tips')),
+            Field::make('rich_text', 'tips', __('Tips')),
 
         ])->add_tab(__('Questions'), [
 
-            Field::make('textarea', 'question_1', __('1) What is your company’s elevator pitch?')),
-            Field::make('textarea', 'question_2', __('2) Please complete the below value statement: Example: "We help (XXX) in the (XXX) industry (XXX) WITHOUT (XXX) & WITHOUT (XXX).')),
-            Field::make('textarea', 'question_3', __('3) How do you currently pitch your company to a prospect?')),
-            Field::make('textarea', 'question_4', __('4) What are the most common objections you face within your current sales cycle?')),
-            Field::make('textarea', 'question_5', __('5) What strategies do you employ to overcome the objections specified?')),
-            Field::make('textarea', 'question_6', __('6) Please give an overview of what company challenges you help your clients overcome?')),
+            Field::make('rich_text', 'question_1', __('1) What is your company’s elevator pitch?')),
+            Field::make('rich_text', 'question_2', __('2) Please complete the below value statement: Example: "We help (XXX) in the (XXX) industry (XXX) WITHOUT (XXX) & WITHOUT (XXX).')),
+            Field::make('rich_text', 'question_3', __('3) How do you currently pitch your company to a prospect?')),
+            Field::make('rich_text', 'question_4', __('4) What are the most common objections you face within your current sales cycle?')),
+            Field::make('rich_text', 'question_5', __('5) What strategies do you employ to overcome the objections specified?')),
+            Field::make('rich_text', 'question_6', __('6) Please give an overview of what company challenges you help your clients overcome?')),
 
         ])->where('post_type', '=', 'opportunity');
 
