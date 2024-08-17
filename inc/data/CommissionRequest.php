@@ -83,6 +83,7 @@ class CommissionRequest
               
                 if ($price_paid_in_dollars < $minimal_price) {
                     $minimal_price_formatted = Helper::format_price_for_user($minimal_price);
+                    $minimal_price_formatted = $minimal_price_formatted ?? "0";
                     wp_send_json_error(["general" => "In row $row_number the price is less than the agreed contract price ($minimal_price_formatted)."]);
                     wp_die();
                 }
