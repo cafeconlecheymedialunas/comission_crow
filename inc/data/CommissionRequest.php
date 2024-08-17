@@ -13,107 +13,81 @@ class CommissionRequest
         }
         return self::$instance;
     }
-
     public function create_commission_request()
     {
-        // Verify nonce for security
         check_ajax_referer('create_commission_request_nonce', 'security');
-
+    
         $errors = []; // Array for item-specific errors
-
-        // Sanitize and validate form data
+    
         $contract_id = sanitize_text_field($_POST['contract_id']);
-
         $comments = wp_kses_post($_POST["comments"]);
-
-        // Validate contract_id
+    
         if (empty($contract_id)) {
-
             wp_send_json_error(["general" => 'Contract ID is required.']);
         }
-
+    
         $contract = get_post($contract_id);
-
         if (empty($contract)) {
             wp_send_json_error(["general" => 'Contract Not Found.']);
-
         }
-
-        // Validate current user
+    
         $current_user = wp_get_current_user();
         if (!in_array("commercial_agent", $current_user->roles)) {
             wp_send_json_error(["general" => 'You must be a commercial agent to create a commission request.']);
-
         }
-
-        // Verify the status of the contract
+    
         $status = carbon_get_post_meta($contract_id, "status");
         if ($status === "pending" || $status === "refused") {
             wp_send_json_error(["general" => 'The contract is either pending or refused.']);
-
         }
-
-        // Check if a commission request already exists for this contract
-        $query = new WP_Query([
-            'post_type' => 'commission_request',
-            'meta_query' => [
-                [
-                    'key' => 'contract_id',
-                    'value' => $contract_id,
-                    'compare' => '=', // Compare exact value
-                ],
-            ],
-        ]);
-        $commission_requests = $query->posts;
-
-        if (!empty($commission_requests)) {
-
-            wp_send_json_error(["general" => 'A commission request already exists for this contract.']);
-        }
-
-        // Check if there are any general errors and send them in response
-
+    
+    
         $allowed_supporting_types = ['application/pdf', 'text/plain'];
         $max_supporting_size = 10 * 1024 * 1024; // 10 MB
-
+    
         if (isset($_FILES['general_invoice']) && !empty($_FILES['general_invoice']['name'][0])) {
             $validation_result = Helper::validate_files($_FILES['general_invoice'], $allowed_supporting_types, $max_supporting_size);
-            if (!$validation_result["success"] ) {
+            if (!$validation_result["success"]) {
                 $errors['general_invoice'][] = $validation_result["errors"][0];
             }
         }
-
+    
         $general_invoice_ids = Helper::handle_multiple_file_upload($_FILES['general_invoice']);
-
-        // Prepare and update Carbon Fields
+    
         $items = [];
         $total_cart = 0;
         $commission = intval(carbon_get_post_meta($contract_id, "commission"));
         $minimal_price = carbon_get_post_meta($contract_id, "minimal_price");
-
+    
         if (isset($_POST['price']) && is_array($_POST['price'])) {
             foreach ($_POST['price'] as $index => $price) {
                 $price_paid = floatval(sanitize_text_field($price));
                 $quantity = intval(sanitize_text_field($_POST['quantity'][$index]));
                 $detail = sanitize_text_field($_POST['detail'][$index]);
-
-                // Adding the row number to the error messages
                 $row_number = $index + 1;
 
-                if ($price_paid <= 0) {
-                    wp_send_json_error(["general" => "In row $row_number the price is no specified."]);
-                    wp_die();
-                }
-                if ($price_paid < $minimal_price) {
-                    $minimal_price_formatted = Helper::get_human_time_diff($minimal_price);
-                    wp_send_json_error(["general" => "In row $row_number  the price is less than the agreed contract price ($minimal_price_formatted)."]);
-                    wp_die();
-                }
+
                 if ($quantity <= 0) {
-                    wp_send_json_error(["general" => "In row $row_number the quantity is no specified."]);
+                    wp_send_json_error(["general" => "In row $row_number the quantity is not specified."]);
+                    wp_die();
+                }
+                if ($price_paid <= 0) {
+                    wp_send_json_error(["general" => "In row $row_number the price is not specified."]);
+                    wp_die();
+                }
+                $price_paid_in_dollars = Helper::convert_to_usd($price_paid);
+                if (is_wp_error($price_paid_in_dollars)) {
+                    wp_send_json_error(["general" => $price_paid_in_dollars->get_error_message()]);
+                    wp_die();
+                }
+              
+                if ($price_paid_in_dollars < $minimal_price) {
+                    $minimal_price_formatted = Helper::format_price_for_user($minimal_price);
+                    wp_send_json_error(["general" => "In row $row_number the price is less than the agreed contract price ($minimal_price_formatted)."]);
                     wp_die();
                 }
 
+               
                 if (isset($_FILES['invoice']) && !empty($_FILES['invoice']['name'][0])) {
                     $validation_result = Helper::validate_files($_FILES['invoice']);
                     if (!$validation_result['success']) {
@@ -122,15 +96,15 @@ class CommissionRequest
                         wp_die();
                     }
                 }
-
+    
                 $invoices_ids = Helper::handle_multiple_file_upload($_FILES['invoice']);
-
+    
                 if ($quantity >= 0 && $price_paid >= 0) {
-                    $subtotal = $price_paid * $quantity;
+                    $subtotal = $price_paid_in_dollars * $quantity;
                     $total_cart += $subtotal;
-
+    
                     $items[] = [
-                        'price_paid' => $price_paid,
+                        'price_paid' => $price_paid_in_dollars,
                         'quantity' => $quantity,
                         'subtotal' => $subtotal,
                         'detail' => $detail,
@@ -139,32 +113,33 @@ class CommissionRequest
                 }
             }
         }
-
-        // Check if there are any item-specific errors and send them in response
+    
         if (!empty($errors)) {
             wp_send_json_error(['fields' => $errors]);
             wp_die();
         }
-
+    
         $sku = carbon_get_post_meta($contract_id, "sku");
         $contract_title_key = $sku ?? $contract_id;
-
+    
         $post_id = wp_insert_post([
             'post_type' => 'commission_request',
             'post_status' => 'publish',
-            'post_title' => 'Commission Request by contract ' . $contract_title_key, // Customize the title as needed
+            'post_title' => 'Commission Request by contract ' . $contract_title_key,
         ]);
-
+    
         if (is_wp_error($post_id)) {
             wp_send_json_error(["general" => 'Could not create the commission request.']);
             wp_die();
         }
-
-        $total_agent = $this->calculate_agent_price($total_cart, $commission);
-        $total_tax_service = $this->calculate_tax_stripe_price($total_cart);
-        $total_platform = $this->calculate_platform_price($total_cart);
+    
+        $total_agent = $this->calculate_agent_price($total_cart, $commission, $current_user->ID);
+        $total_tax_service = $this->calculate_tax_stripe_price($total_cart, $current_user->ID);
+        $total_platform = $this->calculate_platform_price($total_cart, $current_user->ID);
         $total_to_pay = $this->calculate_total($total_agent, $total_tax_service, $total_platform);
+        
         $status_history = Helper::add_item_to_status_history($contract_id, "pending");
+
         carbon_set_post_meta($post_id, 'contract_id', $contract_id);
         carbon_set_post_meta($post_id, 'general_invoice', $general_invoice_ids);
         carbon_set_post_meta($post_id, 'items', $items);
@@ -178,66 +153,49 @@ class CommissionRequest
         carbon_set_post_meta($post_id, "status", "pending");
         carbon_set_post_meta($post_id, "status_history", $status_history);
         carbon_set_post_meta($post_id, "initiating_user", get_current_user_id());
-
+    
         $this->send_commission_request_email_to_agent($post_id);
         $this->send_commission_request_email_to_company($post_id);
-
+    
         wp_send_json_success(['message' => 'Commission request successfully created.']);
         wp_die();
     }
+    
 
-    public function calculate_agent_price($total_cart, $commission)
+    public function calculate_agent_price($total_cart, $commission, $user_id = null)
     {
-        // Verifica que $total_cart y $commission sean valores numéricos y no vacíos
-        if (empty($total_cart) || !is_numeric($total_cart)) {
-            return 0; // Retorna 0 si el valor es inválido
-        }
+      
         if (empty($commission) || !is_numeric($commission)) {
-            return 0; // Retorna 0 si el valor es inválido
+            return new WP_Error('invalid_commission', 'Invalid commission value.');
         }
-
-        // Calcula el descuento
+    
         $discount = $total_cart * $commission / 100;
-
         return $discount;
     }
-
-    public function calculate_tax_stripe_price($total_cart)
+    
+    public function calculate_tax_stripe_price($total_cart, $user_id = null)
     {
-
-        if (empty($total_cart) || !is_numeric($total_cart)) {
-            return;
-        }
-
         $tax = $total_cart * 3 / 100;
-
         return $tax;
     }
-
-    public function calculate_platform_price($total_cart)
+    
+    public function calculate_platform_price($total_cart, $user_id = null)
     {
-
-        if (empty($total_cart) || !is_numeric($total_cart)) {
-            return;
-        }
-
-        $tax = $total_cart * 5 / 100;
-
+    
+        $tax = $total_cart* 5 / 100;
         return $tax;
     }
-
+    
     public function calculate_total($agent_price, $tax_price, $platform_price)
     {
-
         $total_final = $agent_price + $tax_price + $platform_price;
-
         return $total_final;
     }
+    
 
     public function delete_commission_request()
     {
 
-        // Verificar el nonce para la seguridad
         check_ajax_referer('delete_commission_request_nonce', 'security');
 
         $commission_request_id = intval($_POST['commission_request_id']);
@@ -257,7 +215,6 @@ class CommissionRequest
             wp_send_json_error(['message' => 'This commission request can only be deleted by the user who created it.']);
         }
 
-        // Intentar eliminar la oportunidad
         if (wp_delete_post($commission_request_id, true)) {
             $this->send_commission_request_deletion_email_to_agent($commission_request_id);
             $this->send_commission_request_deletion_email_to_company($commission_request_id);
@@ -270,7 +227,6 @@ class CommissionRequest
 
     private function send_commission_request_deletion_email_to_agent($commission_request_id)
     {
-        // Obtener detalles de la solicitud de comisión
         $commission_request = get_post($commission_request_id);
         if (!$commission_request) {
             error_log('Invalid commission request ID.');
@@ -289,10 +245,8 @@ class CommissionRequest
         $company_id = carbon_get_post_meta($contract_id, 'company');
         $company_name = get_post_meta($company_id, 'company_name', true);
 
-        // Crear una instancia de la clase EmailSender
+    
         $email_sender = new EmailSender();
-
-        // Definir los parámetros del correo electrónico
         $to = $agent_user->user_email;
         $subject = 'Commission Request Deleted';
         $message = "<p>Hello {$agent_user->first_name},</p>
@@ -303,7 +257,6 @@ class CommissionRequest
         <p><strong>Details:</strong> {$commission_request->post_content}</p>
         <p>If you have any questions or need further assistance, please contact us.</p>";
 
-        // Enviar el correo electrónico
         $sent = $email_sender->send_email($to, $subject, $message);
 
         if (!$sent) {

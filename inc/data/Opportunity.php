@@ -69,6 +69,13 @@ class Opportunity extends Crud
             $errors["commission"][] = __("Commission must be between 1 and 100.");
         }
 
+        $minimal_price  = Helper::convert_to_usd($data["price"]);
+        if (is_wp_error($minimal_price)) {
+          
+            wp_send_json_error([
+                'general' => $minimal_price->get_error_message(),
+            ]);
+        }
         $error_videos = [];
         $videos = [];
         foreach ($data['videos'] as $video_url) {
@@ -427,7 +434,7 @@ class Opportunity extends Crud
                  
                         <div class="pricing">
                             <?php if ($price !== null): ?>
-                                <h5 class="price"><?php echo Helper::format_price($price); ?></h5>
+                                <h5 class="price"><?php echo Helper::format_price_for_user($price); ?></h5>
                             <?php endif;?>
                             <?php if ($commission_value !== null): ?>
                                 <p class="commissions">Commission: <?php echo esc_html($commission_value); ?> %</p>

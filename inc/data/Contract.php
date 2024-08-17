@@ -157,7 +157,13 @@ class Contract
         }
 
         $status_history = Helper::add_item_to_status_history($contract_id);
-
+        $minimal_price  = Helper::convert_to_usd($minimal_price);
+        if (is_wp_error($minimal_price)) {
+          
+            wp_send_json_error([
+                'general' => $minimal_price->get_error_message(),
+            ]);
+        }
         carbon_set_post_meta($contract_id, 'company', $company->ID);
         carbon_set_post_meta($contract_id, 'commercial_agent', $commercial_agent->ID);
         carbon_set_post_meta($contract_id, 'opportunity', $opportunity->ID);

@@ -29,6 +29,16 @@ class Payment
             $contract_id = carbon_get_post_meta($commission_request_id, 'contract_id');
             $opportunity_id = carbon_get_post_meta($contract_id, 'opportunity');
             $commercial_agent_id = carbon_get_post_meta($contract_id, 'commercial_agent');
+            $company_id = carbon_get_post_meta($contract_id, 'company');
+
+          
+    
+            $currency = wp_get_post_terms($company_id,"currency");
+          
+            $currency_code = !empty($currency) ? carbon_get_term_meta($currency[0]->term_id, 'currency_code') : "USD";
+            $currency_symbol = !empty($currency) ? carbon_get_term_meta($currency[0]->term_id, 'currency_symbol') : "$";
+            $currency_exchange_rate = !empty($currency) ? carbon_get_term_meta($currency[0]->term_id, 'currency_exhange_rate') : 1;
+          
             $commercial_agent_title = get_the_title($commercial_agent_id);
             $opportunity_title = get_the_title($opportunity_id);
     
@@ -45,14 +55,21 @@ class Payment
                 $customer = $this->get_or_create_stripe_customer($customer_email);
     
                 $line_items = [];
+    
+                // Mensaje dinámico basado en la moneda
+                $conversion_message = '';
+                if ($currency_code !== 'USD' || empty($currency_code)) {
+                    $conversion_message = " The price was automatically converted to US dollars. The exchange rate for your currency is equal to $currency_symbol$currency_exchange_rate ($currency_code) = 1 dollar.";
+                }
+                
                 $product = \Stripe\Product::create([
                     'name' => "Sku: $sku, Opportunity: $opportunity_title",
-                    'description' => "To: $commercial_agent_title",
+                    'description' => "To: $commercial_agent_title.$conversion_message",
                 ]);
                 $price = \Stripe\Price::create([
                     'product' => $product->id,
                     'unit_amount' => intval($total_paid * 100), // Precio en centavos
-                    'currency' => $currency,
+                    'currency' => "USD",
                 ]);
                 $line_items[] = [
                     'price' => $price->id,
@@ -85,16 +102,13 @@ class Payment
                 carbon_set_post_meta($payment_id, "source", "stripe");
                 carbon_set_post_meta($payment_id, "payment_stripe_id", $checkout_session->id);
                 carbon_set_post_meta($payment_id, "date", current_time('mysql'));
-                carbon_set_post_meta($payment_id, "status", 'payment_psending'); // Inicializar el estado
+                carbon_set_post_meta($payment_id, "status", 'payment_pending'); // Inicializar el estado
                 carbon_set_post_meta($payment_id, "user", get_current_user_id());
-
-
+    
                 $status_commision_request_history = Helper::add_item_to_status_history($commission_request_id, "payment_pending");
                 carbon_set_post_meta($commission_request_id, 'status_history', $status_commision_request_history);
                 carbon_set_post_meta($commission_request_id, 'status', "payment_pending");
-
-
-              
+    
                 // Redirigir a la página de checkout de Stripe
                 header("HTTP/1.1 303 See Other");
                 header("Location: " . $checkout_session->url);
@@ -107,13 +121,14 @@ class Payment
             echo "Solicitud no válida.";
         }
     }
+    
 
 
     public function send_create_agent_payment_email($payment_id)
     {
         // Obtener detalles del pago
         $commission_request_id = carbon_get_post_meta($payment_id, 'commission_request_id');
-        $total_agent = Helper::format_price(carbon_get_post_meta($commission_request_id, 'total_agent'));
+        $total_agent = Helper::format_price_for_user(carbon_get_post_meta($commission_request_id, 'total_agent'));
         $contract_id = carbon_get_post_meta($commission_request_id, 'contract_id');
         $commercial_agent = carbon_get_post_meta($contract_id, 'commercial_agent');
         $user = carbon_get_post_meta($commercial_agent, 'user');
@@ -150,7 +165,7 @@ class Payment
     {
         // Obtener detalles del pago
         $commission_request_id = carbon_get_post_meta($payment_id, 'commission_request_id');
-        $total_agent = Helper::format_price(carbon_get_post_meta($commission_request_id, 'total_agent'));
+        $total_agent = Helper::format_price_for_user(carbon_get_post_meta($commission_request_id, 'total_agent'));
         $contract_id = carbon_get_post_meta($commission_request_id, 'contract_id');
         $commercial_agent = carbon_get_post_meta($contract_id, 'commercial_agent');
         $user = carbon_get_post_meta($commercial_agent, 'user');

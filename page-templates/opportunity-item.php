@@ -389,7 +389,7 @@ if (locate_template($template)) {
                             <h5>Average deal value</h5>
                             
                                 <span class="price">
-                                    <?php echo Helper::format_price($price); ?>
+                                    <?php echo Helper::format_price_for_user($price); ?>
                                 </span>
                             
                             <p>Commission: <strong><?php echo esc_html($commission); ?>%</strong></p>

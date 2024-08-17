@@ -53,7 +53,7 @@ class Admin
         $CustomTaxonomy->register('type_of_company', ["company"], 'Company Type', 'Company Types');
         $CustomTaxonomy->register('location', ['company',"commercial_agent","opportunity"], 'Location', 'Locations');
         $CustomTaxonomy->register('language', ["commercial_agent","opportunity"], 'Language', 'Languages');
-        $CustomTaxonomy->register('currency', ["opportunity"], 'Currency', 'Currencies');
+        $CustomTaxonomy->register('currency', ["opportunity","company","commercial_agent"], 'Currency', 'Currencies');
 
 
 
@@ -364,6 +364,26 @@ class Admin
             }
         }
     
+        return $options;
+    }
+
+
+    public function get_location_terms()
+    {
+       
+        $terms = get_terms([
+            'taxonomy' => 'location',
+            'hide_empty' => false,
+        ]);
+
+        $options = [];
+        if (!empty($terms) && !is_wp_error($terms)) {
+            $options[""] = "Select a Location";
+            foreach ($terms as $term) {
+                $options[$term->term_id] = $term->name;
+            }
+        }
+
         return $options;
     }
 

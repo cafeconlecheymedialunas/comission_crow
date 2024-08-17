@@ -30,6 +30,11 @@ $seller_type_terms = get_terms([
     "taxonomy" => "seller_type",
     "hide_empty" => false,
 ]);
+
+$currency_terms = get_terms([
+    "taxonomy" => "currency",
+    "hide_empty" => false,
+]);
 $commercial_agent = CommercialAgent::get_instance();
 $commercial_agent_post = $commercial_agent->get_commercial_agent();
 
@@ -43,7 +48,7 @@ $selected_skills = wp_get_post_terms($commercial_agent_post->ID, 'skill', ['fiel
 $selected_industry = wp_get_post_terms($commercial_agent_post->ID, 'industry', ['fields' => 'ids']);
 $selected_selling_method = wp_get_post_terms($commercial_agent_post->ID, 'selling_method', ['fields' => 'ids']);
 $selected_seller_type = wp_get_post_terms($commercial_agent_post->ID, 'seller_type', ['fields' => 'ids']);
-
+$selected_currency = wp_get_post_terms($commercial_agent_post->ID, 'currency', ['fields' => 'ids']);
 
 
 ?>
@@ -146,7 +151,47 @@ $selected_seller_type = wp_get_post_terms($commercial_agent_post->ID, 'seller_ty
                             <div class="error-message"></div>
                         </div>
                     <?php endif;?>
-                    <?php if($selling_method_terms):?>
+                    <?php if ($currency_terms): ?>
+                        <div class="col-md-6">
+                            <label for="currency" class="form-label">Currency<button type="button" class="operation ms-2" data-bs-toggle="tooltip" data-bs-html="true" title="
+                                Select the currency you wish to use to display all prices on our platform.<br><br>
+                    What does this mean?<br>
+                    The currency you choose will be used to show the prices of all products and services in your account. This includes prices on invoices, quotes, and any other cost details you see on the platform.<br><br>
+                    Once you select a currency, all prices will be displayed in that currency. Make sure to choose the currency that you prefer or that best fits your country or region.<br><br>
+                    If you need to change the currency in the future, you can do so from this same section of your profile.
+
+                                ">
+                                <i class="fa-solid fa-circle-info text-primary"></i>
+                                </button>:</label>
+                            <div class="d-flex align-items-center">
+                                <select name="currency[]" class="form-select">
+                                    <option value="">Select an option</option>
+                                    <?php foreach ($currency_terms as $term): ?>
+                                        <option
+                                            value="<?php echo esc_attr($term->term_id); ?>"
+                                            <?php echo in_array($term->term_id, $selected_currency) ? 'selected' : ''; ?>
+                                        >
+                                            <?php echo esc_html($term->name); ?>
+                                        </option>
+                                    <?php endforeach;?>
+                                </select>
+                                
+                            </div>
+                            <div class="error-message"></div>
+                        </div>
+                    <?php endif; ?>
+
+
+
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            var tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+                            tooltips.forEach(function (tooltip) {
+                                new bootstrap.Tooltip(tooltip);
+                            });
+                        });
+                    </script>
+                                        <?php if($selling_method_terms):?>
                         <div class="col-md-6">
                             <label for="selling_method[]" class="form-label">Selling Methods:</label>
                             <select name="selling_method[]" id="selling_method" class="form-select">

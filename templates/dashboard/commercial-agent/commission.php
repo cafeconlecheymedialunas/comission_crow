@@ -4,6 +4,11 @@ $commission_requests = ProfileUser::get_instance()->get_commission_requests_for_
 
 
 $contracts = ProfileUser::get_instance()->get_contracts(["accepted","finishing","finished"]);
+$associated_post = ProfileUser::get_instance()->get_user_associated_post_type();
+
+$currency = wp_get_post_terms($associated_post->ID,"currency");
+$currency_code = !empty($currency) ? carbon_get_term_meta($currency[0]->term_id, 'currency_code') : "USD";
+$currency_symbol = !empty($currency) ? carbon_get_term_meta($currency[0]->term_id, 'currency_symbol') : "$";
 ?>
 <div class="card mb-4 flex-row d-flex justify-content-between align-items-center">
     <h2 class="mb-0 d-inline"><?php echo __("Sended commission requests"); ?></h2>

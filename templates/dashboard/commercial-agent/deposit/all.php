@@ -37,7 +37,7 @@ $deposits_completed = get_posts([
         ],
         [
             'key' => 'status',
-            'value' => "deposit_completed",
+            'value' => "payment_completed",
             'compare' => '=',
         ]
     ],
@@ -52,19 +52,26 @@ $deposits_completed = get_posts([
 
             <h2 class="d-inline">Balance</h2>
 
-            <h3 class="mb-0"><?php echo Helper::format_price($wallet_balance); ?></h3>
+            <h3 class="mb-0"><?php echo Helper::format_price_for_user($wallet_balance); ?></h3>
             <div class="row w-100 mt-4">
                 <div class="col-md-4">  
                     <h5>withdrawn</h5>
-                    <h5><?php echo Helper::format_price($total_expenses); ?></h5>
+                        <?php 
+                        $price_formatted = Helper::format_price_for_user($total_expenses);
+                        $price_total_expenses_formatted = $minimal_price_formatted ?? "0";?>
+                    <h5><?php echo $price_total_expenses_formatted; ?></h5>
                 </div>
                 <div class="col-md-4">  
                     <h5>Incomes</h5>
-                    <h5><?php echo Helper::format_price($total_incomes); ?></h5>
+                    <?php $price_total_incomes = Helper::format_price_for_user($total_incomes);
+                    $price_total_incomes_formatted = $price_total_incomes ?? "0";?>
+                    <h5><?php echo Helper::format_price_for_user($price_total_incomes_formatted); ?></h5>
                 </div>
                 <div class="col-md-4">
                     <h5>Pending Withdrawals</h5>
-                    <h5><?php echo Helper::format_price($pending_withdrawls); ?></h5>
+                    <?php $price_pending_withdraws = Helper::format_price_for_user($pending_withdrawls);
+                    $price_pending_withdraws_formatted = $price_pending_withdraws ?? "0";?>
+                    <h5><?php echo $price_pending_withdraws_formatted; ?></h5>
                 </div>
             </div>
           
@@ -128,7 +135,7 @@ $deposits_completed = get_posts([
                             <th scope="col">Amount</th>
                             <th scope="col">Source</th>
                             <th scope="col">Date</th>
-                            <th scope="col"></th>
+                      
                         </tr>
                     </thead>
                     <tbody>
@@ -142,20 +149,9 @@ $deposits_completed = get_posts([
                                 ?>
                             <tr>
                                 <td><?php echo $deposit->ID; ?></td>
-                                <td><?php echo esc_html(Helper::format_price($total_paid)); ?></td>
+                                <td><?php echo esc_html(Helper::format_price_for_user($total_paid)); ?></td>
                                 <td><i class="fa-brands fa-cc-stripe"></i></td>
-                                <td><?php echo Helper::get_human_time_diff($date) . " ago"; ?></td>
-                                <td>
-                                    <ul class="p-0 mb-0 d-flex justify-content-center align-items-center">
-                                        <?php if (!empty($invoice)): ?>
-                                            <li class="list-inline-item"></li>
-                                            <a href="<?php echo wp_get_attachment_url($invoice[0]); ?>" download class="btn btn-sm btn-primary">
-                                                <i class="fa-solid fa-file-invoice"></i>
-                                            </a>
-                                            </li>
-                                        <?php endif; ?>
-                                    </ul>
-                                </td>
+                                <td><?php echo Helper::get_human_time_diff($date) . " ago"; ?></td>    
                             </tr>
                         <?php endforeach; ?>
                         <?php endif; ?>
@@ -192,7 +188,7 @@ $deposits_completed = get_posts([
                                 ?>
                             <tr>
                                 <td><?php echo $deposit->ID; ?></td>
-                                <td><?php echo esc_html(Helper::format_price($total_paid)); ?></td>
+                                <td><?php echo esc_html(Helper::format_price_for_user($total_paid)); ?></td>
                                 <td><i class="fa-brands fa-cc-stripe"></i></td>
                                 <td><?php echo Helper::get_human_time_diff($date) . " ago"; ?></td>
                                 <td>

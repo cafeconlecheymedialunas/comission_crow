@@ -573,3 +573,7 @@ body p{
 .opportunity-widget .company-name{
   margin-top:20px;
 }
+
+[data-bs-toggle="tooltip"] {
+height:auto;
+}

@@ -30,6 +30,7 @@ class ContainerCustomFields
         $this->register_theme_options();
         $this->register_home_fields();
         $this->register_taxonomy_industry_fields();
+        $this->register_taxonomy_currency_fields();
     }
 
     public function register_company_fields()
@@ -400,6 +401,26 @@ class ContainerCustomFields
             ->where('term_taxonomy', '=', 'industry') // Solo para el tipo de post 'page'
             ->add_fields([
                 Field::make('file', 'cover_image', 'Cover Image'),
+            ]); 
+     
+
+    }
+
+    
+    public function register_taxonomy_currency_fields(){
+        
+    
+        // Registra los campos personalizados solo si estamos en la página de inicio
+        Container::make('term_meta', __('Review'))
+          
+            ->where('term_taxonomy', '=', 'currency') // Solo para el tipo de post 'page'
+            ->add_fields([
+
+                Field::make('text', 'currency_symbol', 'Currency Symbol'),
+                Field::make('text', 'currency_code', 'Currency Code'),
+                Field::make('text', 'currency_exhange_rate', 'Currency Rate Exhange 1 dollar'),
+                Field::make('select', 'location', __('Location'))
+                ->add_options([$this->admin,'get_location_terms']),
             ]); 
      
 

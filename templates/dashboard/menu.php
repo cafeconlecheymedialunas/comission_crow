@@ -24,7 +24,7 @@
         <?php endif; ?>
         <li class="nav-item dropdown">
             <a class="" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-                <i class="fa fa-fw fa-file-contract "></i><span class="">Contracts</span>
+                <i class="fa fa-fw fa-file-contract "></i><span class=""><?php echo in_array("company", $current_user->roles)?"My Agents":"My Companies";?></span>
                 <i class="fa fa-fw fa-caret-down caret-collapse float-left"></i>
             </a>
             <ul class="collapse" id="collapseExample">

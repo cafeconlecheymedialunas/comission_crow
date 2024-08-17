@@ -81,7 +81,6 @@ $status_classes = [
                 $initiating_user_id = carbon_get_post_meta($commission_request->ID, "initiating_user");
                 $last_update_text = Helper::get_last_update_by_and_date($commission_request->ID);
 
-                // Obtener la clase CSS para el estado actual
                 $status_class = isset($status_classes[$status]) ? $status_classes[$status] : 'badge bg-secondary';
 
                 ?>
@@ -99,9 +98,9 @@ $status_classes = [
                             <?php echo get_the_title($opportunity_id); ?>
                         </a>
                     </td>
-                    <td><?php echo esc_html(Helper::format_price($total_cart_commission_request)); ?></td>
+                    <td><?php echo esc_html(Helper::format_price_for_user($total_cart_commission_request)); ?></td>
                     <td><?php echo esc_html(carbon_get_post_meta($contract_id, "commission") . "%"); ?></td>
-                    <td><?php echo esc_html(Helper::format_price($total_agent_commission_request)); ?></td>
+                    <td><?php echo esc_html(Helper::format_price_for_user($total_agent_commission_request)); ?></td>
                     <td>
                         <span class="<?php echo $status_class; ?>"><?php echo esc_html(ucwords(str_replace('_', ' ', $status))); ?></span>
                     </td>

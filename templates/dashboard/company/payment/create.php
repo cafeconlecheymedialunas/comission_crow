@@ -17,6 +17,11 @@ $args = [
             'value' => $commission_request_id,
             'compare' => '=',
         ],
+        [
+            'key' => "status",
+            'value' => "payment_completed",
+            'compare' => '=',
+        ]
     ],
     'posts_per_page' => -1,
 ];
@@ -95,7 +100,7 @@ $location = get_user_meta($user->ID, 'location', true); // Ejemplo para obtener 
                                     <h6><?php echo esc_html(get_the_title($opportunity_id)); ?></h6>
                                 <?php endif;?>
                                 <?php if ($has_minimal_price): ?>
-                                    <p>Minimum price: <?php echo esc_html(Helper::format_price($minimal_price)); ?></p>
+                                    <p>Minimum price: <?php echo esc_html(Helper::format_price_for_user($minimal_price)); ?></p>
                                 <?php endif;?>
                                 <?php if ($has_commission): ?>
                                     <p>Commission: <?php echo esc_html($commission); ?>%</p>
@@ -115,145 +120,9 @@ $location = get_user_meta($user->ID, 'location', true); // Ejemplo para obtener 
                             </div>
 
                             <form action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="post">
-                            <select class="form-control" name="currency" id="currency">
-    <option value="USD">US Dollar (USD)</option>
-    <option value="AED">United Arab Emirates Dirham (AED)</option>
-    <option value="AFN">Afghan Afghani (AFN)</option>
-    <option value="ALL">Albanian Lek (ALL)</option>
-    <option value="AMD">Armenian Dram (AMD)</option>
-    <option value="ANG">Netherlands Antillean Guilder (ANG)</option>
-    <option value="AOA">Angolan Kwanza (AOA)</option>
-    <option value="ARS">Argentine Peso (ARS)</option>
-    <option value="AUD">Australian Dollar (AUD)</option>
-    <option value="AWG">Aruban Florin (AWG)</option>
-    <option value="AZN">Azerbaijani Manat (AZN)</option>
-    <option value="BAM">Bosnia and Herzegovina Convertible Mark (BAM)</option>
-    <option value="BBD">Barbadian Dollar (BBD)</option>
-    <option value="BDT">Bangladeshi Taka (BDT)</option>
-    <option value="BGN">Bulgarian Lev (BGN)</option>
-    <option value="BIF">Burundian Franc (BIF)</option>
-    <option value="BMD">Bermudian Dollar (BMD)</option>
-    <option value="BND">Brunei Dollar (BND)</option>
-    <option value="BOB">Bolivian Boliviano (BOB)</option>
-    <option value="BRL">Brazilian Real (BRL)</option>
-    <option value="BSD">Bahamian Dollar (BSD)</option>
-    <option value="BWP">Botswana Pula (BWP)</option>
-    <option value="BYN">Belarusian Ruble (BYN)</option>
-    <option value="BZD">Belize Dollar (BZD)</option>
-    <option value="CAD">Canadian Dollar (CAD)</option>
-    <option value="CDF">Congolese Franc (CDF)</option>
-    <option value="CHF">Swiss Franc (CHF)</option>
-    <option value="CLP">Chilean Peso (CLP)</option>
-    <option value="CNY">Chinese Yuan (CNY)</option>
-    <option value="COP">Colombian Peso (COP)</option>
-    <option value="CRC">Costa Rican Colón (CRC)</option>
-    <option value="CVE">Cape Verdean Escudo (CVE)</option>
-    <option value="CZK">Czech Koruna (CZK)</option>
-    <option value="DJF">Djiboutian Franc (DJF)</option>
-    <option value="DKK">Danish Krone (DKK)</option>
-    <option value="DOP">Dominican Peso (DOP)</option>
-    <option value="DZD">Algerian Dinar (DZD)</option>
-    <option value="EGP">Egyptian Pound (EGP)</option>
-    <option value="ETB">Ethiopian Birr (ETB)</option>
-    <option value="EUR">Euro (EUR)</option>
-    <option value="FJD">Fijian Dollar (FJD)</option>
-    <option value="FKP">Falkland Islands Pound (FKP)</option>
-    <option value="GBP">British Pound Sterling (GBP)</option>
-    <option value="GEL">Georgian Lari (GEL)</option>
-    <option value="GIP">Gibraltar Pound (GIP)</option>
-    <option value="GMD">Gambian Dalasi (GMD)</option>
-    <option value="GNF">Guinean Franc (GNF)</option>
-    <option value="GTQ">Guatemalan Quetzal (GTQ)</option>
-    <option value="GYD">Guyanese Dollar (GYD)</option>
-    <option value="HKD">Hong Kong Dollar (HKD)</option>
-    <option value="HNL">Honduran Lempira (HNL)</option>
-    <option value="HTG">Haitian Gourde (HTG)</option>
-    <option value="HUF">Hungarian Forint (HUF)</option>
-    <option value="IDR">Indonesian Rupiah (IDR)</option>
-    <option value="ILS">Israeli New Shekel (ILS)</option>
-    <option value="INR">Indian Rupee (INR)</option>
-    <option value="ISK">Icelandic Króna (ISK)</option>
-    <option value="JMD">Jamaican Dollar (JMD)</option>
-    <option value="JPY">Japanese Yen (JPY)</option>
-    <option value="KES">Kenyan Shilling (KES)</option>
-    <option value="KGS">Kyrgystani Som (KGS)</option>
-    <option value="KHR">Cambodian Riel (KHR)</option>
-    <option value="KMF">Comorian Franc (KMF)</option>
-    <option value="KRW">South Korean Won (KRW)</option>
-    <option value="KYD">Cayman Islands Dollar (KYD)</option>
-    <option value="KZT">Kazakhstani Tenge (KZT)</option>
-    <option value="LAK">Laotian Kip (LAK)</option>
-    <option value="LBP">Lebanese Pound (LBP)</option>
-    <option value="LKR">Sri Lankan Rupee (LKR)</option>
-    <option value="LRD">Liberian Dollar (LRD)</option>
-    <option value="LSL">Lesotho Loti (LSL)</option>
-    <option value="MAD">Moroccan Dirham (MAD)</option>
-    <option value="MDL">Moldovan Leu (MDL)</option>
-    <option value="MGA">Malagasy Ariary (MGA)</option>
-    <option value="MKD">Macedonian Denar (MKD)</option>
-    <option value="MMK">Myanma Kyat (MMK)</option>
-    <option value="MNT">Mongolian Tugrik (MNT)</option>
-    <option value="MOP">Macanese Pataca (MOP)</option>
-    <option value="MUR">Mauritian Rupee (MUR)</option>
-    <option value="MVR">Maldivian Rufiyaa (MVR)</option>
-    <option value="MWK">Malawian Kwacha (MWK)</option>
-    <option value="MXN">Mexican Peso (MXN)</option>
-    <option value="MYR">Malaysian Ringgit (MYR)</option>
-    <option value="MZN">Mozambican Metical (MZN)</option>
-    <option value="NAD">Namibian Dollar (NAD)</option>
-    <option value="NGN">Nigerian Naira (NGN)</option>
-    <option value="NIO">Nicaraguan Córdoba (NIO)</option>
-    <option value="NOK">Norwegian Krone (NOK)</option>
-    <option value="NPR">Nepalese Rupee (NPR)</option>
-    <option value="NZD">New Zealand Dollar (NZD)</option>
-    <option value="PAB">Panamanian Balboa (PAB)</option>
-    <option value="PEN">Peruvian Nuevo Sol (PEN)</option>
-    <option value="PGK">Papua New Guinean Kina (PGK)</option>
-    <option value="PHP">Philippine Peso (PHP)</option>
-    <option value="PKR">Pakistani Rupee (PKR)</option>
-    <option value="PLN">Polish Zloty (PLN)</option>
-    <option value="PYG">Paraguayan Guarani (PYG)</option>
-    <option value="QAR">Qatari Rial (QAR)</option>
-    <option value="RON">Romanian Leu (RON)</option>
-    <option value="RSD">Serbian Dinar (RSD)</option>
-    <option value="RUB">Russian Ruble (RUB)</option>
-    <option value="RWF">Rwandan Franc (RWF)</option>
-    <option value="SAR">Saudi Riyal (SAR)</option>
-    <option value="SBD">Solomon Islands Dollar (SBD)</option>
-    <option value="SCR">Seychellois Rupee (SCR)</option>
-    <option value="SEK">Swedish Krona (SEK)</option>
-    <option value="SGD">Singapore Dollar (SGD)</option>
-    <option value="SHP">Saint Helena Pound (SHP)</option>
-    <option value="SLE">Sierra Leonean Leone (SLE)</option>
-    <option value="SOS">Somali Shilling (SOS)</option>
-    <option value="SRD">Surinamese Dollar (SRD)</option>
-    <option value="STD">São Tomé and Príncipe Dobra (STD)</option>
-    <option value="SZL">Swazi Lilangeni (SZL)</option>
-    <option value="THB">Thai Baht (THB)</option>
-    <option value="TJS">Tajikistani Somoni (TJS)</option>
-    <option value="TOP">Tongan Paʻanga (TOP)</option>
-    <option value="TRY">Turkish Lira (TRY)</option>
-    <option value="TTD">Trinidad and Tobago Dollar (TTD)</option>
-    <option value="TWD">New Taiwan Dollar (TWD)</option>
-    <option value="TZS">Tanzanian Shilling (TZS)</option>
-    <option value="UAH">Ukrainian Hryvnia (UAH)</option>
-    <option value="UGX">Ugandan Shilling (UGX)</option>
-    <option value="UYU">Uruguayan Peso (UYU)</option>
-    <option value="UZS">Uzbekistani Som (UZS)</option>
-    <option value="VND">Vietnamese Dong (VND)</option>
-    <option value="VUV">Vanuatu Vatu (VUV)</option>
-    <option value="WST">Samoan Tala (WST)</option>
-    <option value="XAF">Central African CFA Franc (XAF)</option>
-    <option value="XCD">East Caribbean Dollar (XCD)</option>
-    <option value="XOF">West African CFA Franc (XOF)</option>
-    <option value="XPF">CFP Franc (XPF)</option>
-    <option value="YER">Yemeni Rial (YER)</option>
-    <option value="ZAR">South African Rand (ZAR)</option>
-    <option value="ZMW">Zambian Kwacha (ZMW)</option>
-</select>
+          
 
                                 <input type="hidden" name="action" value="create_payment">
-                                <input type="hidden" name="amount" value="2000"> <!-- Cantidad en centavos -->
                                 <input type="hidden" name="currency" value="usd"> <!-- Moneda -->
                                 <input type="hidden" name="payment_init" value="on">
                                 <input type="hidden" name="commission_request_id" value="<?php echo esc_attr($commission_request_id); ?>">
@@ -272,31 +141,35 @@ $location = get_user_meta($user->ID, 'location', true); // Ejemplo para obtener 
                             <?php foreach ($items as $item): ?>
                                 <li class="list-group-item d-flex justify-content-between lh-condensed">
                                     <div>
-                                        <span class="text-muted"><?php echo esc_html(Helper::format_price($item["price_paid"])); ?></span>
+                                        <span class="text-muted"><?php echo esc_html(Helper::format_price_for_user($item["price_paid"])); ?></span>
                                         <small class="text-muted">X <?php echo esc_html($item["quantity"]); ?></small>
                                     </div>
-                                    <h6 class="my-0 text-muted"><?php echo esc_html(Helper::format_price($item["subtotal"])); ?></h6>
+                                    <h6 class="my-0 text-muted"><?php echo esc_html(Helper::format_price_for_user($item["subtotal"])); ?></h6>
                                 </li>
                             <?php endforeach;?>
                             <li class="list-group-item d-flex justify-content-between">
                                 <span>Total Sales (USD)</span>
-                                <strong><?php echo esc_html(Helper::format_price($total_cart)); ?></strong>
+                                <strong><?php echo esc_html(Helper::format_price_for_user($total_cart)); ?></strong>
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
                                 <span>Commission of Agent </span>
-                                <strong><?php echo esc_html(Helper::format_price($total_agent)); ?></strong>
+                                <strong><?php echo esc_html(Helper::format_price_for_user($total_agent)); ?></strong>
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
                                 <span>Commission of Nexfy</span>
-                                <strong><?php echo esc_html(Helper::format_price($total_platform)); ?></strong>
+                                <strong><?php echo esc_html(Helper::format_price_for_user($total_platform)); ?></strong>
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
                                 <span>Stripe service fee</span>
-                                <strong><?php echo esc_html(Helper::format_price($total_tax_service)); ?></strong>
+                                <strong><?php echo esc_html(Helper::format_price_for_user($total_tax_service)); ?></strong>
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
-                                <span class="fw-bold">Total:</span>
-                                <span class="fw-bold"><?php echo esc_html(Helper::format_price($total_to_pay)); ?></span>
+                                <span class="fw-bold">Total in your currency:</span>
+                                <span class="fw-bold"><?php echo esc_html(Helper::format_price_for_user($total_to_pay)); ?></span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span class="fw-bold">Total Paid:</span>
+                                <span class="fw-bold"><?php echo esc_html("$".number_format($total_to_pay, 2, '.', ',')." (USD)"); ?></span>
                             </li>
                         </ul>
                     </div>

@@ -39,9 +39,9 @@ $gender_terms = get_terms([
 
 $company_post = ProfileUser::get_instance()->get_user_associated_post_type();
 
-
-
-
+$currency = wp_get_post_terms($company_post->ID,"currency");
+$currency_code = !empty($currency) ? carbon_get_term_meta($currency[0]->term_id, 'currency_code') : "USD";
+$currency_symbol = !empty($currency) ? carbon_get_term_meta($currency[0]->term_id, 'currency_symbol') : "$";
 
 
 
@@ -200,9 +200,14 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
 
     <div class="col-md-6">
         <label for="price" class="form-label">Price:</label>
-        <input type="text"   id="price" name="price" class="form-control" value="<?php echo isset($opportunity_post) ? esc_attr(carbon_get_post_meta($opportunity_post->ID, "price")):"";?>">
-        <div class="error-message"></div>
+        <div class="input-group mb-3">
+            <span class="input-group-text"><?php echo "$currency_symbol ($currency_code)";?></span>
+            <input type="text"   id="price" name="price" class="form-control" value="<?php echo isset($opportunity_post) ? esc_attr(carbon_get_post_meta($opportunity_post->ID, "price")):"";?>">
+            <div class="error-message"></div>
+        </div>
+        
     </div>
+  
 
     <div class="col-md-6">
         <label for="commission" class="form-label">Commission:</label>

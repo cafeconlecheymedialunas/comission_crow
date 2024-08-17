@@ -13,18 +13,74 @@ class Helper
         }
         return self::$instance;
     }
-
-    public static function format_price($amount, $currency = '$', $decimals = 2)
+    public static function format_price_for_user($amount, $user_id = null, $decimals = 2)
     {
-        // Asegurarse de que $amount sea un número flotante
+        $post = ProfileUser::get_instance()->get_user_associated_post_type($user_id);
+        
+        $post_id = $post ? $post->ID : null;
+    
+        $currency_symbol = '$';
+        $currency_code = 'USD';
+        $exchange_rate = 1.0;
+    
+        if ($post_id) {
+            $post_currency_terms = wp_get_post_terms($post_id, 'currency');
+            if (!empty($post_currency_terms)) {
+                $post_currency = $post_currency_terms[0];
+                $currency_symbol = carbon_get_term_meta($post_currency->term_id, 'currency_symbol') ?: $currency_symbol;
+                $currency_code = carbon_get_term_meta($post_currency->term_id, 'currency_code') ?: $currency_code;
+                $exchange_rate = floatval(carbon_get_term_meta($post_currency->term_id, 'currency_exhange_rate')) ?: $exchange_rate;
+            }
+        }
+    
         $amount = floatval($amount);
-
-        // Formatear el precio con el número de decimales especificado
-        $formatted_amount = number_format($amount, $decimals, '.', ',');
-
-        // Devolver el precio con el símbolo de la moneda
-        return $currency . $formatted_amount;
+        if ($amount <= 0) {
+            return false;
+        }
+    
+        if ($exchange_rate <= 0) {
+            return false; 
+        }
+    
+        $converted_amount = $amount * $exchange_rate;
+        $formatted_amount = number_format($converted_amount, $decimals, '.', ',');
+    
+        return $currency_symbol . $formatted_amount . " ($currency_code)";
     }
+
+    public static function convert_to_usd($amount, $user_id = null, $decimals = 2)
+    {
+        $post = ProfileUser::get_instance()->get_user_associated_post_type($user_id);
+        $post_id = $post ? $post->ID : null;
+    
+        $currency_code = 'USD';
+        $exchange_rate = 1.0;
+    
+        if ($post_id) {
+            $post_currency_terms = wp_get_post_terms($post_id, 'currency');
+            if (!empty($post_currency_terms)) {
+                $post_currency = $post_currency_terms[0];
+                $currency_code = carbon_get_term_meta($post_currency->term_id, 'currency_code') ?: $currency_code;
+                $exchange_rate = floatval(carbon_get_term_meta($post_currency->term_id, 'currency_exhange_rate')) ?: $exchange_rate;
+            }
+        }
+    
+        $amount = floatval($amount);
+        if ($amount <= 0) {
+            return new WP_Error('invalid_amount', 'Invalid amount for conversion.');
+        }
+    
+        if ($exchange_rate <= 0) {
+            return new WP_Error('invalid_exchange_rate', 'Invalid exchange rate.');
+        }
+    
+        $converted_amount = $amount / $exchange_rate;
+
+        return $converted_amount;
+    }
+    
+
+    
 
     public static function get_human_time_diff($date)
     {

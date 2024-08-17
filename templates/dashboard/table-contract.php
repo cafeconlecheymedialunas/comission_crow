@@ -90,7 +90,7 @@
                                         <td><?php echo esc_html($another_part->post_title); ?></td>
                                     
                                         <td><?php echo esc_html($commission); ?> %</td>
-                                        <td><?php echo esc_html(Helper::format_price($minimal_price)); ?></td>
+                                        <td><?php echo esc_html(Helper::format_price_for_user($minimal_price)); ?></td>
                                         <td><span class="badge <?php echo $status_class; ?>"><?php echo esc_html($status_text); ?></span></td>
                                         <td><?php echo ($last_sender_history_user && $history_status_end["date_status"])?$last_update_text:""; ?></td>
                                         <td>

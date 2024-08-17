@@ -20,6 +20,11 @@ $location_terms = get_terms([
     "hide_empty" => false,
 ]);
 
+$currency_terms = get_terms([
+    "taxonomy" => "currency",
+    "hide_empty" => false,
+]);
+
 $company = Company::get_instance();
 $company_post = $company->get_company();
 
@@ -29,7 +34,7 @@ $industry = wp_get_post_terms($company_post->ID, 'industry', ['fields' => 'ids']
 $activity = wp_get_post_terms($company_post->ID, 'activity', ['fields' => 'ids']) ?? [];
 $type_of_company = wp_get_post_terms($company_post->ID, 'type_of_company', ['fields' => 'ids']) ?? [];
 $location = wp_get_post_terms($company_post->ID, 'location', ['fields' => 'ids']) ?? [];
-
+$currency = wp_get_post_terms($company_post->ID, 'currency', ['fields' => 'ids']) ?? [];
 
 $company_name = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'company_name') : '';
 $company_street = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'company_street') : '';
@@ -144,6 +149,47 @@ $youtube_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'y
                             <div class="error-message"></div>
                         </div>
                     <?php endif;?>
+                    <?php if ($currency_terms): ?>
+    <div class="col-md-6">
+        <label for="currency" class="form-label">Currency<button type="button" class="operation ms-2" data-bs-toggle="tooltip" data-bs-html="true" title="
+              Select the currency you wish to use to display all prices on our platform.<br><br>
+What does this mean?<br>
+The currency you choose will be used to show the prices of all products and services in your account. This includes prices on invoices, quotes, and any other cost details you see on the platform.<br><br>
+Once you select a currency, all prices will be displayed in that currency. Make sure to choose the currency that you prefer or that best fits your country or region.<br><br>
+If you need to change the currency in the future, you can do so from this same section of your profile.
+
+            ">
+            <i class="fa-solid fa-circle-info text-primary"></i>
+            </button>:</label>
+        <div class="d-flex align-items-center">
+            <select name="currency[]" class="form-select">
+                <option value="">Select an option</option>
+                <?php foreach ($currency_terms as $term): ?>
+                    <option
+                        value="<?php echo esc_attr($term->term_id); ?>"
+                        <?php echo in_array($term->term_id, $currency) ? 'selected' : ''; ?>
+                    >
+                        <?php echo esc_html($term->name); ?>
+                    </option>
+                <?php endforeach;?>
+            </select>
+            
+        </div>
+        <div class="error-message"></div>
+    </div>
+<?php endif; ?>
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        tooltips.forEach(function (tooltip) {
+            new bootstrap.Tooltip(tooltip);
+        });
+    });
+</script>
+
                     <?php if ($activity_terms): ?>
                     <div class="col-md-6">
                         <label for="activity" class="form-label">Activity:</label>

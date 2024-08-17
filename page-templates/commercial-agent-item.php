@@ -97,7 +97,7 @@ $years_of_experience = carbon_get_post_meta($commercial_agent->ID, "years_of_exp
                                 <div class="stats-list">
                                     <?php ?>
                                     <div class="stats">
-                                        <span><?php echo Helper::format_price($total_incomes); ?></span> in  earnings</div>
+                                        <span><?php echo Helper::format_price_for_user($total_incomes); ?></span> in  earnings</div>
                                     <div class="stats">
                                         <span><?php echo count($on_going_contracts); ?></span> On Going Contracts</div>
                                     <div class="stats">

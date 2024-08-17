@@ -65,6 +65,7 @@ class CommercialAgent
         $industry = isset($_POST["industry"]) ? array_map('sanitize_text_field', $_POST["industry"]) : [];
         $seller_type = isset($_POST["seller_type"]) ? array_map('sanitize_text_field', $_POST["seller_type"]) : [];
         $selling_method = isset($_POST["selling_method"]) ? array_map('sanitize_text_field', $_POST["selling_method"]) : [];
+        $currency = isset($_POST["currency"]) ? array_map('sanitize_text_field', $_POST["currency"]) : [];
         $years_of_experience = sanitize_text_field($_POST["years_of_experience"]);
 
         // Validaciones
@@ -125,6 +126,10 @@ class CommercialAgent
 
         if (!empty($seller_type)) {
             wp_set_post_terms($commercial_agent_id, $seller_type, 'seller_type', false);
+        }
+
+        if (!empty($currency)) {
+            wp_set_post_terms($commercial_agent_id, $currency, 'currency', false);
         }
 
         // Actualizar imagen del perfil

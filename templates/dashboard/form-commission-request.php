@@ -1,3 +1,4 @@
+
 <div class="modal fade" id="modal-commission" tabindex="-1" aria-labelledby="chatModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
@@ -51,10 +52,15 @@
                       <tbody>
                         <tr class="row_to_clone">
                           <td>
-                            <input type="number" name="price[]" min="" class="txt price form-control rounded-2" placeholder="Price" step="0.01" autocomplete='off' />
+                          <div class="input-group mb-3">
+                              <span class="input-group-text"><?php echo "$currency_symbol ($currency_code)";?></span>
+                              <input type="number" name="price[]" min="0" class="txt price form-control rounded-2" min="1" placeholder="Price" step="0.01" autocomplete='off' />
+                              <div class="error-message"></div>
+                          </div>
+                           
                           </td>
                           <td>
-                            <input type="number" name="quantity[]" class="txt quantity form-control rounded-2" placeholder="Quantity" autocomplete='off' />
+                            <input type="number" name="quantity[]" min="1" class="txt quantity form-control rounded-2" placeholder="Quantity" autocomplete='off' />
                           </td>
                           <td>
                             <input type="file" name="invoice[]" class="invoice form-control rounded-2"  multiple accept=".pdf, .txt"/>

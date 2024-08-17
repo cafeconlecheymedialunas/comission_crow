@@ -135,6 +135,7 @@ class Company extends Crud
         $location = isset($_POST["location"]) ? array_map('sanitize_text_field', $_POST["location"]) : [];
         $type_of_company = isset($_POST["type_of_company"]) ? array_map('sanitize_text_field', $_POST["type_of_company"]) : [];
         $activity = isset($_POST["activity"]) ? array_map('sanitize_text_field', $_POST["activity"]) : [];
+        $currency = isset($_POST["currency"]) ? array_map('sanitize_text_field', $_POST["currency"]) : [];
         $employees_number = sanitize_text_field($_POST["employees_number"]);
     
         $errors = new WP_Error();
@@ -210,6 +211,10 @@ class Company extends Crud
         }
         if (!empty($type_of_company)) {
             wp_set_post_terms($company_id, $type_of_company, 'type_of_company', false);
+        }
+
+        if (!empty($currency)) {
+            wp_set_post_terms($company_id, $currency, 'currency', false);
         }
     
         if (!empty($company_logo['name'])) {
