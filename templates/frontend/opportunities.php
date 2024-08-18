@@ -36,7 +36,7 @@
                                     <div class="col-md-2">
                                         <div class="pricing">
                                             <?php if ($price): ?>
-                                                <p class="price"><?php echo esc_html(Helper::format_price_for_user($price)); ?></p>
+                                                <p class="price"><?php echo esc_html(Helper::convert_price_to_selected_currency($price)); ?></p>
                                             <?php endif;?>
                                             <?php if ($commission): ?>
                                                 <p class="commission">Commission: <?php echo esc_html($commission); ?>%</p>

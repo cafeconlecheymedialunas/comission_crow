@@ -95,7 +95,7 @@ $current_user = wp_get_current_user();
 						<?php
 						$wallet_balance = Deposit::get_instance()->calculate_wallet_balance();
 						if (in_array("commercial_agent", $current_user->roles) && $wallet_balance > 0): ?>
-						<span class="balance"><?php echo Helper::format_price_for_user($wallet_balance); ?></span>
+						<span class="balance"><?php echo Helper::convert_price_to_selected_currency($wallet_balance); ?></span>
 						<?php endif;?>
 
 

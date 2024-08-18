@@ -45,15 +45,15 @@ $hero_button_image = wp_get_attachment_image($hero_button_image,"full");
         wp_footer();
 
 
-    require_once locate_template('templates/home/hero.php');
-    require_once locate_template('templates/home/features.php');
-    require_once locate_template('templates/home/opportunities.php');
-    require_once locate_template('templates/home/industries.php');
-    require_once locate_template('templates/home/selected-agents.php');
-    require_once locate_template('templates/home/counters.php');
-    require_once locate_template('templates/home/blog.php');
-    require_once locate_template('templates/home/brands.php');
-    require_once locate_template('templates/home/hero-button.php');
+    require_once locate_template('templates/frontend/hero.php');
+    require_once locate_template('templates/frontend/features.php');
+    require_once locate_template('templates/frontend/opportunities.php');
+    require_once locate_template('templates/frontend/industries.php');
+    require_once locate_template('templates/frontend/selected-agents.php');
+    require_once locate_template('templates/frontend/counters.php');
+    require_once locate_template('templates/frontend/blog.php');
+    require_once locate_template('templates/frontend/brands.php');
+    require_once locate_template('templates/frontend/hero-button.php');
 ?>
 
    

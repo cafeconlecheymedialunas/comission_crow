@@ -31,6 +31,7 @@ module.exports = {
       'js/frontend': path.resolve(process.cwd(), 'assets/js/frontend.js'),
       'css/frontend': path.resolve(process.cwd(), 'assets/css/frontend.css'),
       'css/blog': path.resolve(process.cwd(), 'assets/css/blog.css'),
+      'css/contact': path.resolve(process.cwd(), 'assets/css/contact.css'),
     },
     output: {
         path: path.resolve(process.cwd(), 'dist'),

@@ -1,4 +1,12 @@
 /*General Styles */
+body, p {
+  font-family: Rubik;
+  line-height: 28px;
+  font-weight: normal;
+  font-style: normal;
+  color: #4A6375;
+  font-size: 16px;
+}
 .btn.btn-primary {
   padding: 15px 25px;
   border-radius: 50px;
@@ -18,6 +26,13 @@
   margin-top: 10px;
   display: inline-block;
   line-height: 1rem;
+}
+.btn.btn-info{
+  border-radius: 50px;
+  padding: 15px 25px;
+  color: #6787FE;
+background: rgb(103 135 254 / 10%);
+border-color:rgb(103 135 254 / 10%)!important;
 }
 .custom-spinner {
   z-index: 10000;
@@ -577,3 +592,107 @@ body p{
 [data-bs-toggle="tooltip"] {
 height:auto;
 }
+
+/* Commercial Agent Single */
+
+.commercial-agent-picture .agent-profile-picture{
+  border-radius: 10%;
+}
+
+.commercial-agent-item .btn.btn-info{
+  border-radius: 20px;
+  padding: 10px 20px;
+  text-align: center;
+  line-height: 1.2rem;
+  height:auto;
+}
+
+.commercial-agent-item .nav-pills .btn.btn-info{
+margin-right:20px;
+}
+
+.commercial-agent-item  .stats {
+  text-align: left;
+  display: inline-block;
+  padding-right: 10px;
+  border-radius: 25px;
+  overflow: hidden;
+}
+
+.commercial-agent-item .stats span {
+  margin-right: 10px;
+  display: inline-block;
+  border-radius: 25px;
+  width: 35px;
+  height: 35px;
+  color: #FFF;
+  text-align: center;
+  padding-top: 5px;
+}
+
+
+.commercial-agent-item .earnings{
+  background: rgb(103 135 254 / 20%);
+}
+.commercial-agent-item .earnings span{
+  background: #6787FE;
+}
+.commercial-agent-item .contracts{
+  background: rgb(0 233 185 / 20%);
+}
+
+.commercial-agent-item .contracts span{
+  background: #00E9B9;
+}
+.commercial-agent-item .orders{
+  background: rgb(255 187 0 / 20%);
+}
+.commercial-agent-item .orders span{
+  background: #FFBB00;
+}
+
+
+.commercial-agent-item .seller-detail{
+  margin-bottom: 10px;
+}
+.commercial-agent-item .seller-detail i{
+  margin-right: 20px;
+  line-height: 60px;
+  text-align: center;
+  border-radius: 10px;
+  width: 60px;
+  height: 60px;
+  font-size: 28px;
+}
+
+.commercial-agent-item .seller-detail h5{
+  margin-bottom:10px;
+}
+.commercial-agent-item .seller-detail p{
+  margin-bottom:10px;
+}
+.commercial-agent-item .seller-detail:nth-of-type(1) i{
+  background: rgb(103 135 254 / 20%);
+}
+.commercial-agent-item .seller-detail:nth-of-type(2) i{
+  background: rgb(0 233 185 / 20%);
+}
+
+.commercial-agent-item .seller-detail:nth-of-type(3) i{
+  background: rgb(255 187 0 / 20%);
+}
+
+
+.commercial-agent-item .seller-detail:nth-of-type(4) i{
+  background: rgb(103 135 254 / 20%);
+}
+.commercial-agent-item .seller-detail:nth-of-type(5) i{
+  background: rgb(0 233 185 / 20%);
+}
+
+.commercial-agent-item .seller-detail:nth-of-type(6) i{
+  background: rgb(255 187 0 / 20%);
+}
+
+
+

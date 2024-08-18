@@ -13,7 +13,7 @@ class Helper
         }
         return self::$instance;
     }
-    public static function format_price_for_user($amount, $user_id = null, $decimals = 2)
+    public static function convert_price_to_selected_currency($amount, $user_id = null, $decimals = 2)
     {
         $post = ProfileUser::get_instance()->get_user_associated_post_type($user_id);
         
@@ -47,6 +47,34 @@ class Helper
     
         return $currency_symbol . $formatted_amount . " ($currency_code)";
     }
+
+    public static function convert_and_format_price($amount, $user_id = null)
+    {
+        // Convertimos el precio utilizando la función existente
+        $converted_price = self::convert_price_to_selected_currency($amount, $user_id, 0);
+        
+        // Extraemos el valor numérico del precio convertido
+        preg_match('/[\d,]+(?:\.\d+)?/', $converted_price, $matches);
+        $numeric_value = isset($matches[0]) ? floatval(str_replace(',', '', $matches[0])) : 0;
+    
+        // Formateamos el número con notaciones como K, M, etc., y redondeamos
+        if ($numeric_value >= 1000000) {
+            $formatted_value = round($numeric_value / 1000000) . 'M';
+        } elseif ($numeric_value >= 1000) {
+            $formatted_value = round($numeric_value / 1000) . 'K';
+        } else {
+            $formatted_value = round($numeric_value);
+        }
+    
+        // Extraemos el símbolo de la moneda de la cadena original
+        preg_match('/^\D+/', $converted_price, $currency_symbol);
+        $currency_symbol = isset($currency_symbol[0]) ? $currency_symbol[0] : '';
+    
+        // Retornamos el precio formateado con el símbolo de moneda
+        return  $formatted_value;
+    }
+    
+
 
     public static function convert_to_usd($amount, $user_id = null, $decimals = 2)
     {

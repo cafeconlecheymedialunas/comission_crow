@@ -79,7 +79,7 @@ $payments = ProfileUser::get_instance()->get_payments_for_user();
 				                <tr>
 		                            <td><?php echo $payment->ID; ?></td>
 				                    <td><span class="txt-sm"><?php echo $commission_request_id; ?></span></td>
-		                            <td><?php echo esc_html(Helper::format_price_for_user($total_paid)); ?></td>
+		                            <td><?php echo esc_html(Helper::convert_price_to_selected_currency($total_paid)); ?></td>
 				                    <td>Stripe</td>
 
 				                    <td>

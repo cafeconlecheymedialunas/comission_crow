@@ -44,7 +44,7 @@ $opportunities = $company->get_opportunities();
                                         <th scope="row"><?php echo $opportunity->ID; ?></th>
                                         <td><?php echo get_the_title($opportunity->ID); ?></td>
                                         <td><?php echo esc_html($industry[0]); ?></td>
-                                        <td><?php echo esc_html(Helper::format_price_for_user($price)); ?></td>
+                                        <td><?php echo esc_html(Helper::convert_price_to_selected_currency($price)); ?></td>
                                         <td><?php echo esc_html($commission); ?>%</td>
                                         <td><?php echo esc_html($location[0]); ?></td>
                                         

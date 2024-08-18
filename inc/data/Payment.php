@@ -128,7 +128,7 @@ class Payment
     {
         // Obtener detalles del pago
         $commission_request_id = carbon_get_post_meta($payment_id, 'commission_request_id');
-        $total_agent = Helper::format_price_for_user(carbon_get_post_meta($commission_request_id, 'total_agent'));
+        $total_agent = Helper::convert_price_to_selected_currency(carbon_get_post_meta($commission_request_id, 'total_agent'));
         $contract_id = carbon_get_post_meta($commission_request_id, 'contract_id');
         $commercial_agent = carbon_get_post_meta($contract_id, 'commercial_agent');
         $user = carbon_get_post_meta($commercial_agent, 'user');
@@ -165,7 +165,7 @@ class Payment
     {
         // Obtener detalles del pago
         $commission_request_id = carbon_get_post_meta($payment_id, 'commission_request_id');
-        $total_agent = Helper::format_price_for_user(carbon_get_post_meta($commission_request_id, 'total_agent'));
+        $total_agent = Helper::convert_price_to_selected_currency(carbon_get_post_meta($commission_request_id, 'total_agent'));
         $contract_id = carbon_get_post_meta($commission_request_id, 'contract_id');
         $commercial_agent = carbon_get_post_meta($contract_id, 'commercial_agent');
         $user = carbon_get_post_meta($commercial_agent, 'user');

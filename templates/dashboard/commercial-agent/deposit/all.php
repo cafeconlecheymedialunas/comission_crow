@@ -52,24 +52,24 @@ $deposits_completed = get_posts([
 
             <h2 class="d-inline">Balance</h2>
 
-            <h3 class="mb-0"><?php echo Helper::format_price_for_user($wallet_balance); ?></h3>
+            <h3 class="mb-0"><?php echo Helper::convert_price_to_selected_currency($wallet_balance); ?></h3>
             <div class="row w-100 mt-4">
                 <div class="col-md-4">  
                     <h5>withdrawn</h5>
                         <?php 
-                        $price_formatted = Helper::format_price_for_user($total_expenses);
+                        $price_formatted = Helper::convert_price_to_selected_currency($total_expenses);
                         $price_total_expenses_formatted = $minimal_price_formatted ?? "0";?>
                     <h5><?php echo $price_total_expenses_formatted; ?></h5>
                 </div>
                 <div class="col-md-4">  
                     <h5>Incomes</h5>
-                    <?php $price_total_incomes = Helper::format_price_for_user($total_incomes);
+                    <?php $price_total_incomes = Helper::convert_price_to_selected_currency($total_incomes);
                     $price_total_incomes_formatted = $price_total_incomes ?? "0";?>
-                    <h5><?php echo Helper::format_price_for_user($price_total_incomes_formatted); ?></h5>
+                    <h5><?php echo Helper::convert_price_to_selected_currency($price_total_incomes_formatted); ?></h5>
                 </div>
                 <div class="col-md-4">
                     <h5>Pending Withdrawals</h5>
-                    <?php $price_pending_withdraws = Helper::format_price_for_user($pending_withdrawls);
+                    <?php $price_pending_withdraws = Helper::convert_price_to_selected_currency($pending_withdrawls);
                     $price_pending_withdraws_formatted = $price_pending_withdraws ?? "0";?>
                     <h5><?php echo $price_pending_withdraws_formatted; ?></h5>
                 </div>
@@ -149,7 +149,7 @@ $deposits_completed = get_posts([
                                 ?>
                             <tr>
                                 <td><?php echo $deposit->ID; ?></td>
-                                <td><?php echo esc_html(Helper::format_price_for_user($total_paid)); ?></td>
+                                <td><?php echo esc_html(Helper::convert_price_to_selected_currency($total_paid)); ?></td>
                                 <td><i class="fa-brands fa-cc-stripe"></i></td>
                                 <td><?php echo Helper::get_human_time_diff($date) . " ago"; ?></td>    
                             </tr>
@@ -188,7 +188,7 @@ $deposits_completed = get_posts([
                                 ?>
                             <tr>
                                 <td><?php echo $deposit->ID; ?></td>
-                                <td><?php echo esc_html(Helper::format_price_for_user($total_paid)); ?></td>
+                                <td><?php echo esc_html(Helper::convert_price_to_selected_currency($total_paid)); ?></td>
                                 <td><i class="fa-brands fa-cc-stripe"></i></td>
                                 <td><?php echo Helper::get_human_time_diff($date) . " ago"; ?></td>
                                 <td>

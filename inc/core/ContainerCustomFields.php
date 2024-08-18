@@ -29,6 +29,7 @@ class ContainerCustomFields
         $this->register_deposit_fields();
         $this->register_theme_options();
         $this->register_home_fields();
+        $this->register_contact_fields();
         $this->register_taxonomy_industry_fields();
         $this->register_taxonomy_currency_fields();
     }
@@ -45,11 +46,12 @@ class ContainerCustomFields
                 Field::make('text', 'company_street', __('Company Street')),
 
                 Field::make('text', 'company_number', __('Company Number')),
+               
                 Field::make('text', 'company_city', __('Company City')),
                 Field::make('text', 'company_state', __('Company State')),
                 Field::make('text', 'company_country', __('Company Country')),
                 Field::make('text', 'company_postalcode', __('Company Postal Code')),
-                Field::make('text', 'employees_number', __('Number of Employees')),
+            
                 Field::make('text', 'website_url', __('website Profile')),
                 Field::make('text', 'facebook_url', __('Facebook Profile')),
                 Field::make('text', 'instagram_url', __('Instagram Profile')),
@@ -331,6 +333,8 @@ class ContainerCustomFields
             Field::make('text', 'billing_address_postalcode', __('Billing Address Postal Code')),
             Field::make('text', 'billing_company_holder', __('Billing Company Holder')),
             Field::make('text', 'billing_company_name', __('Billing Company Name')),
+            Field::make('text', 'billing_company_email', __('Company Email')),
+            Field::make('text', 'billing_company_phone', __('Company Phone')),
         ]);
     }
 
@@ -508,6 +512,26 @@ class ContainerCustomFields
                     Field::make( 'image', 'brand_image', __( 'Image' ) )
                 ) )->set_layout('tabbed-horizontal')
             ) ); 
+     
+
+    }
+
+    
+    public function register_contact_fields(){
+      
+    
+        // Registra los campos personalizados solo si estamos en la página de inicio
+        Container::make('post_meta', __('Review'))
+          
+            ->where('post_type', '=', 'page') // Solo para el tipo de post 'page'
+            ->where('post_id', '=', 17)
+            ->add_fields(array(
+                Field::make( 'text', 'latitud', 'Latitud' ),
+                Field::make( 'text', 'longitud', 'Longitud' ),
+            
+                   
+                
+            )); 
      
 
     }

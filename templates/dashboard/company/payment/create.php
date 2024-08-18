@@ -100,7 +100,7 @@ $location = get_user_meta($user->ID, 'location', true); // Ejemplo para obtener 
                                     <h6><?php echo esc_html(get_the_title($opportunity_id)); ?></h6>
                                 <?php endif;?>
                                 <?php if ($has_minimal_price): ?>
-                                    <p>Minimum price: <?php echo esc_html(Helper::format_price_for_user($minimal_price)); ?></p>
+                                    <p>Minimum price: <?php echo esc_html(Helper::convert_price_to_selected_currency($minimal_price)); ?></p>
                                 <?php endif;?>
                                 <?php if ($has_commission): ?>
                                     <p>Commission: <?php echo esc_html($commission); ?>%</p>
@@ -141,31 +141,31 @@ $location = get_user_meta($user->ID, 'location', true); // Ejemplo para obtener 
                             <?php foreach ($items as $item): ?>
                                 <li class="list-group-item d-flex justify-content-between lh-condensed">
                                     <div>
-                                        <span class="text-muted"><?php echo esc_html(Helper::format_price_for_user($item["price_paid"])); ?></span>
+                                        <span class="text-muted"><?php echo esc_html(Helper::convert_price_to_selected_currency($item["price_paid"])); ?></span>
                                         <small class="text-muted">X <?php echo esc_html($item["quantity"]); ?></small>
                                     </div>
-                                    <h6 class="my-0 text-muted"><?php echo esc_html(Helper::format_price_for_user($item["subtotal"])); ?></h6>
+                                    <h6 class="my-0 text-muted"><?php echo esc_html(Helper::convert_price_to_selected_currency($item["subtotal"])); ?></h6>
                                 </li>
                             <?php endforeach;?>
                             <li class="list-group-item d-flex justify-content-between">
                                 <span>Total Sales (USD)</span>
-                                <strong><?php echo esc_html(Helper::format_price_for_user($total_cart)); ?></strong>
+                                <strong><?php echo esc_html(Helper::convert_price_to_selected_currency($total_cart)); ?></strong>
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
                                 <span>Commission of Agent </span>
-                                <strong><?php echo esc_html(Helper::format_price_for_user($total_agent)); ?></strong>
+                                <strong><?php echo esc_html(Helper::convert_price_to_selected_currency($total_agent)); ?></strong>
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
                                 <span>Commission of Nexfy</span>
-                                <strong><?php echo esc_html(Helper::format_price_for_user($total_platform)); ?></strong>
+                                <strong><?php echo esc_html(Helper::convert_price_to_selected_currency($total_platform)); ?></strong>
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
                                 <span>Stripe service fee</span>
-                                <strong><?php echo esc_html(Helper::format_price_for_user($total_tax_service)); ?></strong>
+                                <strong><?php echo esc_html(Helper::convert_price_to_selected_currency($total_tax_service)); ?></strong>
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
                                 <span class="fw-bold">Total in your currency:</span>
-                                <span class="fw-bold"><?php echo esc_html(Helper::format_price_for_user($total_to_pay)); ?></span>
+                                <span class="fw-bold"><?php echo esc_html(Helper::convert_price_to_selected_currency($total_to_pay)); ?></span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
                                 <span class="fw-bold">Total Paid:</span>

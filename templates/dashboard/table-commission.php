@@ -98,9 +98,9 @@ $status_classes = [
                             <?php echo get_the_title($opportunity_id); ?>
                         </a>
                     </td>
-                    <td><?php echo esc_html(Helper::format_price_for_user($total_cart_commission_request)); ?></td>
+                    <td><?php echo esc_html(Helper::convert_price_to_selected_currency($total_cart_commission_request)); ?></td>
                     <td><?php echo esc_html(carbon_get_post_meta($contract_id, "commission") . "%"); ?></td>
-                    <td><?php echo esc_html(Helper::format_price_for_user($total_agent_commission_request)); ?></td>
+                    <td><?php echo esc_html(Helper::convert_price_to_selected_currency($total_agent_commission_request)); ?></td>
                     <td>
                         <span class="<?php echo $status_class; ?>"><?php echo esc_html(ucwords(str_replace('_', ' ', $status))); ?></span>
                     </td>
