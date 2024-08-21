@@ -1,4 +1,4 @@
-<?php var_dump($opportunities_select);if (!empty($opportunities_select)): ?>
+<?php if (!empty($opportunities_select)): ?>
     <div class="opportunities d-flex flex-column align-items-center">
         <?php if ($opportunities_title): ?>
             <h2 class="title"><?php echo esc_html($opportunities_title); ?></h2>
