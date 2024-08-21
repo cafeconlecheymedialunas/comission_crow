@@ -17,7 +17,7 @@ $allowed_roles = ["commercial_agent", "company"];
 
 // Check if user has a permitted role
 if (!in_array($current_user->roles[0], $allowed_roles)) {
-    get_header();
+    get_header("dashboard");
     echo '<div class="alert alert-danger">Access denied. You do not have permission to access this page.</div>';
     get_footer();
     ob_end_flush();
@@ -47,16 +47,21 @@ $current_user = wp_get_current_user();
 $commission_requests = ProfileUser::get_instance()->get_commission_requests_for_user();
 
 $completed_commission_request = [];
+$pending_commission_request = [];
 foreach ($commission_requests as $commission_request) {
     $status = carbon_get_post_meta($commission_request->ID, "status");
     if ($status === "payment_completed") {
         $completed_commission_request[] = $commission_request;
     }
 
+    if ($status !== "payment_completed") {
+        $completed_commission_request[] = $commission_request;
+    }
+
 }
 $on_going_contracts = ProfileUser::get_instance()->get_contracts(["accepted", "finishing", "finished"]);
 
-$total_incomes = Deposit::get_instance()->calculate_total_income();
+$total_incomes = Deposit::get_instance()->calculate_total_incomes();
 
 
 $language = wp_get_post_terms($commercial_agent->ID, 'language');
@@ -116,20 +121,20 @@ $years_of_experience = carbon_get_post_meta($commercial_agent->ID, "years_of_exp
                                         
                                         ?>
                                         <div class="stats earnings">
-                                            <span><?php echo Helper::convert_and_format_price($total_incomes); ?></span> <?php echo $currency_code;?> in  earnings
+                                            <span><?php echo count($pending_commission_request); ?></span> Pending Commission
                                         </div>
                                         <div class="stats contracts">
                                             <span><?php echo count($on_going_contracts); ?></span> On Going Contracts
                                         </div>
                                         <div class="stats orders">
-                                            <span><?php echo count($completed_commission_request); ?></span> Completed Orders                                 
+                                            <span><?php echo count($completed_commission_request); ?></span> Completed Commission                               
                                         </div>
                                     </div>
                                     </div>
                                     <div class="col-xl-5">
                                     <ul class="list-unstyled mid-meta">
                                     <li class="list-inline-item">
-                                        <button class="btn btn-sm btn-info mb-3" data-bs-toggle="modal" data-bs-target="#chat-modal" data-user-id="<?php echo esc_attr($user->ID); ?>">
+                                        <button class="btn btn-sm btn-info mb-3" data-bs-toggle="modal" data-bs-target="#chat-modal" data-user-id="<?php echo esc_attr($user_commercial_agent->ID); ?>">
                                             Send Message
                                         </button>
                                     </li>
@@ -158,19 +163,25 @@ $years_of_experience = carbon_get_post_meta($commercial_agent->ID, "years_of_exp
                                         ],
                                         'posts_per_page' => -1,
                                     ];
+
                                     $query = new WP_Query($args);
-                                
-                                    $company = $query->posts[0];
-                                     if(in_array("company",$current_user->roles) && $company):
-                                       
-                                     ?>
-                                    <li class="list-inline-item">
-                                        <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#rating" data-user-id="<?php echo esc_attr($user_commercial_agent->ID); ?>">
-                                            Send a Rating
-                                        </button>
-                                    </li>
-                                 
-                                    <?php endif;?>
+
+                                    
+                                    if ($query->have_posts()) {
+                                        $company = $query->posts[0];
+
+                                        
+                                        if (in_array('company', $current_user->roles) && $company) {
+                                            ?>
+                                            <li class="list-inline-item">
+                                                <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#rating" data-user-id="<?php echo esc_attr($user_commercial_agent->ID); ?>">
+                                                    Send a Rating
+                                                </button>
+                                            </li>
+                                            <?php
+                                        }
+                                    }
+                                    ?>
                                  
                                 </ul>
                                     </div>

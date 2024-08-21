@@ -16,11 +16,19 @@
                         <?php if (!empty($contracts)) :
                             foreach ($contracts as $contract) :
                                 
-                                $another_part = ProfileUser::get_instance()->get_another_part_of_contract($contract->ID);
-                                $another_part_user = ProfileUser::get_instance()->get_user_another_part_of_contract($contract->ID);
+                                if(in_array("company",$current_user->roles)){
+                                    $another_part_id = carbon_get_post_meta($contract->ID,"commercial_agent");
 
-                                
+                                }else{
+                                    $another_part_id = carbon_get_post_meta($contract->ID,"company");
+                                }
 
+                                $another_part = get_post($another_part_id);
+                             
+                               
+                   
+                                $another_part_user_id = get_post_meta($another_part_id,"_user_id")[0];
+                                $another_part_user = get_user_by("ID",$another_part_user_id);
                                 
                                 $opportunity = carbon_get_post_meta($contract->ID, 'opportunity');
                 
@@ -123,11 +131,13 @@
                                                     </form>
                                                 </li>
                                                 <?php endif; ?>
+                                               <?php if($another_part_user):?>
                                                 <li class="list-inline-item">
                                                     <button class="operation" data-bs-toggle="modal" data-bs-target="#chat-modal-<?php echo $another_part_user->ID;?>" data-user-id="<?php echo esc_attr($another_part_user->ID); ?>">
                                                         <i class="chat text-secondary fa-solid fa-comments"></i>
                                                     </button>
                                                 </li>
+                                               <?php endif;?> 
                                                 <?php if(in_array("commercial_agent", $current_user->roles)):?>
                                                     <?php if ($status === "accepted" || $status === "finished" || $status === "finishing") : ?>
                                                         <?php if(!$commission_requests):?>
@@ -139,7 +149,7 @@
                                                         <?php endif;?>
                                                     <?php endif;?>
                                                 <?php endif;?>
-                                                
+                                                <?php if($another_part_user):?>
                                                 <div class="modal fade" id="chat-modal-<?php echo $another_part_user->ID;?>" tabindex="-1" aria-labelledby="chatModalLabel" aria-hidden="true">
                                                     <div class="modal-dialog">
                                                         <div class="modal-content">
@@ -153,6 +163,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <?php endif;?>
                                             </ul>
                                         </td>
                                     </tr>

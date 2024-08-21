@@ -30,6 +30,7 @@ class ContainerCustomFields
         $this->register_theme_options();
         $this->register_home_fields();
         $this->register_contact_fields();
+        $this->register_faqs_fields();
         $this->register_taxonomy_industry_fields();
         $this->register_taxonomy_currency_fields();
     }
@@ -304,7 +305,7 @@ class ContainerCustomFields
                 Field::make('date_time', 'date', 'payment Date'),
 
                 Field::make('select', 'status', __('Status'))
-                ->set_options([$this->status_manager,"get_status_deposit"]),
+                ->set_options([$this->status_manager,"get_status_payment"]),
 
                 
     
@@ -452,13 +453,9 @@ class ContainerCustomFields
             ) )->add_tab( __( 'Selected Opportunities' ), array(
                 Field::make( 'text', 'opportunities_title', __( 'Title' ) ),
                 Field::make( 'rich_text', 'opportunities_description', __( 'Description' ) ),
-                Field::make( 'association', 'opportunities_select', __( 'Select Opportunities' ) )
-                ->set_types( array(
-                    array(
-                        'type'      => 'post',
-                        'post_type' => 'opportunity',
-                    )
-                ) )
+               
+                Field::make('multiselect', 'opportunity', __('Opportunity'))
+                ->add_options([$this->admin,'get_opportunities']),
             ) )
             ->add_tab( __( 'Selected Taxonomy' ), array(
                 Field::make( 'text', 'industry_title', __( 'Title' ) ),
@@ -473,13 +470,8 @@ class ContainerCustomFields
             ) )->add_tab( __( 'Selected agents' ), array(
                 Field::make( 'text', 'selected_agents_title', __( 'Title' ) ),
                 Field::make( 'rich_text', 'selected_agents_description', __( 'Description' ) ),
-                Field::make( 'association', 'selected_agents', __( 'Select Agents' ) )
-                ->set_types( array(
-                    array(
-                        'type'      => 'post',
-                        'post_type' => 'commercial_agent',
-                    )
-                ) )
+                Field::make('multiselect', 'selected_agents', __('Selected Commercial Agents'))
+                ->add_options([$this->admin,'get_commercial_agents']),
             ) )
             ->add_tab( __( 'Counters' ), array(
                 Field::make( 'complex', 'counters', __( 'Counters' ) )
@@ -515,6 +507,32 @@ class ContainerCustomFields
      
 
     }
+
+    public function register_faqs_fields(){
+       
+        Container::make('post_meta', __('Faqs Page'))
+          
+            ->where('post_type', '=', 'page') 
+            ->where('post_id', '=', 13)
+            ->add_fields( array(
+                Field::make( 'text', 'faqs_company_title', __( 'Title' ) ),
+                Field::make( 'complex', 'faqs_company', __( 'Faqs Company' ) )
+                ->add_fields( array(
+                    Field::make( 'text', 'question', __( 'Question' ) ),
+                    Field::make( 'rich_text', 'answer', __( 'Answer' ) ),
+                ) )->set_layout('tabbed-horizontal')
+                ,
+                Field::make( 'text', 'faqs_agent_title', __( 'Title' ) ),
+                Field::make( 'complex', 'faqs_agent', __( 'Faqs Agent' ) )
+                ->add_fields( array(
+                    Field::make( 'text', 'question', __( 'Question' ) ),
+                    Field::make( 'rich_text', 'answer', __( 'Answer' ) ),
+                ) )->set_layout('tabbed-horizontal')
+            ) ); 
+     
+
+    }
+
 
     
     public function register_contact_fields(){

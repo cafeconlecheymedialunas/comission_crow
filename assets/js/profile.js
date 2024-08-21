@@ -107,13 +107,7 @@ jQuery(document).ready(function ($) {
             showConfirmButton: false,
             timer: 2000,
           }).then(function () {
-            if (response.data.roles[0]) {
-              let key =
-                response.data.roles[0] === "commercial_agent"
-                  ? "commercial-agent"
-                  : "company";
-              window.location.href = `/dashboard/${key}/profile`;
-            }
+           window.location.href = response.data.redirect_url;
           });
         } else {
           displayFormErrors(form, response.data); // Asegúrate de que displayFormErrors esté definido para manejar errores

@@ -101,7 +101,14 @@ class ProfileUser
             wp_update_post($post_data);
         }
 
-        wp_send_json_success($user);
+        $role = $user->roles[0];
+        $role = $role === "commercial_agent" ? "commercial-agent" : "company";
+
+        // Build the redirect URL
+        $redirect_url = site_url("dashboard/$role/profile");
+
+        wp_send_json_success(["redirect_url" => $redirect_url]);
+      
 
     }
 
@@ -397,7 +404,9 @@ class ProfileUser
     {
         $current_user = !$user_id?wp_get_current_user():get_user_by("ID",$user_id);
 
-       
+       if(empty($current_user->roles)){
+            return false;
+       }
 
         $query = new WP_Query([
             'post_type' => $current_user->roles[0],

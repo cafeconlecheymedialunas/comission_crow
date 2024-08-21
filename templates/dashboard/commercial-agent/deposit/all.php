@@ -6,10 +6,13 @@ $current_user_id = get_current_user_id();
 $post_associated_user = ProfileUser::get_instance()->get_user_associated_post_type();
 
 $wallet_balance = Deposit::get_instance()->calculate_wallet_balance();
-$pending_withdrawls = Deposit::get_instance()->calculate_pending_income();
-$total_incomes = Deposit::get_instance()->calculate_total_income();
-$total_expenses = Deposit::get_instance()->calculate_total_expenses();
-// Consultar depósitos para el usuario actual
+
+$pending_withdrawls = Deposit::get_instance()->calculate_pending_withdrawals();
+
+$total_incomes = Deposit::get_instance()->calculate_total_incomes();
+
+$total_withdrawals = Deposit::get_instance()->calculate_total_withdrawals();
+
 $deposits_requested = get_posts([
     'post_type' => 'deposit',
     'posts_per_page' => -1,
@@ -57,21 +60,18 @@ $deposits_completed = get_posts([
                 <div class="col-md-4">  
                     <h5>withdrawn</h5>
                         <?php 
-                        $price_formatted = Helper::convert_price_to_selected_currency($total_expenses);
-                        $price_total_expenses_formatted = $minimal_price_formatted ?? "0";?>
-                    <h5><?php echo $price_total_expenses_formatted; ?></h5>
+                        $price_formatted = Helper::convert_price_to_selected_currency($total_withdrawals);
+                        $price_total_withdrawals_formatted = $minimal_price_formatted ?? "0";?>
+                    <h5><?php echo $price_total_withdrawals_formatted; ?></h5>
                 </div>
                 <div class="col-md-4">  
                     <h5>Incomes</h5>
-                    <?php $price_total_incomes = Helper::convert_price_to_selected_currency($total_incomes);
-                    $price_total_incomes_formatted = $price_total_incomes ?? "0";?>
-                    <h5><?php echo Helper::convert_price_to_selected_currency($price_total_incomes_formatted); ?></h5>
+                 
+                    <h5><?php echo Helper::convert_price_to_selected_currency($total_incomes); ?></h5>
                 </div>
                 <div class="col-md-4">
                     <h5>Pending Withdrawals</h5>
-                    <?php $price_pending_withdraws = Helper::convert_price_to_selected_currency($pending_withdrawls);
-                    $price_pending_withdraws_formatted = $price_pending_withdraws ?? "0";?>
-                    <h5><?php echo $price_pending_withdraws_formatted; ?></h5>
+                    <h5><?php echo Helper::convert_price_to_selected_currency($pending_withdrawls ); ?></h5>
                 </div>
             </div>
           

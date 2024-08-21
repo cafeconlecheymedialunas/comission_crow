@@ -242,7 +242,14 @@ class Auth
     
         // Return the user information as JSON response
         $user = get_user_by('id', $user_id);
-    
+        $role = $user->roles[0];
+        $role = $role === "commercial_agent" ? "commercial-agent" : "company";
+
+        // Build the redirect URL
+        $redirect_url = site_url("auth");
+
+        wp_send_json_success(["redirect_url" => $redirect_url]);
+
         wp_send_json_success($user);
         die();
     }
@@ -292,7 +299,13 @@ class Auth
         if (is_wp_error($user)) {
             wp_send_json_error(['general' => [strip_tags($user->get_error_message())]]);
         } else {
-            wp_send_json_success($user);
+            $role = $user->roles[0];
+            $role = $role === "commercial_agent" ? "commercial-agent" : "company";
+
+            // Build the redirect URL
+            $redirect_url = site_url("dashboard/$role/profile");
+    
+            wp_send_json_success(["redirect_url" => $redirect_url]);
         }
     
         die();

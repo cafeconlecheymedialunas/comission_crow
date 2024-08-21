@@ -34,6 +34,14 @@ body, p {
 background: rgb(103 135 254 / 10%);
 border-color:rgb(103 135 254 / 10%)!important;
 }
+.input-group .input-group-text{
+  border-top-left-radius: 50px!important;
+  border-bottom-left-radius: 50px!important;
+}
+.input-group .form-control{
+  border-top-right-radius: 50px!important;
+  border-bottom-right-radius: 50px!important;
+}
 .custom-spinner {
   z-index: 10000;
 }
@@ -572,6 +580,7 @@ body p{
   font-size: calc(1.375rem + 1.5vw);
   margin:20px 0;
   display: block;
+    line-height: calc(1.5rem + 1.5vw);
 }
 
 .opportunity-widget p{

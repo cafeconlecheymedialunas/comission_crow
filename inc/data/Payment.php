@@ -131,21 +131,24 @@ class Payment
         $total_agent = Helper::convert_price_to_selected_currency(carbon_get_post_meta($commission_request_id, 'total_agent'));
         $contract_id = carbon_get_post_meta($commission_request_id, 'contract_id');
         $commercial_agent = carbon_get_post_meta($contract_id, 'commercial_agent');
-        $user = carbon_get_post_meta($commercial_agent, 'user');
-        $user = get_user_by('ID', $user);
+        $user_id = get_post_meta($commercial_agent, '_user_id');
+       
+        $user = get_user_by('ID', $user_id[0]);
+
         $sku = carbon_get_post_meta($contract_id, 'sku');
-    
+
+        if($user) return;
         // Crear una instancia de la clase EmailSender
         $email_sender = new EmailSender();
     
         // Definir los parámetros del correo electrónico
         $to = $user->user_email;
         $subject = 'Payment Received for Your Commission';
-        $message = "<p>Hello, {$user->first_name},</p>
+        $message = "<p>Hello, $user->first_name</p>
             <p>Your commission payment has been successfully processed.</p>
-            <p><strong>Commission Request ID:</strong> {$commission_request_id}</p>
-            <p><strong>Agent Commission:</strong> {$total_agent}</p>
-            <p><strong>Contract SKU:</strong> {$sku}</p>
+            <p><strong>Commission Request ID:</strong> $commission_request_id</p>
+            <p><strong>Agent Commission:</strong> $total_agent</p>
+            <p><strong>Contract SKU:</strong> $sku</p>
             <p>Thank you for your business.</p>";
     
         // Enviar el correo electrónico
@@ -168,8 +171,9 @@ class Payment
         $total_agent = Helper::convert_price_to_selected_currency(carbon_get_post_meta($commission_request_id, 'total_agent'));
         $contract_id = carbon_get_post_meta($commission_request_id, 'contract_id');
         $commercial_agent = carbon_get_post_meta($contract_id, 'commercial_agent');
-        $user = carbon_get_post_meta($commercial_agent, 'user');
-        $user = get_user_by('ID', $user);
+        $user = get_post_meta($commercial_agent, '_user_id',false);
+        $user = get_user_by('ID', $user[0]);
+        if(!$user) return;
         $sku = carbon_get_post_meta($contract_id, 'sku');
     
         // Crear una instancia de la clase EmailSender

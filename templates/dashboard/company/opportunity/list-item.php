@@ -1,5 +1,15 @@
 <?php 
-$company_id = carbon_get_post_meta($contract_id, "company");
+            if(isset($contract_id)){
+                $company_id = carbon_get_post_meta($contract_id, "company");
+            }else{
+                $company_id = carbon_get_post_meta($opportunity_id, "company");
+            }
+
+   
+            
+            
+            
+
              
              $company_logo = get_the_post_thumbnail($company_id, [50, 50], [
                  'class' => 'rounded-circle company-logo',
@@ -61,7 +71,7 @@ $company_id = carbon_get_post_meta($contract_id, "company");
                          <?php endif;?>
                      </div>
            
-                     <a href="<?php echo home_url() . "/opportunity-item/?opportunity_id=" . get_the_ID(); ?>" class="btn btn-primary">Detail</a>
+                     <a href="<?php echo home_url() . "/opportunity-item/?opportunity_id=" . $opportunity_id; ?>" class="btn btn-primary">Detail</a>
                
                 
              </div>

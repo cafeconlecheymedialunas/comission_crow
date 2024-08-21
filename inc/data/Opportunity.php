@@ -32,6 +32,7 @@ class Opportunity extends Crud
             'gender' => isset($_POST["gender"]) ? $_POST["gender"] : [],
             'price' => sanitize_text_field($_POST['price']),
             'commission' => sanitize_text_field($_POST['commission']),
+            "date" => current_time("mysql"),
             'deliver_leads' => isset($_POST['deliver_leads']) && $_POST['deliver_leads'] === 'yes' ? true : false,
             'sales_cycle_estimation' => sanitize_text_field($_POST['sales_cycle_estimation']),
             'tips' => sanitize_textarea_field($_POST['tips']),
@@ -137,6 +138,7 @@ class Opportunity extends Crud
         $field_mappings = [
             "company" => "Company",
             'price' => 'Price',
+            "date" => "Date",
             'commission' => 'Commission',
             'deliver_leads' => 'Deliver Leads',
             'sales_cycle_estimation' => 'Sales Cycle Estimation',
@@ -377,12 +379,15 @@ class Opportunity extends Crud
     
         $opportunities = new WP_Query($query_args);
     
+    
         if ($opportunities->have_posts()) {
             foreach($opportunities->posts as $opportunity):
 
-            $spinner_template = 'templates/dashboard/company/opportunity/list-item.php';
-            if (locate_template($spinner_template)) {
-                include locate_template($spinner_template);
+            $opportunity_id = $opportunity->ID;
+
+            $template = 'templates/dashboard/company/opportunity/list-item.php';
+            if (locate_template($template)) {
+                include locate_template($template);
             }
         
         endforeach;

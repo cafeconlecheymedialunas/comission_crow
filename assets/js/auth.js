@@ -12,7 +12,7 @@ jQuery(document).ready(function ($) {
       cache: false,
       success: function (response) {
         $customSpinner.removeClass("d-flex").hide();
-        console.log(response);
+     
         if (response.success) {
           Swal.fire({
             title: "You have successfully registered!",
@@ -21,11 +21,7 @@ jQuery(document).ready(function ($) {
             showConfirmButton: false,
             timer: 2000, // 2 segundos
           }).then(function () {
-            let key =
-              response.data.roles[0] === "commercial_agent"
-                ? "commercial-agent"
-                : "company";
-            window.location.href = `/dashboard/${key}/profile`;
+            window.location.href = response.data.redirect_url;
           });
         } else {
           displayFormErrors(form, response.data);
@@ -36,37 +32,42 @@ jQuery(document).ready(function ($) {
 
   $("#login_form").on("submit", function (e) {
     e.preventDefault();
-    var form = $(this);
+
     $customSpinner.addClass("d-flex");
+
+    var form = this;
+    var formData = new FormData(form);
+
+    formData.append("action", "login_user");
+
     $.ajax({
-      type: "POST",
-      url: ajax_object.ajax_url,
-      data: form.serialize() + "&action=login_user",
-      cache: false,
-      success: function (response) {
-        $customSpinner.removeClass("d-flex").hide();
-        if (response.success) {
-          Swal.fire({
-            title: "You are successfully logged in!",
-            text: "You will be redirected to the dashboard",
-            icon: "success",
-            showConfirmButton: false,
-            timer: 2000, // 2 segundos
-          }).then(function () {
-            if (response.data.roles[0]) {
-              let key =
-                response.data.roles[0] === "commercial_agent"
-                  ? "commercial-agent"
-                  : "company";
-              window.location.href = `/dashboard/${key}/profile`;
+        type: "POST",
+        url: ajax_object.ajax_url,
+        data: formData,
+        cache: false,
+        processData: false,
+        contentType: false,
+        success: function (response) {
+            console.log(response);
+            $customSpinner.removeClass("d-flex").hide();
+
+            if (response.success) {
+                Swal.fire({
+                    title: "You are successfully logged in!",
+                    text: "You will be redirected to the dashboard",
+                    icon: "success",
+                    showConfirmButton: false,
+                    timer: 2000, // 2 segundos
+                }).then(function () {
+                    window.location.href = response.data.redirect_url;
+                });
+            } else {
+                displayFormErrors(form, response.data);
             }
-          });
-        } else {
-          displayFormErrors(form, response.data);
-        }
-      },
+        },
     });
-  });
+});
+
 
   $("#reset_form").on("submit", function (e) {
     e.preventDefault();

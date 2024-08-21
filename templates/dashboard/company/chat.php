@@ -5,7 +5,8 @@
     <div class="col-md-12">
        
 <div class="card">
-    <?php echo do_shortcode('[better_messages user_ids="78"]]'); ?>
+    <?php echo do_shortcode('[better_messages user_ids="78"]'); ?>
 </div>
 </div>
 </div>
+<?php echo do_shortcode('[better_messages_pm_button user_id="-1" text="Private Message" subject="Have a question to you" message="Lorem Ipsum is simply dummy text." target="_self" fast_start="0" url_only="0"]'); ?>

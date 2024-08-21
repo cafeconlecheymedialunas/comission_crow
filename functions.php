@@ -14,7 +14,7 @@ require_once get_template_directory() . '/vendor/autoload.php';
 $files_to_require = [
     __DIR__ . '/inc/setup/wp-bootstrap-navwalker.php',
     __DIR__ . '/inc/setup/wp-bootstrap-navwalker-footer.php',
-    __DIR__ . '/inc/setup/customizer.php',
+     __DIR__ . '/inc/setup/customizer.php',
     __DIR__ . '/inc/setup/setup-theme.php',
 
     __DIR__ . '/inc/core/EmailSender.php',

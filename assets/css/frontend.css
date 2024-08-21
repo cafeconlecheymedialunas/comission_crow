@@ -610,12 +610,19 @@ ol.wp-block-latest-comments {
 /*--------------------------------------------------------------
 # Contact Page
 --------------------------------------------------------------*/
+.contact-icons{
+	margin-top:70px;
+	margin-bottom:100px;
+}
 .contact-info{
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 	
+}
+#map{
+	margin-bottom:100px;
 }
 .contact-info .icon{
 	background-color: #1ABB691A;
@@ -647,4 +654,32 @@ ol.wp-block-latest-comments {
     font-size: 18px;
     font-weight: 300;
     line-height: 24px;
+}
+
+.page-id-13 h2{
+	color: var(--e-global-color-secondary);
+    font-family: "Roboto", Sans-serif;
+    font-weight: 600;
+}
+.wp-block-faq-block-for-gutenberg-faq .question h4{
+    margin: 0 !important;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.wp-block-faq-block-for-gutenberg-faq {
+    padding: 20px 30px;
+    border-radius: 6px;
+    border: 1px solid #ececec;
+    background: #fff!important;
+   
+}
+
+.wp-block-faq-block-for-gutenberg-faq .active+.answer {
+	display: block;
+    -webkit-transition: visibility 0s linear .33s, opacity .33s linear;
+    transition: visibility 0s linear .33s, opacity .33s linear;
+    margin-top: 20px;
+    border-top: 1px solid #ececec;
+    padding-top: 20px;
 }

@@ -168,7 +168,7 @@ $location = get_user_meta($user->ID, 'location', true); // Ejemplo para obtener 
                                 <span class="fw-bold"><?php echo esc_html(Helper::convert_price_to_selected_currency($total_to_pay)); ?></span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
-                                <span class="fw-bold">Total Paid:</span>
+                                <span class="fw-bold">Total to pay:</span>
                                 <span class="fw-bold"><?php echo esc_html("$".number_format($total_to_pay, 2, '.', ',')." (USD)"); ?></span>
                             </li>
                         </ul>

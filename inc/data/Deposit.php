@@ -137,7 +137,7 @@ class Deposit
 
         return $total_income_by_month;
     }
-    public function calculate_total_income()
+    public function calculate_total_incomes()
     {
         // Obtiene los requests de comisión para el usuario
         $commission_requests = ProfileUser::get_instance()->get_commission_requests_for_user();
@@ -146,6 +146,8 @@ class Deposit
         $commission_request_ids = array_map(function ($post) {
             return $post->ID;
         }, $commission_requests);
+
+        
 
         // Obtiene todos los pagos completados
         $payments = get_posts([
@@ -156,21 +158,25 @@ class Deposit
         
 
         $total_income = 0;
+    
 
         foreach ($payments as $payment) {
             // Obtiene el ID de la solicitud de comisión asociada
             $commission_request_id = carbon_get_post_meta($payment->ID, 'commission_request_id');
 
-          
+           
+
+            
 
             // Verifica si el commission_request_id está en la lista de IDs de commission_requests del usuario
             if (in_array($commission_request_id, $commission_request_ids)) {
                 // Obtiene el estado del pago
             
-                $payment_status = get_post_meta($payment->ID, '_status')[0];
+                $payment_status = get_post_meta($payment->ID, '_status');
+             
 
                 // Solo agrega al total si el pago está completado
-                if ($payment_status === 'payment_completed') {
+                if ($payment_status[0] === 'payment_completed') {
                     $total_paid = carbon_get_post_meta($payment->ID, 'total_agent');
                     $total_income += floatval($total_paid);
                 }
@@ -180,7 +186,7 @@ class Deposit
         return $total_income;
     }
 
-    public function calculate_total_expenses()
+    public function calculate_total_withdrawals()
     {
         $deposits = get_posts([
             'post_type' => 'deposit',
@@ -194,65 +200,55 @@ class Deposit
             ],
         ]);
 
-        $total_expenses = 0;
+        $total_withdrawals = 0;
 
         foreach ($deposits as $deposit) {
             $total_paid = carbon_get_post_meta($deposit->ID, 'total_paid');
             $deposit_status = carbon_get_post_meta($deposit->ID, 'status');
+        
 
             // Incluye solo los depósitos con estado "deposit_completed" (excluye "pending_deposit")
             if ($deposit_status === 'deposit_completed') {
-                $total_expenses += floatval($total_paid);
+                $total_withdrawals += floatval($total_paid);
             }
         }
 
-        return $total_expenses;
+        return $total_withdrawals;
     }
 
-    public function calculate_pending_income()
+    public function calculate_pending_withdrawals()
     {
-        // Obtiene los requests de comisión para el usuario
-        $commission_requests = ProfileUser::get_instance()->get_commission_requests_for_user();
-
-        // Extrae los IDs de los commission requests
-        $commission_request_ids = array_map(function ($post) {
-            return $post->ID;
-        }, $commission_requests);
-
-        // Obtiene todos los pagos
-        $payments = get_posts([
-            'post_type' => 'payment',
+        $deposits = get_posts([
+            'post_type' => 'deposit',
             'posts_per_page' => -1,
-            'post_status' => 'publish', // Asegúrate de que solo se obtengan pagos publicados
+            'meta_query' => [
+                [
+                    'key' => 'user',
+                    'value' => get_current_user_id(),
+                    'compare' => '=',
+                ],
+            ],
         ]);
 
-        $total_pending_income = 0;
+        $pending_withdrawals = 0;
 
-        foreach ($payments as $payment) {
-            // Obtiene el ID de la solicitud de comisión asociada
-            $commission_request_id = carbon_get_post_meta($payment->ID, 'commission_request_id');
-
-            // Verifica si el commission_request_id está en la lista de IDs de commission_requests del usuario
-            if (in_array($commission_request_id, $commission_request_ids)) {
-                // Obtiene el estado del pago
-                $payment_status = carbon_get_post_meta($payment->ID, 'status');
-
-                // Solo agrega al total si el pago está pendiente
-                if ($payment_status === 'payment_pending') {
-                    $total_paid = carbon_get_post_meta($payment->ID, 'total_paid');
-                    $total_pending_income += floatval($total_paid);
-                }
+        foreach ($deposits as $deposit) {
+            $total_paid = carbon_get_post_meta($deposit->ID, 'total_paid');
+            $deposit_status = carbon_get_post_meta($deposit->ID, 'status');
+        
+            if ($deposit_status === 'deposit_requested') {
+                $pending_withdrawals += floatval($total_paid);
             }
         }
 
-        return $total_pending_income;
+        return $pending_withdrawals;
     }
 
     public function calculate_wallet_balance()
     {
-        $total_income = $this->calculate_total_income();
-        $total_expenses = $this->calculate_total_expenses();
-        $wallet_balance = $total_income - $total_expenses;
+        $total_income = $this->calculate_total_incomes();
+        $total_withdrawals = $this->calculate_total_withdrawals();
+        $wallet_balance = $total_income - $total_withdrawals;
         return $wallet_balance;
     }
 

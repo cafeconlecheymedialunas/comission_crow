@@ -26,11 +26,8 @@ jQuery(document).ready(function ($) {
             showConfirmButton: false,
             timer: 2000,
           }).then(function () {
-            let key =
-              response.data.roles[0] === "commercial_agent"
-                ? "commercial-agent"
-                : "company";
-            window.location.href = `/dashboard/${key}/contract/all`;
+            window.location.href = response.data.redirect_url;
+            
           });
         } else {
           displayFormErrors(form, response.data);

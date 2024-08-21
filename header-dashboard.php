@@ -125,7 +125,8 @@ $current_user = wp_get_current_user();
 ?>
 								</span>
 								<ul class="dropdown-menu" aria-labelledby="accountDropdown">
-									<li><a class="dropdown-item" href="<?php echo esc_url(home_url('/dashboard')); ?>">Profile</a></li>
+									<?php $role_url = in_array("commercial_agent", $current_user->roles) ? "commercial-agent" : "company"; ?>
+									<li><a class="dropdown-item" href="<?php echo home_url() . "/dashboard/$role_url/profile"; ?>">Profile</a></li>
 									<li><a class="dropdown-item" href="<?php echo esc_url(wp_logout_url(home_url())); ?>">Logout</a></li>
 								</ul>
 							</div>

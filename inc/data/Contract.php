@@ -176,8 +176,13 @@ class Contract
 
         $this->send_contract_creation_email_to_agent($contract_id);
         $this->send_contract_creation_email_to_company($contract_id);
+        $user = wp_get_current_user();
+        $role = $user->roles[0];
+        $role = $role === "commercial_agent" ? "commercial-agent" : "company";
 
-        wp_send_json_success(wp_get_current_user());
+        $redirect_url = site_url("dashboard/$role/contract/all");
+
+        wp_send_json_success(["redirect_url" => $redirect_url]);
     }
 
     public function send_contract_creation_email_to_agent($contract_id)
@@ -300,6 +305,56 @@ class Contract
         wp_send_json_success('Contract status updated successfully.');
     }
     
+    public function schedule_daily_contract_check() {
+        if (!wp_next_scheduled('daily_contract_check_event')) {
+            wp_schedule_event(time(), 'daily', 'daily_contract_check_event');
+        }
+    }
+   
+    
+    public function check_and_update_contracts() {
+        $args = array(
+            'post_type' => 'contract',
+            'meta_query' => array(
+                array(
+                    'key' => 'finalization_date',
+                    'value' => current_time('Y-m-d'),
+                    'compare' => '<=',
+                    'type' => 'DATE'
+                ),
+                array(
+                    'key' => 'status',
+                    'value' => 'finishing',
+                    'compare' => '='
+                )
+            ),
+            'posts_per_page' => -1
+        );
+    
+        $contracts = get_posts($args);
+    
+        foreach ($contracts as $contract) {
+            carbon_set_post_meta($contract->ID, 'status', 'finished');
+            $company_id = carbon_get_post_meta($contract->ID,"company");
+            $user_company_id = get_post_meta($company_id,"_user_id")[0];
+            $user_company = get_user_by("ID",$user_company_id);
+
+
+            $commercial_agent_id = carbon_get_post_meta($contract->ID,"commercial_agent");
+            $user_commercial_agent_id = get_post_meta($commercial_agent_id,"_user_id")[0];
+            $user_commercial_agent = get_user_by("ID",$user_commercial_agent_id);
+
+            $sku = carbon_get_post_meta($contract->ID,"sku");                
+                               
+                   
+          
+
+            $this->send_email_to_agent($user_commercial_agent->user_email, $sku, 'finished');
+            $this->send_email_to_company($user_company->user_email, $sku, 'finished');
+        }
+    }
+   
+    
 
     private function send_email_to_agent($agent_email, $sku, $status)
     {
@@ -344,3 +399,5 @@ class Contract
     
     
 }
+
+

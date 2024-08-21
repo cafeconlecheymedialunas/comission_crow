@@ -123,7 +123,7 @@ $youtube_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'y
                             <?php foreach ($industry_terms as $term): ?>
                                 <option
                                     value="<?php echo esc_attr($term->term_id); ?>"
-                                    <?php echo in_array($term->term_id, $industry) ? 'selected' : ''; ?>
+                                    <?php echo !empty($term) &&  !empty($industry) && in_array($term->term_id, $industry) ? 'selected' : ''; ?>
                                     >
                                     <?php echo esc_html($term->name); ?>
                                 </option>
@@ -140,7 +140,7 @@ $youtube_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'y
                                 <?php foreach ($location_terms as $term): ?>
                                     <option
                                         value="<?php echo esc_attr($term->term_id); ?>"
-                                        <?php echo in_array($term->term_id, $location) ? 'selected' : ''; ?>
+                                        <?php echo !empty($term) &&  !empty($location) && in_array($term->term_id, $location) ? 'selected' : ''; ?>
                                         >
                                         <?php echo esc_html($term->name); ?>
                                     </option>
@@ -167,7 +167,7 @@ If you need to change the currency in the future, you can do so from this same s
                 <?php foreach ($currency_terms as $term): ?>
                     <option
                         value="<?php echo esc_attr($term->term_id); ?>"
-                        <?php echo in_array($term->term_id, $currency) ? 'selected' : ''; ?>
+                        <?php echo !empty($term) && in_array($term->term_id, $currency) ? 'selected' : ''; ?>
                     >
                         <?php echo esc_html($term->name); ?>
                     </option>

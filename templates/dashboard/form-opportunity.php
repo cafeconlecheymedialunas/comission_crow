@@ -211,7 +211,7 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
 
     <div class="col-md-6">
         <label for="commission" class="form-label">Commission:</label>
-        <input type="text" id="commission" name="commission" class="form-control" value="<?php echo isset($opportunity_post) ? esc_attr(carbon_get_post_meta($opportunity_post->ID, "commission")) : ""; ?>" />
+        <input type="number" min="0" max="100"  id="commission" name="commission" class="form-control" value="<?php echo isset($opportunity_post) ? esc_attr(carbon_get_post_meta($opportunity_post->ID, "commission")) : ""; ?>" />
         <div class="error-message"></div>
     </div>
 

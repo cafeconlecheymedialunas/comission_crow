@@ -34,7 +34,7 @@ $allowed_roles = ["commercial_agent", "company"];
 
 // Check if user has a permitted role
 if (!in_array($current_user->roles[0], $allowed_roles)) {
-    get_header();
+    get_header("dashboard");
     echo '<div class="alert alert-danger">Access denied. You do not have permission to access this page.</div>';
     get_footer();
     ob_end_flush();
@@ -125,7 +125,6 @@ $page_custom_title = get_the_title($opportunity->ID);
 if (locate_template($template)) {
     include locate_template($template);
 }
-
 ?>
 
 
@@ -133,10 +132,8 @@ if (locate_template($template)) {
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <div class="row opportunity-meta-cards mb-3">
-                
-
-                   
+            <div class="row opportunity-meta-cards mb-3">
+                    <?php if (!empty($target_audience)): ?>
                         <div class="col-xl-4 col-md-6 target-audience">
                             <div class="opportunity-meta">
                                 <div class="my-auto">
@@ -144,13 +141,13 @@ if (locate_template($template)) {
                                 </div>
                                 <div class="my-auto">
                                     <span>Target Audience</span>
-                                    <h6><?php echo $target_audience[0]? esc_html($target_audience[0]->name):"Not especified"; ?></h6>
+                                    <h6><?php echo esc_html($target_audience[0]->name); ?></h6>
                                 </div>
                             </div>
                         </div>
-                  
+                    <?php endif;?>
 
-                   
+                    <?php if (!empty($industry)): ?>
                         <div class="col-xl-4 col-md-6 industry">
                             <div class="opportunity-meta">
                                 <div class="my-auto">
@@ -158,13 +155,13 @@ if (locate_template($template)) {
                                 </div>
                                 <div class="my-auto">
                                     <span>Industry</span>
-                                    <h6><?php echo $industry[0]? esc_html($industry[0]->name):"Not especified"; ?> </h6>
+                                    <h6><?php echo esc_html($industry[0]->name); ?></h6>
                                 </div>
                             </div>
                         </div>
-                  
+                    <?php endif;?>
 
-                   
+                    <?php if (!empty($currency)): ?>
                         <div class="col-xl-4 col-md-6 currency">
                             <div class="opportunity-meta">
                                 <div class="my-auto">
@@ -172,12 +169,13 @@ if (locate_template($template)) {
                                 </div>
                                 <div class="my-auto">
                                     <span>Currency</span>
-                                    <h6><?php echo $currency[0]? esc_html($currency[0]->name):"Not especified"; ?></h6>
+                                    <h6><?php echo esc_html($currency[0]->name); ?></h6>
                                 </div>
                             </div>
                         </div>
-                  
+                    <?php endif;?>
 
+                    <?php if (!empty($age)): ?>
                         <div class="col-xl-4 col-md-6 age">
                             <div class="opportunity-meta">
                                 <div class="my-auto">
@@ -185,14 +183,13 @@ if (locate_template($template)) {
                                 </div>
                                 <div class="my-auto">
                                     <span>Age Range</span>
-                                    <h6><?php echo $age[0]? esc_html($age[0]->name):"Not especified"; ?></h6>
+                                    <h6><?php echo esc_html($age[0]->name); ?></h6>
                                 </div>
                             </div>
                         </div>
-                    
+                    <?php endif;?>
 
-                    
-                   
+                    <?php if (!empty($location)): ?>
                         <div class="col-xl-4 col-md-6 location">
                             <div class="opportunity-meta">
                                 <div class="my-auto">
@@ -200,13 +197,13 @@ if (locate_template($template)) {
                                 </div>
                                 <div class="my-auto">
                                     <span>Location</span>
-                                    <h6><?php echo $location[0]? esc_html($location[0]->name):"Not especified"; ?></h6>
+                                    <h6><?php echo esc_html($location[0]->name); ?></h6>
                                 </div>
                             </div>
                         </div>
-                
+                    <?php endif;?>
 
-                    
+                    <?php if (!empty($gender)): ?>
                         <div class="col-xl-4 col-md-6 gender">
                             <div class="opportunity-meta">
                                 <div class="my-auto">
@@ -214,12 +211,11 @@ if (locate_template($template)) {
                                 </div>
                                 <div class="my-auto">
                                     <span>Gender</span>
-                                    <h6><?php echo $gender[0]? esc_html($gender[0]->name):"Not especified"; ?></h6>
+                                    <h6><?php echo esc_html($gender[0]->name); ?></h6>
                                 </div>
                             </div>
                         </div>
-                    
-
+                    <?php endif;?>
 
                     <?php if (!empty($languages)): ?>
                         <div class="col-xl-4 col-md-6 language">
@@ -229,12 +225,13 @@ if (locate_template($template)) {
                                 </div>
                                 <div class="my-auto">
                                     <span>Languages</span>
-                                    <h6><?php echo $languages ? esc_html(implode(', ', $languages)):"Not especified"; ?></h6>
+                                    <h6><?php echo esc_html(implode(', ', $languages)); ?></h6>
                                 </div>
                             </div>
                         </div>
                     <?php endif;?>
                 </div>
+
 
                 <div class="opportunity-entry-content mb-3">
                     <?php echo$opportunity->post_content; ?>
@@ -289,7 +286,7 @@ if (locate_template($template)) {
             <?php endforeach;?>
         </div>
     </div>
-<?php endif;?>
+                <?php endif;?>
 
 <style>
     .embed-responsive {
@@ -339,11 +336,12 @@ if (locate_template($template)) {
                     </div>
                 <?php endif;?>
 
-
+                <?php if (!empty($tips)): ?>
                 <div class="opportunity-entry-content mb-3">
                     <h6>Tips</h6>
                     <?php echo wp_kses_post($tips); ?>
                 </div>
+                <?php endif;?>
                 <?php if (!empty($question_1)): ?>
                     <div class="opportunity-entry-content mb-3">
                         <h6>What is your company’s elevator pitch?</h6>
@@ -384,25 +382,43 @@ if (locate_template($template)) {
 
             <div class="col-lg-4 position-relative">
                 <div class="widget-area">
-                    <div class="opportunity-widget">
-                        <div class="text-center">
-                            <h5>Average deal value</h5>
-                            
-                                <span class="price">
-                                    <?php echo Helper::convert_price_to_selected_currency($price); ?>
-                                </span>
-                            
-                            <p>Commission: <strong><?php echo esc_html($commission); ?>%</strong></p>
-                            <p>Deliver Leads?: <strong><?php echo esc_html($deliver_leads === 'yes' ? "Yes" : "No"); ?></strong></p>
-                            <p>Sales Cycle Estimation: <strong><?php echo esc_html($sales_cycle_estimation); ?> Days</strong></p>
-                            <p><i class="fa fa-calendar"></i> <span>Posted <?php echo esc_html(Helper::get_human_time_diff($date) . " ago."); ?></span></p>
-                            <p><i class="fa fa-user"></i> <span>Posted By: <?php echo esc_html(get_the_title($company)); ?></span></p>
-                        </div>
-                       
-                    </div>
-                    <div class="opportunity-widget">
+                <div class="opportunity-widget">
     <div class="text-center">
-        <a href="https://nexfyapp-cp167.wordpresstemporal.com/subcarpeta/buyers/nicoreyes7/">
+        <h5>Average deal value</h5>
+        
+        <?php if (!empty($price)): ?>
+            <span class="price">
+                <?php echo Helper::convert_price_to_selected_currency($price); ?>
+            </span>
+        <?php else: ?>
+            <span class="price">Price not specified</span>
+        <?php endif; ?>
+        
+        <?php if (!empty($commission)): ?>
+            <p>Commission: <strong><?php echo esc_html($commission); ?>%</strong></p>
+        <?php endif; ?>
+        
+        <?php if (isset($deliver_leads)): ?>
+            <p>Deliver Leads?: <strong><?php echo esc_html($deliver_leads === 'yes' ? "Yes" : "No"); ?></strong></p>
+        <?php endif; ?>
+        
+        <?php if (!empty($sales_cycle_estimation)): ?>
+            <p>Sales Cycle Estimation: <strong><?php echo esc_html($sales_cycle_estimation); ?> Days</strong></p>
+        <?php endif; ?>
+        
+        <?php if (!empty($opportunity)): ?>
+            <p><i class="fa fa-calendar"></i> <span>Posted <?php echo esc_html(Helper::get_human_time_diff($opportunity->post_date) . " ago."); ?></span></p>
+        <?php endif; ?>
+        
+        <?php if (!empty($company)): ?>
+            <p><i class="fa fa-user"></i> <span>Posted By: <?php echo esc_html(get_the_title($company)); ?></span></p>
+        <?php endif; ?>
+    </div>
+</div>
+
+<div class="opportunity-widget">
+    <div class="text-center">
+        <span>
             <?php
             if ($company) {
                 $post_thumbnail = get_the_post_thumbnail($company, [100, 100], ['class' => 'rounded-circle']);
@@ -414,77 +430,94 @@ if (locate_template($template)) {
                 }
             }
             ?>
-        </a>
-      
-        <h4 class="company-name"><?php echo esc_html(get_the_title($company)); ?></h4>
-    
+        </span>
 
-        <p>Industry: <strong><?php echo esc_html($company_industry[0]->name ?? 'Not Specified'); ?></strong></p>
-        <p>Activity: <strong><?php echo esc_html($company_activity[0]->name ?? 'Not Specified'); ?></strong></p>
-        <p>Location: <strong><?php echo esc_html($company_location[0]->name ?? 'Not Specified'); ?></strong></p>
-        <p>Type of Company: <strong><?php echo esc_html($company_type_of_company[0]->name ?? 'Not Specified'); ?></strong></p>
-        <p>Number of Employees: <strong><?php echo esc_html($company_employees_number ?? 'Not Specified'); ?></strong></p>
+        <?php if ($company): ?>
+            <h4 class="company-name"><?php echo esc_html(get_the_title($company)); ?></h4>
+        <?php endif; ?>
+
+        <?php if (!empty($company_industry)): ?>
+            <p>Industry: <strong><?php echo esc_html($company_industry[0]->name); ?></strong></p>
+        <?php endif; ?>
+
+        <?php if (!empty($company_activity)): ?>
+            <p>Activity: <strong><?php echo esc_html($company_activity[0]->name); ?></strong></p>
+        <?php endif; ?>
+
+        <?php if (!empty($company_location)): ?>
+            <p>Location: <strong><?php echo esc_html($company_location[0]->name); ?></strong></p>
+        <?php endif; ?>
+
+        <?php if (!empty($company_type_of_company)): ?>
+            <p>Type of Company: <strong><?php echo esc_html($company_type_of_company[0]->name); ?></strong></p>
+        <?php endif; ?>
+
+        <?php if (!empty($company_employees_number)): ?>
+            <p>Number of Employees: <strong><?php echo esc_html($company_employees_number); ?></strong></p>
+        <?php endif; ?>
 
         <?php if (!empty($company_full_address)): ?>
             <p><?php echo esc_html($company_full_address); ?></p>
         <?php endif; ?>
 
-        <div class="company-social-links">
-      
-            <ul class="list-inline">
-                <?php if (!empty($company_website_url)): ?>
-                    <li class="list-inline-item">
-                        <a href="<?php echo esc_url($company_website_url); ?>" target="_blank">
-                            <i class="fas fa-globe"></i>
-                        </a>
-                    </li>
-                <?php endif; ?>
-                <?php if (!empty($company_facebook_url)): ?>
-                    <li class="list-inline-item">
-                        <a href="<?php echo esc_url($company_facebook_url); ?>" target="_blank">
-                            <i class="fab fa-facebook-f"></i> 
-                        </a>
-                    </li>
-                <?php endif; ?>
-                <?php if (!empty($company_instagram_url)): ?>
-                    <li class="list-inline-item">
-                        <a href="<?php echo esc_url($company_instagram_url); ?>" target="_blank">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                    </li>
-                <?php endif; ?>
-                <?php if (!empty($company_twitter_url)): ?>
-                    <li class="list-inline-item">
-                        <a href="<?php echo esc_url($company_twitter_url); ?>" target="_blank">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                    </li>
-                <?php endif; ?>
-                <?php if (!empty($company_linkedin_url)): ?>
-                    <li class="list-inline-item">
-                        <a href="<?php echo esc_url($company_linkedin_url); ?>" target="_blank">
-                            <i class="fab fa-linkedin-in"></i>
-                        </a>
-                    </li>
-                <?php endif; ?>
-                <?php if (!empty($company_tiktok_url)): ?>
-                    <li class="list-inline-item">
-                        <a href="<?php echo esc_url($company_tiktok_url); ?>" target="_blank">
-                            <i class="fab fa-tiktok"></i> 
-                        </a>
-                    </li>
-                <?php endif; ?>
-                <?php if (!empty($company_youtube_url)): ?>
-                    <li class="list-inline-item">
-                        <a href="<?php echo esc_url($company_youtube_url); ?>" target="_blank">
-                            <i class="fab fa-youtube"></i> 
-                        </a>
-                    </li>
-                <?php endif; ?>
-            </ul>
-        </div>
+        <?php if (!empty($company_website_url) || !empty($company_facebook_url) || !empty($company_instagram_url) || !empty($company_twitter_url) || !empty($company_linkedin_url) || !empty($company_tiktok_url) || !empty($company_youtube_url)): ?>
+            <div class="company-social-links">
+                <ul class="list-inline">
+                    <?php if (!empty($company_website_url)): ?>
+                        <li class="list-inline-item">
+                            <a href="<?php echo esc_url($company_website_url); ?>" target="_blank">
+                                <i class="fas fa-globe"></i>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                    <?php if (!empty($company_facebook_url)): ?>
+                        <li class="list-inline-item">
+                            <a href="<?php echo esc_url($company_facebook_url); ?>" target="_blank">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                    <?php if (!empty($company_instagram_url)): ?>
+                        <li class="list-inline-item">
+                            <a href="<?php echo esc_url($company_instagram_url); ?>" target="_blank">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                    <?php if (!empty($company_twitter_url)): ?>
+                        <li class="list-inline-item">
+                            <a href="<?php echo esc_url($company_twitter_url); ?>" target="_blank">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                    <?php if (!empty($company_linkedin_url)): ?>
+                        <li class="list-inline-item">
+                            <a href="<?php echo esc_url($company_linkedin_url); ?>" target="_blank">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                    <?php if (!empty($company_tiktok_url)): ?>
+                        <li class="list-inline-item">
+                            <a href="<?php echo esc_url($company_tiktok_url); ?>" target="_blank">
+                                <i class="fab fa-tiktok"></i>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                    <?php if (!empty($company_youtube_url)): ?>
+                        <li class="list-inline-item">
+                            <a href="<?php echo esc_url($company_youtube_url); ?>" target="_blank">
+                                <i class="fab fa-youtube"></i>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                </ul>
+            </div>
+        <?php endif; ?>
     </div>
 </div>
+
                 </div>
                 </div>
         </div>

@@ -13,8 +13,8 @@ if (!empty($selected_agents)): ?>
             <div class="row justify-content-center">
                 <?php if (!empty($selected_agents)): ?>
                     <?php foreach ($selected_agents as $agent):
-                        $agent_post = get_post($agent['id']);
-                        $cover_image = get_the_post_thumbnail_url($agent['id']);
+                        $agent_post = get_post($agent);
+                        $cover_image = get_the_post_thumbnail_url($agent);
                        
                     ?>
                         <div class="agent border col-md-6 col-lg-3">
@@ -22,11 +22,11 @@ if (!empty($selected_agents)): ?>
                                 <img src="<?php echo esc_url($cover_image); ?>" class="rounded-circle" alt="">
                             <?php endif;?>
                             <div class="content">
-                                <?php if (get_the_title($agent['id'])): ?>
-                                    <h3 class="title mb-2"><?php echo esc_html(get_the_title($agent['id'])); ?></h3>
+                                <?php if (get_the_title($agent)): ?>
+                                    <h3 class="title mb-2"><?php echo esc_html(get_the_title($agent)); ?></h3>
                                 <?php endif;?>
                                 <?php
-                                $agent_id = $agent['id'];
+                                $agent_id = $agent;
                                 $avg_rating_template = 'templates/avg-rating.php';
                                 if (locate_template($avg_rating_template)) {
                                     include locate_template($avg_rating_template);

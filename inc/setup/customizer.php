@@ -115,13 +115,4 @@ function comission_crow_customize($wp_customize)
 }
 add_action('customize_register', 'comission_crow_customize');
 
-/**
- * Bind JS handlers to make Theme Customizer preview reload changes asynchronously.
- *
- * @return void
- */
-function comission_crow_customize_preview_js()
-{
-    wp_enqueue_script('customizer', get_template_directory_uri() . '/inc/setup/customizer.js', [ 'jquery' ], null, true);
-}
-add_action('customize_preview_init', 'comission_crow_customize_preview_js');
+

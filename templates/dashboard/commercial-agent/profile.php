@@ -78,7 +78,7 @@ $selected_currency = wp_get_post_terms($commercial_agent_post->ID, 'currency', [
                             <?php foreach ($language_terms as $term): ?>
                                 <option 
                                     value="<?php echo esc_attr($term->term_id); ?>" 
-                                    <?php echo in_array($term->term_id, $selected_languages) ? 'selected' : ''; ?>
+                                    <?php echo !empty($term) &&  !empty($selected_languages) && in_array($term->term_id, $selected_languages) ? 'selected' : ''; ?>
                                     >
                                     <?php echo esc_html($term->name); ?>
                                 </option>
@@ -87,6 +87,7 @@ $selected_currency = wp_get_post_terms($commercial_agent_post->ID, 'currency', [
                         <div class="error-message"></div>
                     </div>
                     <?php endif;?>
+                    
                     <?php if($location_terms):?>
                         <div class="col-md-6">
                             <label for="location" class="form-label">Location:</label>
@@ -103,6 +104,7 @@ $selected_currency = wp_get_post_terms($commercial_agent_post->ID, 'currency', [
                             <div class="error-message"></div>
                         </div>
                     <?php endif;?>
+                    
                     <?php if($skill_terms):?>
                     <div class="col-md-6">
                         <label for="skill" class="form-label">Skills:</label>
@@ -119,6 +121,7 @@ $selected_currency = wp_get_post_terms($commercial_agent_post->ID, 'currency', [
                         <div class="error-message"></div>
                     </div>
                     <?php endif;?>
+                    
                     <?php if($industry_terms):?>
                         <div class="col-md-6">
                             <label for="industry" class="form-label">Industry:</label>
@@ -135,6 +138,7 @@ $selected_currency = wp_get_post_terms($commercial_agent_post->ID, 'currency', [
                             <div class="error-message"></div>
                         </div>
                     <?php endif;?>
+                    
                     <?php if($seller_type_terms):?>
                         <div class="col-md-6">
                             <label for="seller_type" class="form-label">Seller Type:</label>
@@ -151,18 +155,18 @@ $selected_currency = wp_get_post_terms($commercial_agent_post->ID, 'currency', [
                             <div class="error-message"></div>
                         </div>
                     <?php endif;?>
+                    
                     <?php if ($currency_terms): ?>
                         <div class="col-md-6">
                             <label for="currency" class="form-label">Currency<button type="button" class="operation ms-2" data-bs-toggle="tooltip" data-bs-html="true" title="
                                 Select the currency you wish to use to display all prices on our platform.<br><br>
-                    What does this mean?<br>
-                    The currency you choose will be used to show the prices of all products and services in your account. This includes prices on invoices, quotes, and any other cost details you see on the platform.<br><br>
-                    Once you select a currency, all prices will be displayed in that currency. Make sure to choose the currency that you prefer or that best fits your country or region.<br><br>
-                    If you need to change the currency in the future, you can do so from this same section of your profile.
-
+                                What does this mean?<br>
+                                The currency you choose will be used to show the prices of all products and services in your account. This includes prices on invoices, quotes, and any other cost details you see on the platform.<br><br>
+                                Once you select a currency, all prices will be displayed in that currency. Make sure to choose the currency that you prefer or that best fits your country or region.<br><br>
+                                If you need to change the currency in the future, you can do so from this same section of your profile.
                                 ">
                                 <i class="fa-solid fa-circle-info text-primary"></i>
-                                </button>:</label>
+                            </button>:</label>
                             <div class="d-flex align-items-center">
                                 <select name="currency[]" class="form-select">
                                     <option value="">Select an option</option>
@@ -175,11 +179,29 @@ $selected_currency = wp_get_post_terms($commercial_agent_post->ID, 'currency', [
                                         </option>
                                     <?php endforeach;?>
                                 </select>
-                                
                             </div>
                             <div class="error-message"></div>
                         </div>
                     <?php endif; ?>
+                    <?php if (!empty($selling_method_terms)): ?>
+                        <div class="col-md-6">
+                            <label for="selling_method[]" class="form-label">Selling Methods:</label>
+                            <select name="selling_method[]" id="selling_method" class="form-select" multiple>
+                                <option value="">Select an option</option>
+                                <?php foreach ($selling_method_terms as $term): ?>
+                                    <option 
+                                        value="<?php echo esc_attr($term->term_id); ?>" 
+                                        <?php if (!empty($selected_selling_method) && in_array($term->term_id, $selected_selling_method)): ?>
+                                            selected
+                                        <?php endif; ?>>
+                                        <?php echo esc_html($term->name); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <div class="error-message"></div>
+                        </div>
+                    <?php endif; ?>
+              
 
 
 
@@ -191,22 +213,9 @@ $selected_currency = wp_get_post_terms($commercial_agent_post->ID, 'currency', [
                             });
                         });
                     </script>
-                                        <?php if($selling_method_terms):?>
-                        <div class="col-md-6">
-                            <label for="selling_method[]" class="form-label">Selling Methods:</label>
-                            <select name="selling_method[]" id="selling_method" class="form-select">
-                                <option value="">Select an option</option>
-                                <?php foreach ($selling_method_terms as $term): ?>
-                                    <option 
-                                        value="<?php echo esc_attr($term->term_id); ?>" 
-                                        <?php selected($selected_selling_method[0], $term->term_id); ?>>
-                                        <?php echo esc_html($term->name); ?>
-                                    </option>
-                                <?php endforeach;?>
-                            </select>
-                            <div class="error-message"></div>
-                        </div>
-                    <?php endif;?>
+             
+
+
                     <div class="col-md-6">
                         <label for="years_of_experience">Years of Experience</label>
                         <input type="text" name="years_of_experience" id="years_of_experience" class="form-control" value="<?php echo esc_attr($selected_years_of_experience); ?>" placeholder="Years of Experience">

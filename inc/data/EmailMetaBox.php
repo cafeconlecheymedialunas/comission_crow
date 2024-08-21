@@ -84,7 +84,7 @@ class EmailMetaBox
     public function enqueue_admin_scripts()
     {
         global $post;
-        if (!in_array($post->post_type, $this->post_types)) {
+        if (!$post || !in_array($post->post_type, $this->post_types)) {
             return;
         }
 

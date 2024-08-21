@@ -1,15 +1,13 @@
 <?php
 get_header();
 
-the_post();
-
 // Obtener metadatos del post
 
 
 
 $opportunities_title = carbon_get_post_meta(get_the_ID(), 'opportunities_title');
 $opportunities_description = carbon_get_post_meta(get_the_ID(), 'opportunities_description');
-$opportunities_select = carbon_get_post_meta(get_the_ID(), 'opportunities_select');
+$opportunities = carbon_get_post_meta(get_the_ID(), 'opportunities');
 
 $industry_title = carbon_get_post_meta(get_the_ID(), 'industry_title');
 $industry_description = carbon_get_post_meta(get_the_ID(), 'industry_description');
@@ -18,6 +16,8 @@ $industry_select = carbon_get_post_meta(get_the_ID(), 'industry_select');
 $selected_agents_title = carbon_get_post_meta(get_the_ID(), 'selected_agents_title');
 $selected_agents_description = carbon_get_post_meta(get_the_ID(), 'selected_agents_description');
 $selected_agents = carbon_get_post_meta(get_the_ID(), 'selected_agents');
+
+
 
 $counters = carbon_get_post_meta(get_the_ID(), 'counters');
 

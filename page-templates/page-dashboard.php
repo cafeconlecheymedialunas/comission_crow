@@ -71,10 +71,12 @@ $associated_post = ProfileUser::get_instance()->get_user_associated_post_type();
                             echo '<img class="img-fluid" src="' . $default . '"/>';
                         }
                     }
-?>
+                    ?>
                     <h5><?php echo esc_html($current_user->first_name . " " . $current_user->last_name); ?></h5>
                     <p><?php echo esc_html($current_user->user_email); ?></p>
-                    <a class="view-profile">View Profile</a>
+                    <?php if(in_array("commercial_agent",$current_user->roles)):?>
+                    <a href="<?php echo home_url("commercial-agent-item/?commercial_agent_id=$associated_post->ID");?>" class="view-profile">View Profile</a>
+                    <?php endif;?>
                 </div>
                 <?php include get_template_directory() . '/templates/dashboard/menu.php'; ?>
             </div>

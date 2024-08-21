@@ -71,5 +71,6 @@ if (locate_template($spinner_template)) {
 ?>
 
 
+
 </body>
 </html>

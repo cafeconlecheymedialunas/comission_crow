@@ -68,6 +68,9 @@
 	.desktop-header ul li>a{
 		color: white;
 	}
+    .desktop-header ul li>a:focus, .desktop-header ul li>a:hover {
+        color: #6787FE!important;
+    }
 	.desktop-header.sticky {
 		background-color: white;
 		position:fixed;
@@ -81,14 +84,18 @@
 	.desktop-header.sticky ul li>a{
 		color: rgb(74, 99, 117);
 	}
+    .desktop-header.sticky ul li>a:focus, .desktop-header.sticky ul li>a:hover {
+        color: rgb(74, 99, 117)!important;
+    }
 	
-	.desktop-header .navbar-nav .nav-link.active,.desktop-header .navbar-nav .nav-link.show {
-		color: white;
-		font-weight: bold;
-	}
-	.desktop-header.sticky .navbar-nav .nav-link.active,.desktop-header.sticky .navbar-nav .nav-link.show {
-		color: rgb(74, 99, 117);
+	.desktop-header .navbar-nav .nav-link.active,
+    .desktop-header .navbar-nav .nav-link.show {
+        color: #6787FE!important;
 		
+	}
+	.desktop-header.sticky .navbar-nav .nav-link.active,
+    .desktop-header.sticky .navbar-nav .nav-link.show {
+		color: rgb(74, 99, 117)!important;
 	}
 
 	.desktop-header.sticky .btn.btn-secondary {
@@ -719,6 +726,7 @@
 --------------------------------------------------------------*/
 .brands  {
     margin-bottom:50px;
+    margin-top: 50px;
 }
 .brands img {
     filter: grayscale(100%);

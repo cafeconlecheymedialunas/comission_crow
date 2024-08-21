@@ -65,6 +65,9 @@ class Dashboard
         add_action('wp_ajax_update_contract_status', [$contract, 'update_contract_status']);
         add_action('wp_ajax_nopriv_update_contract_status', [$contract, 'update_contract_status']);
 
+        add_action('wp',[$contract,  'schedule_daily_contract_check']);
+        add_action('daily_contract_check_event', [$contract, 'check_and_update_contracts']);
+
         add_action('wp_ajax_create_commission_request', [$commission_request, 'create_commission_request']);
         add_action('wp_ajax_nopriv_create_commission_request', [$commission_request, 'create_commission_request']);
 
