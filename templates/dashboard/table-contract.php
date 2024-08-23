@@ -98,7 +98,11 @@
                                         <td><?php echo esc_html($another_part->post_title); ?></td>
                                     
                                         <td><?php echo esc_html($commission); ?> %</td>
-                                        <td><?php echo esc_html(Helper::convert_price_to_selected_currency($minimal_price)); ?></td>
+                                        <td><?php echo esc_html(Helper::convert_price_to_selected_currency($minimal_price)); 
+                                        $template = 'templates/info-price.php';
+                                        if (locate_template($template)) {
+                                            include locate_template($template);
+                                        }?></td>
                                         <td><span class="badge <?php echo $status_class; ?>"><?php echo esc_html($status_text); ?></span></td>
                                         <td><?php echo ($last_sender_history_user && $history_status_end["date_status"])?$last_update_text:""; ?></td>
                                         <td>

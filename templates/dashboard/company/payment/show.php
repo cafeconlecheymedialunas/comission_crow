@@ -83,10 +83,16 @@ if ($session_id) {
                 <?php foreach ($items as $item) :?>
                     <li class="list-group-item d-flex justify-content-between lh-condensed">
                         <div>
-                            <span class="text-muted"><?php echo esc_html(Helper::convert_price_to_selected_currency($item["price_paid"]));?></span>
-                            <small class="text-muted">X <?php echo esc_html(Helper::convert_price_to_selected_currency($item["quantity"]));?></small>
+                            <span class="text-muted"><?php echo esc_html(Helper::convert_price_to_selected_currency($item["price_paid"]));$template = 'templates/info-price.php';
+            if (locate_template($template)) {
+                include locate_template($template);
+            }?></span>
+                            <small class="text-muted">X <?php echo esc_html($item["quantity"]);?></small>
                         </div>
-                        <h6 class="my-0 text-muted"><?php echo esc_html(Helper::convert_price_to_selected_currency($item["subtotal"]));?></h6>
+                        <h6 class="my-0 text-muted"><?php echo esc_html(Helper::convert_price_to_selected_currency($item["subtotal"]));$template = 'templates/info-price.php';
+            if (locate_template($template)) {
+                include locate_template($template);
+            }?></h6>
                         
                     </li>
                 <?php endforeach;?>
@@ -94,18 +100,33 @@ if ($session_id) {
                         <div>
                             <span class="text-muted">Total Sales</span>
                         </div>
-                        <h6 class="my-0 text-muted"><?php echo esc_html(Helper::convert_price_to_selected_currency($total_cart)); ?></h6>
+                        <h6 class="my-0 text-muted"><?php echo esc_html(Helper::convert_price_to_selected_currency($total_cart)); $template = 'templates/info-price.php';
+            if (locate_template($template)) {
+                include locate_template($template);
+            }?></h6>
                         
                     </li>
                 </ul>
                
-                <p><strong>Agent Commission: </strong> <?php echo esc_html(Helper::convert_price_to_selected_currency($total_agent)); ?></p>
-                <p><strong>Platform Fee: </strong> <?php echo esc_html(Helper::convert_price_to_selected_currency($total_platform)); ?></p>
-                <p><strong>Tax Service Fee: </strong><?php echo esc_html(Helper::convert_price_to_selected_currency($total_tax_service)); ?></p>
+                <p><strong>Agent Commission: </strong> <?php echo esc_html(Helper::convert_price_to_selected_currency($total_agent)); $template = 'templates/info-price.php';
+            if (locate_template($template)) {
+                include locate_template($template);
+            }?></p>
+                <p><strong>Platform Fee: </strong> <?php echo esc_html(Helper::convert_price_to_selected_currency($total_platform)); $template = 'templates/info-price.php';
+            if (locate_template($template)) {
+                include locate_template($template);
+            }?></p>
+                <p><strong>Tax Service Fee: </strong><?php echo esc_html(Helper::convert_price_to_selected_currency($total_tax_service)); $template = 'templates/info-price.php';
+            if (locate_template($template)) {
+                include locate_template($template);
+            }?></p>
                 <p><strong>Source: </strong> <?php echo esc_html($source); ?></p>
                 <hr>
                 <h5>Total Paid: <?php echo esc_html("$".number_format($total_paid, 2, '.', ',')." (USD)"); ?></h5>
-                <h5>Total in your currency: <?php echo esc_html(Helper::convert_price_to_selected_currency($total_paid)); ?></h5>
+                <h5>Total in your currency: <?php echo esc_html(Helper::convert_price_to_selected_currency($total_paid)); $template = 'templates/info-price.php';
+            if (locate_template($template)) {
+                include locate_template($template);
+            }?></h5>
             </div>
         </div>
     </div>

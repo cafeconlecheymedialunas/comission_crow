@@ -55,23 +55,33 @@ $deposits_completed = get_posts([
 
             <h2 class="d-inline">Balance</h2>
 
-            <h3 class="mb-0"><?php echo Helper::convert_price_to_selected_currency($wallet_balance); ?></h3>
+            <h3 class="mb-0"><?php echo Helper::convert_price_to_selected_currency($wallet_balance); 
+            $template = 'templates/info-price.php';
+            if (locate_template($template)) {
+                include locate_template($template);
+            }?></h3>
             <div class="row w-100 mt-4">
                 <div class="col-md-4">  
                     <h5>withdrawn</h5>
-                        <?php 
-                        $price_formatted = Helper::convert_price_to_selected_currency($total_withdrawals);
-                        $price_total_withdrawals_formatted = $minimal_price_formatted ?? "0";?>
-                    <h5><?php echo $price_total_withdrawals_formatted; ?></h5>
+                    <h5><?php echo Helper::convert_price_to_selected_currency($total_withdrawals); $template = 'templates/info-price.php';
+            if (locate_template($template)) {
+                include locate_template($template);
+            }?></h5>
                 </div>
                 <div class="col-md-4">  
                     <h5>Incomes</h5>
                  
-                    <h5><?php echo Helper::convert_price_to_selected_currency($total_incomes); ?></h5>
+                    <h5><?php echo Helper::convert_price_to_selected_currency($total_incomes); $template = 'templates/info-price.php';
+            if (locate_template($template)) {
+                include locate_template($template);
+            }?></h5>
                 </div>
                 <div class="col-md-4">
                     <h5>Pending Withdrawals</h5>
-                    <h5><?php echo Helper::convert_price_to_selected_currency($pending_withdrawls ); ?></h5>
+                    <h5><?php echo Helper::convert_price_to_selected_currency($pending_withdrawls ); $template = 'templates/info-price.php';
+            if (locate_template($template)) {
+                include locate_template($template);
+            }?></h5>
                 </div>
             </div>
           

@@ -201,7 +201,11 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
     <div class="col-md-6">
         <label for="price" class="form-label">Price:</label>
         <div class="input-group mb-3">
-            <span class="input-group-text"><?php echo "$currency_symbol ($currency_code)";?></span>
+            <span class="input-group-text"><?php echo "$currency_symbol ($currency_code)";
+            $template = 'templates/info-price.php';
+            if (locate_template($template)) {
+                include locate_template($template);
+            }?></span>
             <input type="text"   id="price" name="price" class="form-control" value="<?php echo isset($opportunity_post) ? esc_attr(carbon_get_post_meta($opportunity_post->ID, "price")):"";?>">
             <div class="error-message"></div>
         </div>

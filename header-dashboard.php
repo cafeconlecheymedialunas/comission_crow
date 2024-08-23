@@ -94,14 +94,24 @@ $current_user = wp_get_current_user();
 					<div class="d-flex jus">
 						<?php
 						$wallet_balance = Deposit::get_instance()->calculate_wallet_balance();
-						if (in_array("commercial_agent", $current_user->roles) && $wallet_balance > 0): ?>
-						<span class="balance"><?php echo Helper::convert_price_to_selected_currency($wallet_balance); ?></span>
+						if (in_array("commercial_agent", $current_user->roles)): ?>
+						<span class="balance">
+						<?php echo Helper::convert_price_to_selected_currency($wallet_balance);  
+						$template = 'templates/info-price.php';
+						if (locate_template($template)) {
+							include locate_template($template);
+						}?>
+						</span>
 						<?php endif;?>
 
 
 	                    <div class="notifications-messages">
-	                        	<i class="fas fa-fw fa-envelope"></i>
-								<?php echo do_shortcode('[better_messages_unread_counter hide_when_no_messages="0" preserve_space="1"]'); ?>
+							<?php 
+							$role = in_array("commercial_agent",$current_user->roles)?"commercial-agent":"company";
+							?>
+							<a href="<?php echo home_url("dashboard/$role/chat");?>"><i class="fas fa-fw fa-envelope"></i>
+							<?php echo do_shortcode('[better_messages_unread_counter hide_when_no_messages="0" preserve_space="1"]'); ?></a>
+	                        	
 	                    </div>
 
 						<div class="my-account">

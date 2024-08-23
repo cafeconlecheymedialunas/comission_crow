@@ -27,16 +27,24 @@ $args_opportunities = [
 ];
 $opportunities_query = new WP_Query($args_opportunities);
 $opportunities = $opportunities_query->posts;
+
+// Check if the current opportunity ID is valid
+if($current_opportunity){
+  $valid_opportunity_ids = wp_list_pluck($opportunities, 'ID');
+  $is_current_opportunity_valid = in_array($current_opportunity, $valid_opportunity_ids);
+}
+
 ?>
 
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Create a Contract</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Send a Contract Proposal</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+     
         <form id="save-contract" enctype="multipart/form-data">
           <div class="row">
 
@@ -83,10 +91,12 @@ $opportunities = $opportunities_query->posts;
 
               <div class="col-md-6">
                 <label for="opportunity_id" class="form-label">Opportunity:</label>
-                <select name="opportunity_id" id="opportunity_id" class="form-select">
+                <select name="opportunity_id" id="opportunity_id" class="form-select"
+                <?php echo $current_opportunity && $is_current_opportunity_valid ? 'readonly' : ''; ?>>
                   <option value="">Select an Opportunity</option>
                   <?php foreach ($opportunities as $opportunity): ?>
-                    <option value="<?php echo esc_attr($opportunity->ID); ?>">
+                    <option value="<?php echo esc_attr($opportunity->ID); ?>"
+                    <?php echo ($current_opportunity  && $current_opportunity == $opportunity->ID) ? 'selected' : ''; ?>>
                       <?php echo esc_html($opportunity->post_title); ?>
                     </option>
                   <?php endforeach;?>
@@ -106,7 +116,12 @@ $opportunities = $opportunities_query->posts;
             <div class="col-md-6">
             <label for="minimal_price" class="form-label">Minimal Price:</label>
               <div class="input-group mb-3">
-                <span class="input-group-text"><?php echo "$currency_symbol ($currency_code)"; ?></span>
+                <span class="input-group-text">
+                  <?php echo "$currency_symbol ($currency_code)"; 
+                $template = 'templates/info-price.php';
+                if (locate_template($template)) {
+                  include locate_template($template);
+                }?></span>
                 <input type="text" name="minimal_price" id="minimal_price" class="form-control" placeholder="Minimal Price">
                 <div class="error-message"></div>
               </div>

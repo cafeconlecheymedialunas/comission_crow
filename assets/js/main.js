@@ -14,6 +14,13 @@ jQuery(document).ready(function ($) {
     theme: "bootstrap-5",
   });
 
+
+    var tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltips.forEach(function (tooltip) {
+        new bootstrap.Tooltip(tooltip);
+    });
+
+
   $(".editor-container").each(function () {
     // Get the related hidden field ID from the data-target attribute
     var targetId = $(this).data("target");

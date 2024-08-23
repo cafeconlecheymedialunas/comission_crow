@@ -98,7 +98,10 @@ $status_classes = [
                             <?php echo get_the_title($opportunity_id); ?>
                         </a>
                     </td>
-                    <td><?php echo esc_html(Helper::convert_price_to_selected_currency($total_cart_commission_request)); ?></td>
+                    <td><?php echo esc_html(Helper::convert_price_to_selected_currency($total_cart_commission_request)); $template = 'templates/info-price.php';
+						if (locate_template($template)) {
+							include locate_template($template);
+						}?></td>
                     <td><?php echo esc_html(carbon_get_post_meta($contract_id, "commission") . "%"); ?></td>
                     <td><?php echo esc_html(Helper::convert_price_to_selected_currency($total_agent_commission_request)); ?></td>
                     <td>

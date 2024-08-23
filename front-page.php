@@ -28,7 +28,7 @@ $hero_image = carbon_get_post_meta(get_the_ID(), 'hero_image');
 
 $blog_title = carbon_get_post_meta(get_the_ID(), 'blog_title');
 $blog_description = carbon_get_post_meta(get_the_ID(), 'blog_description');
-$blog_image = carbon_get_post_meta(get_the_ID(), 'blog_image');
+$blog_image = get_post_thumbnail_id(get_the_ID());
 $brands = carbon_get_post_meta(get_the_ID(), 'brands');
 $hero_button_title = carbon_get_post_meta(get_the_ID(), 'hero_button_title');
 $hero_button_description = carbon_get_post_meta(get_the_ID(), 'hero_button_description');

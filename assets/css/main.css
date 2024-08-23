@@ -22,8 +22,12 @@
   line-height: 14px;
   padding: 10px 15px 0 15px;
   color: red;
+  width:100%;
 }
-
+select option:checked {
+  background-color: #6787FE;
+  color: white;
+}
 .box input {
   display: none;
 }

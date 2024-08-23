@@ -53,7 +53,11 @@
                         <tr class="row_to_clone">
                           <td>
                           <div class="input-group mb-3">
-                              <span class="input-group-text"><?php echo "$currency_symbol ($currency_code)";?></span>
+                              <span class="input-group-text"><?php echo "$currency_symbol ($currency_code)";
+                              $template = 'templates/info-price.php';
+						if (locate_template($template)) {
+							include locate_template($template);
+						}?></span>
                               <input type="number" name="price[]" min="0" class="txt price form-control rounded-2" min="1" placeholder="Price" step="0.01" autocomplete='off' />
                               <div class="error-message"></div>
                           </div>

@@ -44,7 +44,10 @@ $opportunities = $company->get_opportunities();
                                         <th scope="row"><?php echo $opportunity->ID; ?></th>
                                         <td><?php echo get_the_title($opportunity->ID); ?></td>
                                         <td><?php echo esc_html($industry[0]); ?></td>
-                                        <td><?php echo esc_html(Helper::convert_price_to_selected_currency($price)); ?></td>
+                                        <td><?php echo esc_html(Helper::convert_price_to_selected_currency($price)); $template = 'templates/info-price.php';
+            if (locate_template($template)) {
+                include locate_template($template);
+            }?></td>
                                         <td><?php echo esc_html($commission); ?>%</td>
                                         <td><?php echo esc_html($location[0]); ?></td>
                                         
@@ -54,7 +57,7 @@ $opportunities = $company->get_opportunities();
                                                     <i class="text-primary fa-regular fa-pen-to-square"></i>
                                                 </a>
                                              
-                                                    <a class="operation" href="<?php echo home_url("/dashboard/company/opportunity/view"). "?opportunity_id=". esc_attr($opportunity->ID); ?>">
+                                                    <a class="operation" href="<?php echo home_url("/opportunity-item"). "?opportunity_id=". esc_attr($opportunity->ID); ?>">
                                                     <i class="text-secondary text-secondary view fa-regular fa-eye"></i>
                                                 </a>
                                                 

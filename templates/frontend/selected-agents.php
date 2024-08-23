@@ -17,7 +17,8 @@ if (!empty($selected_agents)): ?>
                         $cover_image = get_the_post_thumbnail_url($agent);
                        
                     ?>
-                        <div class="agent border col-md-6 col-lg-3">
+                        <div class=" col-md-6 col-lg-3">
+                            <div class="agent border">
                             <?php if ($cover_image): ?>
                                 <img src="<?php echo esc_url($cover_image); ?>" class="rounded-circle" alt="">
                             <?php endif;?>
@@ -32,6 +33,7 @@ if (!empty($selected_agents)): ?>
                                     include locate_template($avg_rating_template);
                                 }
                                 ?>
+                            </div>
                             </div>
                         </div>
                     <?php endforeach;?>

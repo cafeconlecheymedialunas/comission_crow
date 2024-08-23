@@ -655,31 +655,61 @@ ol.wp-block-latest-comments {
     font-weight: 300;
     line-height: 24px;
 }
-
-.page-id-13 h2{
-	color: var(--e-global-color-secondary);
+.faqs .faqs-title{
+	color: rgb(84, 89, 95);
     font-family: "Roboto", Sans-serif;
     font-weight: 600;
+	margin-bottom: 30px;
 }
-.wp-block-faq-block-for-gutenberg-faq .question h4{
-    margin: 0 !important;
+
+.faqs .accordion-item >.accordion-header .accordion-button{
+	background-color:white;
+}
+.faqs .accordion-item{
+	margin-bottom:20px;
+	padding:20px 30px;
+	border: 1px solid #ececec!important;
+		border-top:1px solid #ececec!important;
+	
+}
+.faqs .accordion-button{
+    color: var(--bs-accordion-active-color);
+    background-color: var(--bs-accordion-active-bg);
+    box-shadow: none;
+	margin: 0 !important;
     font-weight: 500;
     cursor: pointer;
+	font-size: 1.25rem;
+	color: #333333;
 }
 
-.wp-block-faq-block-for-gutenberg-faq {
-    padding: 20px 30px;
-    border-radius: 6px;
-    border: 1px solid #ececec;
-    background: #fff!important;
-   
+.faqs .accordion-button:not(.collapsed) {
+    color: var(--bs-accordion-active-color);
+    background-color: var(--bs-accordion-active-bg);
+    box-shadow: none;
+	margin: 0 !important;
+    font-weight: 500;
+    cursor: pointer;
+	font-size: 1.25rem;
+	color: #333333;
 }
 
-.wp-block-faq-block-for-gutenberg-faq .active+.answer {
-	display: block;
-    -webkit-transition: visibility 0s linear .33s, opacity .33s linear;
-    transition: visibility 0s linear .33s, opacity .33s linear;
-    margin-top: 20px;
-    border-top: 1px solid #ececec;
-    padding-top: 20px;
+.faqs .accordion-collapse{
+
+    -webkit-transition: .2s;
+    -o-transition: .2s;
+    transition: .2s;
+    
 }
+
+.faqs .accordion-collapse .accordion-body{
+  padding-top: 20px;
+  margin-top: 20px;
+  border-top: 1px solid #ddd;
+}
+.faqs button:focus:not(:focus-visible) {
+    outline: none!important;
+	box-shadow: none!important;
+
+}
+

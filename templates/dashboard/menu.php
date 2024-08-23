@@ -9,6 +9,12 @@
         <li>
             <a href="<?php echo esc_url($dasboard->get_role_url_link_dashboard_page('chat')); ?>"><i class="fa fa-fw fa-comments"></i>Messages</a>
         </li>
+        <li>
+            <a href="<?php echo esc_url(home_url('/find-opportunities')); ?>"><i class="fa-solid fa-magnifying-glass-dollar"></i>Find Opportunities</a>
+        </li>
+        <li>
+            <a href="<?php echo esc_url(home_url('/find-agents')); ?>"><i class="fa-brands fa-searchengin"></i>Find Agents</a>
+        </li>
         <?php if (in_array("company", $current_user->roles) ): ?>
         <li class="nav-item">
             <a class="" data-bs-toggle="collapse" href="#collapseopportunity" role="button" aria-expanded="false" aria-controls="collapseopportunity">

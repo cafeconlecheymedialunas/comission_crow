@@ -125,6 +125,8 @@ $page_custom_title = get_the_title($opportunity->ID);
 if (locate_template($template)) {
     include locate_template($template);
 }
+
+$current_opportunity = $opportunity_id;
 ?>
 
 
@@ -388,7 +390,11 @@ if (locate_template($template)) {
         
         <?php if (!empty($price)): ?>
             <span class="price">
-                <?php echo Helper::convert_price_to_selected_currency($price); ?>
+                <?php echo Helper::convert_price_to_selected_currency($price); 
+                $template = 'templates/info-price.php';
+						if (locate_template($template)) {
+							include locate_template($template);
+						}?>
             </span>
         <?php else: ?>
             <span class="price">Price not specified</span>
@@ -413,6 +419,10 @@ if (locate_template($template)) {
         <?php if (!empty($company)): ?>
             <p><i class="fa fa-user"></i> <span>Posted By: <?php echo esc_html(get_the_title($company)); ?></span></p>
         <?php endif; ?>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            Apply
+        </button>
+        
     </div>
 </div>
 
@@ -523,5 +533,11 @@ if (locate_template($template)) {
         </div>
     </div>
 </section>
+<?php $template_path = 'templates/dashboard/form-contract.php';
+if (locate_template($template_path)) {
+    include locate_template($template_path);
+}
 
+
+?>
 <?php get_footer("dashboard");?>

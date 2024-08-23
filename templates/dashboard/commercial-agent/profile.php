@@ -205,14 +205,7 @@ $selected_currency = wp_get_post_terms($commercial_agent_post->ID, 'currency', [
 
 
 
-                    <script>
-                        document.addEventListener('DOMContentLoaded', function () {
-                            var tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-                            tooltips.forEach(function (tooltip) {
-                                new bootstrap.Tooltip(tooltip);
-                            });
-                        });
-                    </script>
+                 
              
 
 

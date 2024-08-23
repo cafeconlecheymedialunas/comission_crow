@@ -69,23 +69,24 @@ class Contract
         $commercial_agent = get_post($commercial_agent_id);
 
         if (!$opportunity) {
-            $general_errors[] = 'Opportunity not found.';
+            wp_send_json_error(["general"=>'Opportunity not found.']);
         }
 
         if (!$company) {
-            $general_errors[] = 'Company not found.';
+            wp_send_json_error(["general"=>'Company not found.']);
         }
 
         if (!$commercial_agent) {
-            $general_errors[] = 'Commercial Agent not found.';
+            wp_send_json_error(["general"=>'Commercial Agent not found.']);
         }
 
-        // Check if there are any general errors
-        if (!empty($general_errors)) {
-            wp_send_json_error([
-                'general' => $general_errors,
-            ]);
+        $opportunity_price = carbon_get_post_meta($opportunity_id,"price");
+
+        if($minimal_price < $opportunity_price ){
+            wp_send_json_error(["general"=>'Minimal price cannot be less than the average deal value of the opportunity.']);
         }
+
+      
 
         $args = [
             'post_type' => 'contract',
@@ -112,23 +113,16 @@ class Contract
         $query = new WP_Query($args);
 
         if (is_wp_error($query)) {
-            $general_errors[] = 'Failed to retrieve contracts.';
-        }
-
-        // Check if there are any general errors
-        if (!empty($general_errors)) {
-            wp_send_json_error([
-                'general' => $general_errors,
-            ]);
+            wp_send_json_error(["general"=> 'Failed to retrieve contracts.']);
         }
 
         foreach ($query->posts as $item) {
             $status = carbon_get_post_meta($item->ID, 'status');
 
             if ($status == "pending") {
-                $general_errors[] = "There is already a requested contract proposal. Accept or reject that proposal before starting another one.";
+                wp_send_json_error(["general"=> "There is already a requested contract proposal. Accept or reject that proposal before starting another one."]);
             } elseif ($status == "accepted") {
-                $general_errors[] = "There is already an accepted contract proposal. Finish that proposal before starting another one.";
+                wp_send_json_error(["general"=>"There is already an accepted contract proposal. Finish that proposal before starting another one."]);
             }
         }
 

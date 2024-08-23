@@ -64,7 +64,10 @@
               
                      <div class="pricing">
                          <?php if ($price !== null): ?>
-                             <h5 class="price"><?php echo Helper::convert_price_to_selected_currency($price); ?></h5>
+                             <h5 class="price"><?php echo Helper::convert_price_to_selected_currency($price); $template = 'templates/info-price.php';
+            if (locate_template($template)) {
+                include locate_template($template);
+            }?></h5>
                          <?php endif;?>
                          <?php if ($commission_value !== null): ?>
                              <p class="commissions">Commission: <?php echo esc_html($commission_value); ?> %</p>
