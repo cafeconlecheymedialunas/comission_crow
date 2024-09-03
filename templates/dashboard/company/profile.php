@@ -6,6 +6,10 @@ $industry_terms = get_terms([
     "taxonomy" => "industry",
     "hide_empty" => false,
 ]);
+$target_industry_terms = get_terms([
+    "taxonomy" => "target_industry",
+    "hide_empty" => false,
+]);
 $activity_terms = get_terms([
     "taxonomy" => "activity",
     "hide_empty" => false,
@@ -31,6 +35,7 @@ $company_post = $company->get_company();
 $profile_image = isset($company_post) ? [get_post_thumbnail_id($company_post->ID)] : '';
 
 $industry = wp_get_post_terms($company_post->ID, 'industry', ['fields' => 'ids']) ?? [];
+$target_industry = wp_get_post_terms($company_post->ID, 'target_industry', ['fields' => 'ids']) ?? [];
 $activity = wp_get_post_terms($company_post->ID, 'activity', ['fields' => 'ids']) ?? [];
 $type_of_company = wp_get_post_terms($company_post->ID, 'type_of_company', ['fields' => 'ids']) ?? [];
 $location = wp_get_post_terms($company_post->ID, 'location', ['fields' => 'ids']) ?? [];
@@ -124,6 +129,22 @@ $youtube_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'y
                                 <option
                                     value="<?php echo esc_attr($term->term_id); ?>"
                                     <?php echo !empty($term) &&  !empty($industry) && in_array($term->term_id, $industry) ? 'selected' : ''; ?>
+                                    >
+                                    <?php echo esc_html($term->name); ?>
+                                </option>
+                            <?php endforeach;?>
+                        </select>
+                        <div class="error-message"></div>
+                    </div>
+                    <?php endif;?>
+                    <?php if ($target_industry_terms): ?>
+                    <div class="col-md-6">
+                        <label for="target_industry" class="form-label">Target Industries:</label>
+                        <select name="target_industry[]" class="form-select">
+                            <?php foreach ($target_industry_terms as $term): ?>
+                                <option
+                                    value="<?php echo esc_attr($term->term_id); ?>"
+                                    <?php echo !empty($term) &&  !empty($target_industry) && in_array($term->term_id, $target_industry) ? 'selected' : ''; ?>
                                     >
                                     <?php echo esc_html($term->name); ?>
                                 </option>

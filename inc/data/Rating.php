@@ -39,12 +39,39 @@ class Rating
             wp_send_json_error(["general" =>'Invalid company ID']);
             wp_die();
         }
-    
+       
         if (empty($content)) {
             wp_send_json_error(["general" =>'Content cannot be empty']);
             wp_die();
         }
     
+        $commission_request = new WP_Query([
+            'post_type'  => 'commission_request',
+            'meta_query' => [
+                'relation' => 'AND',
+                [
+                    'key'   => 'commercial_agent',
+                    'value' => $commercial_agent_id,
+                    'compare' => '='
+                ],
+                [
+                    'key'   => 'company',
+                    'value' => $company_id,
+                    'compare' => '='
+                ],
+                [
+                    'key'   => 'status',
+                    'value' => "payment_completed",
+                    'compare' => '='
+                ]
+            ],
+            'fields' => 'ids' // Solo necesitamos los IDs de los posts
+        ]);
+    
+        if ($commission_request->have_posts()) {
+            wp_send_json_error(["general" => 'They can only send rating if you have a full commission order.']);
+            wp_die();
+        }
         // Verificar si ya existe una reseña de esta empresa para este agente
         $existing_review = new WP_Query([
             'post_type'  => 'review',

@@ -103,6 +103,7 @@ class ContainerCustomFields
             ])
             ->add_tab(__('Pricing'), [
                 Field::make('text', 'price', __('Price')),
+                Field::make('rich_text', 'price_structure', __('Price Structure')),
                 Field::make('text', 'commission', __('Commission')),
                 Field::make('checkbox', 'deliver_leads', 'Deliver Leads?')
                     ->set_option_value('yes'),
@@ -333,9 +334,19 @@ class ContainerCustomFields
             Field::make('text', 'billing_address_location', __('Billing Address Location')),
             Field::make('text', 'billing_address_postalcode', __('Billing Address Postal Code')),
             Field::make('text', 'billing_company_holder', __('Billing Company Holder')),
+            Field::make('text', 'platform_fee', __('Platform Fee')),
+            Field::make('text', 'tax_service_fee', __('Tax Service Fee')),
             Field::make('text', 'billing_company_name', __('Billing Company Name')),
             Field::make('text', 'billing_company_email', __('Company Email')),
             Field::make('text', 'billing_company_phone', __('Company Phone')),
+            Field::make('text', 'platform_website_url', __('website Profile')),
+            Field::make('text', 'platform_facebook_url', __('Facebook Profile')),
+            Field::make('text', 'platform_instagram_url', __('Instagram Profile')),
+            Field::make('text', 'platform_twitter_url', __('Twitter Profile')),
+            Field::make('text', 'platform_linkedin_url', __('Linkedin Profile')),
+            Field::make('text', 'platform_tiktok_url', __('TikTok Profile')),
+            Field::make('text', 'platform_youtube_url', __('Youtube Profile')),
+        
         ]);
     }
 

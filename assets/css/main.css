@@ -23,10 +23,26 @@
   padding: 10px 15px 0 15px;
   color: red;
   width:100%;
+  display: none;
 }
 select option:checked {
   background-color: #6787FE;
   color: white;
+}
+.ts-wrapper.multi.has-items .ts-control {
+border:none!important;
+box-shadow: none!important;
+}
+.ts-wrapper {
+height: 60px;
+border-radius: 50px;
+}
+.ts-wrapper.multi .ts-control [data-value] {
+  background-color: #6787FE !important;
+  background-image: none !important;
+  border-radius: 20px;
+  padding: 2px 10px;
+  font-size: 14px;
 }
 .box input {
   display: none;

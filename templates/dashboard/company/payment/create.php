@@ -100,10 +100,7 @@ $location = get_user_meta($user->ID, 'location', true); // Ejemplo para obtener 
                                     <h6><?php echo esc_html(get_the_title($opportunity_id)); ?></h6>
                                 <?php endif;?>
                                 <?php if ($has_minimal_price): ?>
-                                    <p>Minimum price: <?php echo esc_html(Helper::convert_price_to_selected_currency($minimal_price)); $template = 'templates/info-price.php';
-            if (locate_template($template)) {
-                include locate_template($template);
-            }?></p>
+                                    <p>Minimum price: <?php echo Helper::display_price_template(Helper::convert_price_to_selected_currency($minimal_price));?></p>
                                 <?php endif;?>
                                 <?php if ($has_commission): ?>
                                     <p>Commission: <?php echo esc_html($commission); ?>%</p>
@@ -113,26 +110,23 @@ $location = get_user_meta($user->ID, 'location', true); // Ejemplo para obtener 
                         <hr class="mb-4">
                         <h4 class="mb-3">Payment</h4>
                         <div class="d-block my-3">
-                            <div class="custom-control custom-radio">
-                                <input id="stripe" name="paymentMethod" value="stripe" type="radio" class="custom-control-input" checked required>
-                                <label class="custom-control-label" for="stripe">Stripe</label>
-                            </div>
-                            <div class="custom-control custom-radio">
-                                <input id="debit" name="paymentMethod" disabled type="radio" class="custom-control-input" required>
-                                <label class="custom-control-label" for="debit">Deposit</label>
-                            </div>
+                            <?php if($total_to_pay > 0.50):?>
 
                             <form action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="post">
           
 
                                 <input type="hidden" name="action" value="create_payment">
-                                <input type="hidden" name="currency" value="usd"> <!-- Moneda -->
+                                <input type="hidden" name="currency" value="usd">
                                 <input type="hidden" name="payment_init" value="on">
                                 <input type="hidden" name="commission_request_id" value="<?php echo esc_attr($commission_request_id); ?>">
                                 <input type="hidden" name="success_url" value="<?php echo esc_url(home_url('/dashboard/company/payment/success')); ?>">
                                 <input type="hidden" name="cancel_url" value="<?php echo esc_url(home_url('/dashboard/company/payment/cancel')); ?>">
-                                <button class="btn btn-primary" type="submit">Pagar con Stripe</button>
+                                <button class="btn btn-primary" type="submit">Pay with Stripe</button>
                             </form>
+                            <?php else:?>
+                                <p>Payments can only be generated for amounts greater than 0.50 USD.</p>
+
+                            <?php endif;?>
                         </div>
                     </div>
                     <div class="col-md-4 order-md-2 mb-4">
@@ -144,52 +138,31 @@ $location = get_user_meta($user->ID, 'location', true); // Ejemplo para obtener 
                             <?php foreach ($items as $item): ?>
                                 <li class="list-group-item d-flex justify-content-between lh-condensed">
                                     <div>
-                                        <span class="text-muted"><?php echo esc_html(Helper::convert_price_to_selected_currency($item["price_paid"])); $template = 'templates/info-price.php';
-            if (locate_template($template)) {
-                include locate_template($template);
-            }?></span>
+                                        <span class="text-muted"><?php echo Helper::display_price_template(Helper::convert_price_to_selected_currency($item["price_paid"])); ?></span>
                                         <small class="text-muted">X <?php echo esc_html($item["quantity"]); ?></small>
                                     </div>
-                                    <h6 class="my-0 text-muted"><?php echo esc_html(Helper::convert_price_to_selected_currency($item["subtotal"])); $template = 'templates/info-price.php';
-            if (locate_template($template)) {
-                include locate_template($template);
-            }?></h6>
+                                    <h6 class="my-0 text-muted"><?php echo Helper::display_price_template(Helper::convert_price_to_selected_currency($item["subtotal"])); ?></h6>
                                 </li>
                             <?php endforeach;?>
                             <li class="list-group-item d-flex justify-content-between">
                                 <span>Total Sales (USD)</span>
-                                <strong><?php echo esc_html(Helper::convert_price_to_selected_currency($total_cart)); $template = 'templates/info-price.php';
-            if (locate_template($template)) {
-                include locate_template($template);
-            }?></strong>
+                                <strong><?php echo Helper::display_price_template(Helper::convert_price_to_selected_currency($total_cart)); ?></strong>
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
-                                <span>Commission of Agent </span>
-                                <strong><?php echo esc_html(Helper::convert_price_to_selected_currency($total_agent)); $template = 'templates/info-price.php';
-            if (locate_template($template)) {
-                include locate_template($template);
-            }?></strong>
+                                <span>Agent’s fee</span>
+                                <strong><?php echo Helper::display_price_template(Helper::convert_price_to_selected_currency($total_agent)); ?></strong>
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
-                                <span>Commission of Nexfy</span>
-                                <strong><?php echo esc_html(Helper::convert_price_to_selected_currency($total_platform)); $template = 'templates/info-price.php';
-            if (locate_template($template)) {
-                include locate_template($template);
-            }?></strong>
+                                <span>Platform’s fee</span>
+                                <strong><?php echo Helper::display_price_template(Helper::convert_price_to_selected_currency($total_platform));?></strong>
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
-                                <span>Stripe service fee</span>
-                                <strong><?php echo esc_html(Helper::convert_price_to_selected_currency($total_tax_service)); $template = 'templates/info-price.php';
-            if (locate_template($template)) {
-                include locate_template($template);
-            }?></strong>
+                                <span>Tax Service Fee</span>
+                                <strong><?php echo Helper::display_price_template(Helper::convert_price_to_selected_currency($total_tax_service));?></strong>
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
                                 <span class="fw-bold">Total in your currency:</span>
-                                <span class="fw-bold"><?php echo esc_html(Helper::convert_price_to_selected_currency($total_to_pay)); $template = 'templates/info-price.php';
-            if (locate_template($template)) {
-                include locate_template($template);
-            }?></span>
+                                <span class="fw-bold"><?php echo Helper::display_price_template(Helper::convert_price_to_selected_currency($total_to_pay)); ?></span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
                                 <span class="fw-bold">Total to pay:</span>

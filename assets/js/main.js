@@ -1,18 +1,8 @@
 jQuery(document).ready(function ($) {
-  $(".custom-select").select2({
-    placeholder: "Select an option",
-    allowClear: true,
-    theme: "bootstrap-5",
-  });
-  $(".custom-select-multiple").select2({
-    dropdownAutoWidth: true,
-    multiple: true,
-    width: "100%",
-    height: "30px",
-    placeholder: "Select an option",
-    allowClear: true,
-    theme: "bootstrap-5",
-  });
+ 
+  
+
+
 
 
     var tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
@@ -54,6 +44,25 @@ jQuery(document).ready(function ($) {
           menu.classList.remove("sticky");
       }
   }
+
+
+// Selecciona todos los <select> con el atributo "multiple" en la página
+var multipleSelects = $("select[multiple]");
+
+// Verifica si hay elementos seleccionados
+if (multipleSelects.length) {
+  // Itera sobre cada elemento <select> encontrado
+  multipleSelects.each(function() {
+
+    $(this).select2({
+      theme: "bootstrap-5",
+      width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',
+      placeholder: $( this ).data( 'placeholder' ),
+      closeOnSelect: false,
+  
+  });
+  });
+}
 
 
 

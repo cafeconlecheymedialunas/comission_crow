@@ -7,6 +7,9 @@ body, p {
   color: #4A6375;
   font-size: 16px;
 }
+.custom-spinner {
+  z-index: 10000000000000000000000000000000000000000000;
+}
 .btn.btn-primary {
   padding: 15px 25px;
   border-radius: 50px;
@@ -42,9 +45,10 @@ border-color:rgb(103 135 254 / 10%)!important;
   border-top-right-radius: 50px!important;
   border-bottom-right-radius: 50px!important;
 }
-.custom-spinner {
-  z-index: 10000;
+.notifications-messages a{
+color:#4a6375;
 }
+
 
 /*Forms*/
 .editor-container {
@@ -64,6 +68,16 @@ border-color:rgb(103 135 254 / 10%)!important;
   box-shadow: none !important;
 }
 
+.commission.input-group .input-group-text {
+  border-top-right-radius: 50px !important;
+  border-bottom-right-radius: 50px !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+.input-group.commission .form-control {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
 table.default-table{ 
   border-radius: 10px;
   overflow: hidden;
@@ -204,7 +218,7 @@ table.custom-table .btn {
 
 .user-menu > ul > li {
   position: relative;
-  cursor: pointer;
+
   line-height: 45px;
   color: #4a6375;
   font-size: 18px;

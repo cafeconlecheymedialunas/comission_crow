@@ -55,35 +55,25 @@ $deposits_completed = get_posts([
 
             <h2 class="d-inline">Balance</h2>
 
-            <h3 class="mb-0"><?php echo Helper::convert_price_to_selected_currency($wallet_balance); 
-            $template = 'templates/info-price.php';
-            if (locate_template($template)) {
-                include locate_template($template);
-            }?></h3>
+            <h3 class="mb-0"><?php echo  Helper::display_price_template(Helper::convert_price_to_selected_currency($wallet_balance)); 
+            ?></h3>
+            <?php if($wallet_balance  <= 0):?>
             <div class="row w-100 mt-4">
                 <div class="col-md-4">  
                     <h5>withdrawn</h5>
-                    <h5><?php echo Helper::convert_price_to_selected_currency($total_withdrawals); $template = 'templates/info-price.php';
-            if (locate_template($template)) {
-                include locate_template($template);
-            }?></h5>
+                    <h5><?php echo  Helper::display_price_template(Helper::convert_price_to_selected_currency($total_withdrawals)); ?></h5>
                 </div>
                 <div class="col-md-4">  
                     <h5>Incomes</h5>
                  
-                    <h5><?php echo Helper::convert_price_to_selected_currency($total_incomes); $template = 'templates/info-price.php';
-            if (locate_template($template)) {
-                include locate_template($template);
-            }?></h5>
+                    <h5><?php echo Helper::display_price_template(Helper::convert_price_to_selected_currency($total_incomes)); ?></h5>
                 </div>
                 <div class="col-md-4">
                     <h5>Pending Withdrawals</h5>
-                    <h5><?php echo Helper::convert_price_to_selected_currency($pending_withdrawls ); $template = 'templates/info-price.php';
-            if (locate_template($template)) {
-                include locate_template($template);
-            }?></h5>
+                    <h5><?php echo Helper::display_price_template(Helper::convert_price_to_selected_currency($pending_withdrawls )); ?></h5>
                 </div>
             </div>
+            <?php endif;?>
           
          
 
@@ -99,8 +89,6 @@ $deposits_completed = get_posts([
                         <button type="submit" class="btn btn-primary">Withdraw Funds</button>
                     </div>
                 </form>
-            <?php else: ?>
-                <p class="alert">You have a withdrawal request in process. This may take 48 hours or more</p>
             <?php endif; ?>
             
        
@@ -116,9 +104,13 @@ $deposits_completed = get_posts([
             <form id="update-email-stripe-form">
                 <div class="row">
                     <!-- User Fields -->
+                     <?php 
+                     $stripe_email = carbon_get_post_meta($post_associated_user->ID, "stripe_email");
+                     $stripe_email = !empty($stripe_email)? $stripe_email:$current_user->user_email;
+                     ?>
                     <div class="col-md-12">
                         <i class="fa-brands fs-2 fa-cc-stripe me-3" style></i><label for="stripe_email" class="form-label">  Stripe Email</label>
-                        <input type="text" name="stripe_email" id="stripe_email" value="<?php echo carbon_get_post_meta($post_associated_user->ID, "stripe_email"); ?>" class="form-control w-100" >
+                        <input type="text" name="stripe_email" id="stripe_email" value="<?php echo $stripe_email; ?>" class="form-control w-100" >
                         <div class="error-message"></div>
                     </div>
                 </div>

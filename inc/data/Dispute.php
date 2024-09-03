@@ -174,8 +174,8 @@ class Dispute
             wp_send_json_error(['general' => 'Error deleting the post. Try again later.']);
         }
 
-        //$this->send_dispute_deleted_email_to_agent($dispute_id);
-        //$this->send_dispute_deleted_email_to_company($dispute_id);
+        $this->send_dispute_deleted_email_to_agent($dispute_id);
+        $this->send_dispute_deleted_email_to_company($dispute_id);
 
         wp_send_json_success(['Dispute successfully deleted!']);
         wp_die();

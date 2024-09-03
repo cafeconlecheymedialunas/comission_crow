@@ -50,6 +50,21 @@ class Helper
     
 
 
+    public static function display_price_template($price) {
+
+        if ($price > 0) {
+           
+            $template = 'templates/info-price.php';
+    
+            if (locate_template($template)) {
+                include locate_template($template);
+            } else {
+                echo 'Template not found.';
+            }
+        }
+ 
+        return $price;
+    }
     public static function convert_to_usd($amount, $user_id = null, $decimals = 2)
     {
         $post = ProfileUser::get_instance()->get_user_associated_post_type($user_id);

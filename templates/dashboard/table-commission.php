@@ -98,10 +98,8 @@ $status_classes = [
                             <?php echo get_the_title($opportunity_id); ?>
                         </a>
                     </td>
-                    <td><?php echo esc_html(Helper::convert_price_to_selected_currency($total_cart_commission_request)); $template = 'templates/info-price.php';
-						if (locate_template($template)) {
-							include locate_template($template);
-						}?></td>
+                    <td><?php echo Helper::display_price_template(Helper::convert_price_to_selected_currency($total_cart_commission_request));
+                    ?></td>
                     <td><?php echo esc_html(carbon_get_post_meta($contract_id, "commission") . "%"); ?></td>
                     <td><?php echo esc_html(Helper::convert_price_to_selected_currency($total_agent_commission_request)); ?></td>
                     <td>
@@ -111,7 +109,7 @@ $status_classes = [
                     <td>
                         <ul class="p-0 mb-0 d-flex justify-content-center align-items-center">
                             <li class="list-inline-item">
-                                <a class="operation" data-bs-toggle="modal" data-bs-target="#chat-modal-<?php echo $another_user->data->ID; ?>" data-user-id="<?php echo esc_attr($another_user->data->ID); ?>">
+                                <a class="operation" data-bs-toggle="modal" data-bs-target="#chat-modal-<?php echo $another_user->data->ID; ?>" data-user-id="<?php echo esc_attr($another_user->data->ID); ?>" data-bs-toggle="tooltip" data-bs-placement="right" title="Chat with another part">
                                     <i class="chat text-secondary fa-solid fa-comments"></i>
                                 </a>
                             </li>
@@ -120,7 +118,7 @@ $status_classes = [
                                 // Mostrar botón de disputa si no hay disputa abierta
                                 if (empty($existing_dispute) && empty($existing_payment)): ?>
                                     <li class="list-inline-item">
-                                        <a class="operation" data-bs-toggle="modal" data-bs-target="#modal-dispute" data-commission-request="<?php echo $commission_request->ID; ?>">
+                                        <a class="operation dispute-button-modal" id="open-dispute-modal" data-commission-request="<?php echo $commission_request->ID; ?>" data-bs-toggle="tooltip" data-bs-placement="right" title="Create a dispute">
                                             <i class="text-warning fa-solid fa-scale-balanced"></i>
                                         </a>
                                     </li>
@@ -128,7 +126,7 @@ $status_classes = [
                              
                                 if (empty($existing_dispute) && (empty($existing_payment) || in_array($status, ['payment_canceled']))): ?>
                                     <li class="list-inline-item">
-                                        <a class="operation" href="<?php echo $dasboard->get_role_url_link_dashboard_page("payment_create"); ?>?commission_request_id=<?php echo $commission_request->ID; ?>">
+                                        <a class="operation" href="<?php echo $dasboard->get_role_url_link_dashboard_page("payment_create"); ?>?commission_request_id=<?php echo $commission_request->ID; ?>" data-bs-toggle="tooltip" data-bs-placement="right" title="Pay Commission Request">
                                             <i class="text-success fa-solid fa-money-check-dollar"></i>
                                         </a>
                                     </li>

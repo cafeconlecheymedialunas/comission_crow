@@ -31,7 +31,7 @@ $current_user = wp_get_current_user();
 		if (field.length) {
 			// Display the first error message for the field
 			if (errorMessages.length > 0) {
-				field.next(".error-message").text(errorMessages[0]);
+				field.next(".error-message").text(errorMessages[0]).show();
 
 				// Set the first error element for scrolling
 				if (firstErrorElement === null) {
@@ -96,11 +96,8 @@ $current_user = wp_get_current_user();
 						$wallet_balance = Deposit::get_instance()->calculate_wallet_balance();
 						if (in_array("commercial_agent", $current_user->roles)): ?>
 						<span class="balance">
-						<?php echo Helper::convert_price_to_selected_currency($wallet_balance);  
-						$template = 'templates/info-price.php';
-						if (locate_template($template)) {
-							include locate_template($template);
-						}?>
+						<?php 
+						echo Helper::display_price_template(Helper::convert_price_to_selected_currency($wallet_balance));?>
 						</span>
 						<?php endif;?>
 
@@ -130,9 +127,7 @@ $current_user = wp_get_current_user();
 									}
 								}
 								?>
- <?php
-                 
-?>
+
 								</span>
 								<ul class="dropdown-menu" aria-labelledby="accountDropdown">
 									<?php $role_url = in_array("commercial_agent", $current_user->roles) ? "commercial-agent" : "company"; ?>
@@ -143,7 +138,7 @@ $current_user = wp_get_current_user();
 						<?php else: ?>
 							<a class="btn btn-primary" href="<?php echo esc_url(home_url("/auth?action=login")); ?>">Login</a>
 							<a class="btn btn-secondary" href="<?php echo esc_url(home_url("/auth?action=register&role=commercial_agent")); ?>">Register as a Agent</a>
-              <a class="btn btn-secondary" href="<?php echo esc_url(home_url("/auth?action=register&role=company")); ?>">Register your Company</a>
+              				<a class="btn btn-secondary" href="<?php echo esc_url(home_url("/auth?action=register&role=company")); ?>">Register your Company</a>
 						<?php endif;?>
 	                    </div>
                     </div>

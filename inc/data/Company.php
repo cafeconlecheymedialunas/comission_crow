@@ -132,6 +132,7 @@ class Company extends Crud
         $tiktok_url = esc_url_raw($_POST["tiktok_url"]);
         $youtube_url = esc_url_raw($_POST["youtube_url"]);
         $industry = isset($_POST["industry"]) ? array_map('sanitize_text_field', $_POST["industry"]) : [];
+        $target_industry = isset($_POST["target_industry"]) ? array_map('sanitize_text_field', $_POST["target_industry"]) : [];
         $location = isset($_POST["location"]) ? array_map('sanitize_text_field', $_POST["location"]) : [];
         $type_of_company = isset($_POST["type_of_company"]) ? array_map('sanitize_text_field', $_POST["type_of_company"]) : [];
         $activity = isset($_POST["activity"]) ? array_map('sanitize_text_field', $_POST["activity"]) : [];
@@ -147,8 +148,11 @@ class Company extends Crud
         if (empty($company_name)) {
             $field_errors['company_name'][] = __('Company name is required.');
         }
-        if (!is_numeric($employees_number) || $employees_number < 0) {
+        if (!empty($employees_number)){
+            
+            if(!is_numeric($employees_number) || $employees_number < 0) {
             $field_errors['employees_number'][] = __('Number of employees must be a positive number.');
+            }
         }
     
         if (!empty($field_errors)) {
@@ -202,6 +206,9 @@ class Company extends Crud
     
         if (!empty($industry)) {
             wp_set_post_terms($company_id, $industry, 'industry', false);
+        }
+        if (!empty($target_industry)) {
+            wp_set_post_terms($company_id, $target_industry, 'target_industry', false);
         }
         if (!empty($activity)) {
             wp_set_post_terms($company_id, $activity, 'activity', false);

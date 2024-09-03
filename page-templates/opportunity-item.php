@@ -44,6 +44,7 @@ if (!in_array($current_user->roles[0], $allowed_roles)) {
 $opportunity = $opportunity->posts[0];
 $company = carbon_get_post_meta($opportunity->ID, "company");
 $company_industry = wp_get_post_terms($company, 'industry');
+$company_target_industry = wp_get_post_terms($company, 'target_industry');
 $company_activity = wp_get_post_terms($company, 'activity');
 $company_location = wp_get_post_terms($company, 'location');
 $company_employees_number = carbon_get_post_meta($company, 'employees_number');
@@ -91,6 +92,7 @@ $company_full_address = implode(', ', $address_parts);
 
 $sales_cycle_estimation = carbon_get_post_meta($opportunity->ID, "sales_cycle_estimation");
 $price = carbon_get_post_meta($opportunity->ID, "price");
+$price_structure = carbon_get_post_meta($opportunity->ID, "price_structure");
 $commission = carbon_get_post_meta($opportunity->ID, "commission");
 $deliver_leads = carbon_get_post_meta($opportunity->ID, 'deliver_leads') ?: 'no';
 $date = carbon_get_post_meta($opportunity->ID, 'date');
@@ -107,6 +109,7 @@ $question_5 = carbon_get_post_meta($opportunity->ID, 'question_5');
 $question_6 = carbon_get_post_meta($opportunity->ID, 'question_6');
 
 $industry = wp_get_post_terms($opportunity->ID, 'industry');
+
 $language = wp_get_post_terms($opportunity->ID, 'language');
 $languages = !empty($language) ? array_map(function ($lang) {
     return esc_html($lang->name);
@@ -388,17 +391,24 @@ $current_opportunity = $opportunity_id;
     <div class="text-center">
         <h5>Average deal value</h5>
         
-        <?php if (!empty($price)): ?>
-            <span class="price">
-                <?php echo Helper::convert_price_to_selected_currency($price); 
-                $template = 'templates/info-price.php';
-						if (locate_template($template)) {
-							include locate_template($template);
-						}?>
-            </span>
-        <?php else: ?>
+        <?php if (empty($price) && empty($price_structure)): ?>
             <span class="price">Price not specified</span>
+           
         <?php endif; ?>
+        <?php if (!empty($price)):  ?>
+            <span class="price">
+                <?php echo Helper::display_price_template(Helper::convert_price_to_selected_currency($price));?> 
+              
+            </span>
+           
+        <?php endif; ?>
+        <?php if (!empty($price_structure)): ?>
+
+          
+            <div class="price_structure fs-6">
+            <?php echo wp_kses_post($price_structure); ?>
+            </div>
+            <?php endif; ?>  
         
         <?php if (!empty($commission)): ?>
             <p>Commission: <strong><?php echo esc_html($commission); ?>%</strong></p>
@@ -409,7 +419,7 @@ $current_opportunity = $opportunity_id;
         <?php endif; ?>
         
         <?php if (!empty($sales_cycle_estimation)): ?>
-            <p>Sales Cycle Estimation: <strong><?php echo esc_html($sales_cycle_estimation); ?> Days</strong></p>
+            <p>Sales Cycle Estimation: <strong><?php echo esc_html($sales_cycle_estimation); ?></strong></p>
         <?php endif; ?>
         
         <?php if (!empty($opportunity)): ?>
@@ -419,11 +429,11 @@ $current_opportunity = $opportunity_id;
         <?php if (!empty($company)): ?>
             <p><i class="fa fa-user"></i> <span>Posted By: <?php echo esc_html(get_the_title($company)); ?></span></p>
         <?php endif; ?>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" data-opportunity-price="<?php echo $price;?>" data-opportunity-commission="<?php echo $commission;?>">
             Apply
         </button>
         
-    </div>
+        </div>
 </div>
 
 <div class="opportunity-widget">
@@ -448,6 +458,19 @@ $current_opportunity = $opportunity_id;
 
         <?php if (!empty($company_industry)): ?>
             <p>Industry: <strong><?php echo esc_html($company_industry[0]->name); ?></strong></p>
+        <?php endif; ?>
+        <?php if (!empty($company_target_industry)): ?>
+            <p>Target Industries: <strong>
+                <?php 
+                    // Extraer los nombres de los términos y concatenarlos con comas
+                    $industry_names = array_map(function($term) {
+                        return esc_html($term->name);
+                    }, $company_target_industry);
+                    
+                    // Unir los nombres con comas
+                    echo implode(', ', $industry_names);
+                ?>
+            </strong></p>
         <?php endif; ?>
 
         <?php if (!empty($company_activity)): ?>

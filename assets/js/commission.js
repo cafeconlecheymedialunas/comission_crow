@@ -92,13 +92,13 @@ jQuery(document).ready(function ($) {
   });
 
   $("#data-table").on("click", ".removeRow", removeRow);
-
+  var commissionRequestId;
   $("#modal-dispute").on("show.bs.modal", function (e) {
     // Obtén el botón que abrió el modal desde el evento relatedTarget
-    const button = $(e.relatedTarget);
+   
   
     // Obtén el valor del data-attribute del botón
-    const commissionRequestId = button.data("commission-request");
+   
   
     if (commissionRequestId !== undefined) {
       const $commissionRequestIdField = $("#commission_request_id");
@@ -111,8 +111,41 @@ jQuery(document).ready(function ($) {
       $commissionRequestIdField.find("option").not(":selected").prop("disabled", true);
     }
   });
-  
+  $(".dispute-button-modal").on("click", function (e) {
+    e.preventDefault();
 
+    // Obtén el botón que disparó el evento
+    var button = $(this);
+  
+    // Obtén el valor del data-attribute del botón
+    var commissionRequestId = button.data('commission-request');
+
+    // Muestra SweetAlert2 y abre el modal solo si el usuario acepta
+    Swal.fire({
+      title: "Are you sure you want to create a dispute?",
+      text: "Attempting not to pay salespeople who have made a sale can have legal consequences.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Create",
+      cancelButtonText: "Cancel"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Abre el modal
+            var modal = new bootstrap.Modal(document.getElementById('modal-dispute'));
+            modal.show();
+
+            // Llena el campo del modal con el valor del data-attribute
+            if (commissionRequestId !== undefined) {
+                const $commissionRequestIdField = $("#commission_request_id");
+                $commissionRequestIdField.val(commissionRequestId).change();
+                $commissionRequestIdField.attr("readonly", true);
+            }
+        }
+    });
+});
+  
 
   // Form submission handling
   $("#commission-form").on("submit", function (e) {

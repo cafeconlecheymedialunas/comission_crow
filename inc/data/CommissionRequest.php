@@ -114,7 +114,28 @@ class CommissionRequest
                 }
             }
         }
-    
+        $total_agent = $this->calculate_agent_price($total_cart, $commission);
+        if (!$total_agent || !is_numeric($total_agent)) {
+            wp_send_json_error(["general" => "It was impossible to calculate the agent's fee"]);
+        }
+        $total_tax_service = $this->calculate_tax_stripe_price($total_cart);
+        if(!$total_tax_service || !is_numeric($total_tax_service)){
+            wp_send_json_error(["general" => "It was impossible to calculate the tax service's fee"]);
+        }
+        $total_platform = $this->calculate_platform_price($total_cart);
+        
+        if(!$total_platform || !is_numeric($total_tax_service)){
+            wp_send_json_error(["general" => "It was impossible to calculate the platform's fee"]);
+        }
+        
+        $total_to_pay = $this->calculate_total($total_agent, $total_tax_service, $total_platform);
+        
+        if(!$total_to_pay || !is_numeric($total_to_pay)){
+            wp_send_json_error(["general" => "It was impossible to calculate the total"]);
+        }
+        if ($total_to_pay <= 0.50) {
+            wp_send_json_error(["general" => 'Payments can only be generated for amounts greater than 0.50 USD.']);
+        }
         if (!empty($errors)) {
             wp_send_json_error(['fields' => $errors]);
             wp_die();
@@ -134,10 +155,7 @@ class CommissionRequest
             wp_die();
         }
     
-        $total_agent = $this->calculate_agent_price($total_cart, $commission, $current_user->ID);
-        $total_tax_service = $this->calculate_tax_stripe_price($total_cart, $current_user->ID);
-        $total_platform = $this->calculate_platform_price($total_cart, $current_user->ID);
-        $total_to_pay = $this->calculate_total($total_agent, $total_tax_service, $total_platform);
+        
         
         $status_history = Helper::add_item_to_status_history($contract_id, "pending");
 
@@ -163,27 +181,38 @@ class CommissionRequest
     }
     
 
-    public function calculate_agent_price($total_cart, $commission, $user_id = null)
+    public function calculate_agent_price($total_cart,$agent_fee)
     {
       
-        if (empty($commission) || !is_numeric($commission)) {
+        if (empty($total_cart) || !is_numeric($total_cart)) {
+            return new WP_Error('invalid_total_cart', 'Invalid total cart value.');
+        }
+        
+        if (empty($agent_fee) || !is_numeric($agent_fee)) {
             return new WP_Error('invalid_commission', 'Invalid commission value.');
         }
-    
-        $discount = $total_cart * $commission / 100;
+        $discount = $total_cart * $agent_fee / 100;
         return $discount;
     }
     
-    public function calculate_tax_stripe_price($total_cart, $user_id = null)
+    public function calculate_tax_stripe_price($total_cart)
     {
-        $tax = $total_cart * 3 / 100;
+        $tax_service_fee = carbon_get_theme_option("tax_service_fee");
+        
+        if (empty($tax_service_fee) || !is_numeric($tax_service_fee)) {
+            return new WP_Error('invalid_commission', 'Invalid tax service fee value.');
+        }
+        if (empty($total_cart) || !is_numeric($total_cart)) {
+            return new WP_Error('invalid_commission', 'Invalid commission value.');
+        }
+        $tax = $total_cart * $tax_service_fee / 100;
         return $tax;
     }
     
-    public function calculate_platform_price($total_cart, $user_id = null)
+    public function calculate_platform_price($total_cart)
     {
-    
-        $tax = $total_cart* 5 / 100;
+        $platform_fee = carbon_get_theme_option("platform_fee");
+        $tax = $total_cart * $platform_fee / 100;
         return $tax;
     }
     

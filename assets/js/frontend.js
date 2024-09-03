@@ -1,5 +1,6 @@
 jQuery(document).ready(function($) {
     var menu = $('#desktop-header');
+    if(!menu) return
     var sticky = menu.offset().top;
 
     // Función para manejar el sticky menu

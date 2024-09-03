@@ -98,11 +98,8 @@
                                         <td><?php echo esc_html($another_part->post_title); ?></td>
                                     
                                         <td><?php echo esc_html($commission); ?> %</td>
-                                        <td><?php echo esc_html(Helper::convert_price_to_selected_currency($minimal_price)); 
-                                        $template = 'templates/info-price.php';
-                                        if (locate_template($template)) {
-                                            include locate_template($template);
-                                        }?></td>
+                                        <td><?php echo Helper::display_price_template(Helper::convert_price_to_selected_currency($minimal_price)); 
+                                       ?></td>
                                         <td><span class="badge <?php echo $status_class; ?>"><?php echo esc_html($status_text); ?></span></td>
                                         <td><?php echo ($last_sender_history_user && $history_status_end["date_status"])?$last_update_text:""; ?></td>
                                         <td>
@@ -113,7 +110,7 @@
                                                         <input type="hidden" name="security" value="<?php echo wp_create_nonce("update-status-contract-nonce"); ?>"/>
                                                         <input type="hidden" name="contract_id" value="<?php echo esc_attr($contract->ID); ?>">
                                                         <input type="hidden" name="status" value="accepted">
-                                                        <button type="submit" class="operation"><i class="accepted text-success fa-solid fa-check"></i></button>
+                                                        <button type="submit" class="operation" data-bs-toggle="tooltip" data-bs-placement="right" title="Accept Contract"><i class="accepted text-success fa-solid fa-check"></i></button>
                                                     </form>
                                                 </li>
                                                 <li class="list-inline-item">
@@ -121,23 +118,30 @@
                                                         <input type="hidden" name="security" value="<?php echo wp_create_nonce("update-status-contract-nonce"); ?>"/>
                                                         <input type="hidden" name="contract_id" value="<?php echo esc_attr($contract->ID); ?>">
                                                         <input type="hidden" name="status" value="refused">
-                                                        <button type="submit" class="operation"><i class="text-danger refused fa-solid fa-xmark"></i></button>
+                                                        <button type="submit" class="operation" data-bs-toggle="tooltip" data-bs-placement="right" title="Refuse contract"><i class="text-danger refused fa-solid fa-xmark"></i></button>
                                                     </form>
                                                 </li>
                                                 <?php endif; ?>
-                                                <?php if ($status === "accepted") : ?>
+                                                <?php if ($status === "accepted") : 
+                                                    $finish_message_tooltip = in_array("commercial_agent",$current_user->roles)?
+                                                    "Finish agreement. From the moment you terminate it is no longer valid but you can continue sending commission requests."
+                                                    :"Terminate contract. This will remain in effect for 30 days after which the agreement will be cancelled. In the meantime the agent can send you commission requests.";
+                                                    
+                                                    ?>
+
+
                                                 <li class="list-inline-item">
                                                     <form class="update-status-contract-form">
                                                         <input type="hidden" name="security" value="<?php echo wp_create_nonce("update-status-contract-nonce"); ?>"/>
                                                         <input type="hidden" name="contract_id" value="<?php echo esc_attr($contract->ID); ?>">
                                                         <input type="hidden" name="status" value="finished">
-                                                        <button type="submit" class="operation"><i class="finished text-warning fa-solid fa-flag-checkered"></i></button>
+                                                        <button type="submit" class="operation" data-bs-toggle="tooltip" data-bs-placement="right" title="<?php echo $finish_message_tooltip;?>"><i class="finished text-warning fa-solid fa-flag-checkered"></i></button>
                                                     </form>
                                                 </li>
                                                 <?php endif; ?>
                                                <?php if($another_part_user):?>
                                                 <li class="list-inline-item">
-                                                    <button class="operation" data-bs-toggle="modal" data-bs-target="#chat-modal-<?php echo $another_part_user->ID;?>" data-user-id="<?php echo esc_attr($another_part_user->ID); ?>">
+                                                    <button class="operation" data-bs-toggle="modal" data-bs-target="#chat-modal-<?php echo $another_part_user->ID;?>" data-user-id="<?php echo esc_attr($another_part_user->ID); ?>" data-bs-toggle="tooltip" data-bs-placement="right" title="Chat with the other party">
                                                         <i class="chat text-secondary fa-solid fa-comments"></i>
                                                     </button>
                                                 </li>
@@ -146,7 +150,7 @@
                                                     <?php if ($status === "accepted" || $status === "finished" || $status === "finishing") : ?>
                                                         <?php if(!$commission_requests):?>
                                                         <li class="list-inline-item">
-                                                            <button class="operation" data-bs-toggle="modal" data-bs-target="#modal-commission" data-contract-id="<?php echo esc_attr($contract->ID); ?>">
+                                                            <button class="operation" data-bs-toggle="modal" data-bs-target="#modal-commission" data-contract-id="<?php echo esc_attr($contract->ID); ?>" data-bs-toggle="tooltip" data-bs-placement="right" title="Create a commission request">
                                                                 <i class="commission-request  text-primaryfas fa-percentage"></i>
                                                             </button>
                                                         </li>

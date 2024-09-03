@@ -30,6 +30,10 @@ $industry_terms = get_terms([
     "taxonomy" => "industry",
     "hide_empty" => false,
 ]);
+$target_industry_terms = get_terms([
+    "taxonomy" => "target_industry",
+    "hide_empty" => false,
+]);
 $location_terms = get_terms([
     "taxonomy" => "location",
     "hide_empty" => false,
@@ -44,20 +48,12 @@ $type_of_company_terms = get_terms([
     "hide_empty" => false,
 ]);
 
-$age_terms = get_terms([
-    "taxonomy" => "age",
-    "hide_empty" => false,
-]);
 
 $target_audience_terms = get_terms([
     "taxonomy" => "target_audience",
     "hide_empty" => false,
 ]);
 
-$gender_terms = get_terms([
-    "taxonomy" => "gender",
-    "hide_empty" => false,
-]);
 get_header("dashboard");
 ?>
 
@@ -70,7 +66,7 @@ get_header("dashboard");
     ?>
     <div class="container pt-5 pb-5">
         <div class="row">
-            <div class="col-xl-8 result-section mb-5">
+            <div class="col-md-8 result-section mb-5">
                 <div id="results-section">
                     <div id="spinner" style="display: none;">
                         <div class="spinner-border" role="status">
@@ -80,7 +76,7 @@ get_header("dashboard");
                 </div>
             </div>
 
-            <div class="col-xl-4 filter-section">
+            <div class="col-md-4 filter-section">
                 <div class="card">
                     <h4 class="filter-title">Filter by attributes</h4>
                     <form id="filters-form">
@@ -95,6 +91,19 @@ get_header("dashboard");
                             <?php foreach ($industry_terms as $term): ?>
                                 <div class="form-check form-switch">
                                     <input type="checkbox" class="form-check-input filter" name="industry[]" value="<?php echo esc_attr($term->term_id); ?>">
+                                    <label class="form-check-label"><?php echo esc_html($term->name); ?></label>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <?php endif; ?>
+
+                        <?php if ($target_industry_terms): ?>
+                        <label class="form-label">Target Industry:</label>
+                        <div class="mb-3 filter-container">
+                         
+                            <?php foreach ($target_industry_terms as $term): ?>
+                                <div class="form-check form-switch">
+                                    <input type="checkbox" class="form-check-input filter" name="target_industry[]" value="<?php echo esc_attr($term->term_id); ?>">
                                     <label class="form-check-label"><?php echo esc_html($term->name); ?></label>
                                 </div>
                             <?php endforeach; ?>
@@ -147,32 +156,6 @@ get_header("dashboard");
                             <?php foreach ($target_audience_terms as $item): ?>
                                 <div class="form-check form-switch">
                                     <input type="checkbox" class="form-check-input filter" name="target_audience[]" value="<?php echo esc_attr($item->term_id); ?>">
-                                    <label class="form-check-label"><?php echo esc_html($item->name); ?></label>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                        <?php endif; ?>
-
-                        <?php if ($gender_terms): ?>
-                        <label class="form-label">Gender:</label>
-                        <div class="mb-3 filter-container">
-                            
-                            <?php foreach ($gender_terms as $item): ?>
-                                <div class="form-check form-switch">
-                                    <input type="checkbox" class="form-check-input filter" name="gender[]" value="<?php echo esc_attr($item->term_id); ?>">
-                                    <label class="form-check-label"><?php echo esc_html($item->name); ?></label>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                        <?php endif; ?>
-
-                        <?php if ($age_terms): ?>
-                        <label class="form-label">Age:</label>
-                        <div class="mb-3 filter-container">
-                           
-                            <?php foreach ($age_terms as $item): ?>
-                                <div class="form-check form-switch">
-                                    <input type="checkbox" class="form-check-input filter" name="age[]" value="<?php echo esc_attr($item->term_id); ?>">
                                     <label class="form-check-label"><?php echo esc_html($item->name); ?></label>
                                 </div>
                             <?php endforeach; ?>

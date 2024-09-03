@@ -20,7 +20,7 @@ jQuery(document).ready(function ($) {
         console.log(response);
         if (response.success) {
           Swal.fire({
-            title: "contract created successfully!",
+            title: "Contract Proposal created successfully!",
             text: "Redirecting to the contract page.",
             icon: "success",
             showConfirmButton: false,
@@ -80,4 +80,7 @@ jQuery(document).ready(function ($) {
       },
     });
   });
+
+    // Maneja el evento click en el botón
+    
 });

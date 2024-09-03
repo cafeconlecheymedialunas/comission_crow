@@ -29,8 +29,8 @@ class Opportunity extends Crud
             'post_content' => wp_kses_post($_POST['post_content']),
             'target_audience' => isset($_POST["target_audience"]) ? $_POST["target_audience"] : [],
             'age' => isset($_POST["age"]) ? $_POST["age"] : [],
-            'gender' => isset($_POST["gender"]) ? $_POST["gender"] : [],
             'price' => sanitize_text_field($_POST['price']),
+            'price_structure' => sanitize_text_field($_POST['price_structure']),
             'commission' => sanitize_text_field($_POST['commission']),
             "date" => current_time("mysql"),
             'deliver_leads' => isset($_POST['deliver_leads']) && $_POST['deliver_leads'] === 'yes' ? true : false,
@@ -48,6 +48,7 @@ class Opportunity extends Crud
             'location' => isset($_POST["location"]) ? array_map('sanitize_text_field', $_POST["location"]) : [],
             'currency' => isset($_POST["currency"]) ? array_map('sanitize_text_field', $_POST["currency"]) : [],
             'industry' => isset($_POST["industry"]) ? array_map('sanitize_text_field', $_POST["industry"]) : [],
+            'target_industry' => isset($_POST["target_industry"]) ? array_map('sanitize_text_field', $_POST["target_industry"]) : [],
             'post_author' => $current_user->ID,
             'opportunity_id' => isset($_POST['opportunity_id']) ? (int) $_POST['opportunity_id'] : null,
         ];
@@ -56,7 +57,8 @@ class Opportunity extends Crud
             $errors["title"][] = __("Title field is required.");
         }
 
-        if (empty($data['price'])) {
+        if (empty($data['price']) && empty($data["price_structure"])) {
+            
             $errors["price"][] = __("Price field is required.");
         } elseif (!is_numeric($data['price'])) {
             $errors["price"][] = __("Price must be a number.");
@@ -138,6 +140,7 @@ class Opportunity extends Crud
         $field_mappings = [
             "company" => "Company",
             'price' => 'Price',
+            'price_structure' => 'Price Structure',
             "date" => "Date",
             'commission' => 'Commission',
             'deliver_leads' => 'Deliver Leads',
@@ -180,15 +183,16 @@ class Opportunity extends Crud
             wp_set_post_terms($opportunity_id, $data['industry'], 'industry');
         }
 
+        if (!empty($data['target_industry'])) {
+            wp_set_post_terms($opportunity_id, $data['target_industry'], 'target_industry');
+        }
+
        
         if (!empty($data['target_audience'])) {
             wp_set_post_terms($opportunity_id, $data['target_audience'], 'target_audience');
         }
         if (!empty($data['age'])) {
             wp_set_post_terms($opportunity_id, $data['age'], 'age');
-        }
-        if (!empty($data['gender'])) {
-            wp_set_post_terms($opportunity_id, $data['gender'], 'gender');
         }
 
         $this->send_opportunity_created_email_to_company($opportunity_id);
@@ -244,12 +248,11 @@ class Opportunity extends Crud
         ob_start();
     
         $industry_filter = isset($_GET['industry']) ? $_GET['industry'] : [];
+        $target_industry_filter = isset($_GET['target_industry']) ? $_GET['target_industry'] : [];
         $language_filter = isset($_GET['language']) ? $_GET['language'] : [];
         $location_filter = isset($_GET['location']) ? $_GET['location'] : [];
         $currency_filter = isset($_GET['currency']) ? $_GET['currency'] : [];
         $target_audience_filter = isset($_GET['target_audience']) ? $_GET['target_audience'] : [];
-        $age_filter = isset($_GET['age']) ? $_GET['age'] : [];
-        $gender_filter = isset($_GET['gender']) ? $_GET['gender'] : [];
         $deliver_leads_filter = isset($_GET['deliver_leads']) ? $_GET['deliver_leads'] : null;
         $min_price = isset($_GET['minimum_price']) ? floatval($_GET['minimum_price']) : null;
         $max_price = isset($_GET['maximum_price']) ? floatval($_GET['maximum_price']) : null;
@@ -298,7 +301,7 @@ class Opportunity extends Crud
             $query_args['meta_query'] = $meta_query;
         }
     
-        if ($industry_filter || $language_filter || $location_filter || $currency_filter || $target_audience_filter || $age_filter || $gender_filter) {
+        if ($target_industry_filter || $industry_filter || $language_filter || $location_filter || $currency_filter || $target_audience_filter) {
             $tax_query = array('relation' => 'AND');
     
             if ($industry_filter) {
@@ -306,6 +309,14 @@ class Opportunity extends Crud
                     'taxonomy' => 'industry',
                     'field' => 'term_id',
                     'terms' => $industry_filter,
+                    'operator' => 'IN',
+                );
+            }
+            if ($target_industry_filter) {
+                $tax_query[] = array(
+                    'taxonomy' => 'target_industry',
+                    'field' => 'term_id',
+                    'terms' => $target_industry_filter,
                     'operator' => 'IN',
                 );
             }
@@ -346,23 +357,6 @@ class Opportunity extends Crud
                 );
             }
     
-            if ($gender_filter) {
-                $tax_query[] = array(
-                    'taxonomy' => 'gender',
-                    'field' => 'term_id',
-                    'terms' => $gender_filter,
-                    'operator' => 'IN',
-                );
-            }
-    
-            if ($age_filter) {
-                $tax_query[] = array(
-                    'taxonomy' => 'age',
-                    'field' => 'term_id',
-                    'terms' => $age_filter,
-                    'operator' => 'IN',
-                );
-            }
     
             $query_args['tax_query'] = $tax_query;
         }
@@ -380,6 +374,7 @@ class Opportunity extends Crud
         $opportunities = new WP_Query($query_args);
     
     
+        $display_price = true;
         if ($opportunities->have_posts()) {
             foreach($opportunities->posts as $opportunity):
 

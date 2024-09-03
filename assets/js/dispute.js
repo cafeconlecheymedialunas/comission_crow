@@ -1,6 +1,8 @@
 jQuery(document).ready(function ($) {
   var $customSpinner = $(".custom-spinner");
 
+ 
+
   $("#create-dispute").on("submit", function (e) {
     e.preventDefault();
     const form = this;
@@ -12,11 +14,9 @@ jQuery(document).ready(function ($) {
       url: ajax_object.ajax_url,
       type: "POST",
       data: formData,
-
       cache: false,
       processData: false,
       contentType: false,
-
       success: function (response) {
         console.log(response);
         if (response.success) {
@@ -41,6 +41,24 @@ jQuery(document).ready(function ($) {
     });
   });
 
+  $("#open-dispute-modal").on("click", function (e) {
+    e.preventDefault();
+    
+    Swal.fire({
+      title: "Are you sure you want to create a dispute?",
+      text: "Attempting not to pay salespeople who have made a sale can have legal consequences.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, open modal",
+      cancelButtonText: "Cancel"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $("#modal-dispute").modal('show');
+      }
+    });
+  });
   $(document).on("click", ".delete-dispute-button", function (e) {
     e.preventDefault();
 
@@ -59,8 +77,6 @@ jQuery(document).ready(function ($) {
     }).then((result) => {
       if (result.isConfirmed) {
         $customSpinner.addClass("d-flex");
-        console.log(disputeId);
-        console.log(nonce);
         $.ajax({
           type: "POST",
           url: ajax_object.ajax_url,
@@ -80,7 +96,7 @@ jQuery(document).ready(function ($) {
                 showConfirmButton: false,
                 timer: 2000,
               }).then(function () {
-                location.reload(); // Puedes eliminar esta línea si no quieres recargar la página
+                location.reload();
               });
             } else {
               displayFormErrors(form, response.data);

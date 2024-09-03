@@ -107,8 +107,8 @@ $selected_currency = wp_get_post_terms($commercial_agent_post->ID, 'currency', [
                     
                     <?php if($skill_terms):?>
                     <div class="col-md-6">
-                        <label for="skill" class="form-label">Skills:</label>
-                        <select name="skill[]" id="skill" multiple class="form-select">
+                        <label for="skill" class=" w-100 form-label">Skills:</label>
+                        <select name="skill[]" id="skill" multiple placeholder="Select a skill..." autocomplete="off">
                             <?php foreach ($skill_terms as $term): ?>
                                 <option 
                                     value="<?php echo esc_attr($term->term_id); ?>" 

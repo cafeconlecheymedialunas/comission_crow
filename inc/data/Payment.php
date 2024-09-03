@@ -18,7 +18,7 @@ class Payment
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['payment_init'])) {
             $commission_request_id = intval($_POST['commission_request_id']);
-            $currency = isset($_POST["currency"])?sanitize_text_field($_POST["currency"]):"USD";
+            $currency = isset($_POST["currency"]) ? sanitize_text_field($_POST["currency"]) : "USD";
     
             $total_cart = carbon_get_post_meta($commission_request_id, 'total_cart');
             $total_agent = carbon_get_post_meta($commission_request_id, 'total_agent');
@@ -30,15 +30,12 @@ class Payment
             $opportunity_id = carbon_get_post_meta($contract_id, 'opportunity');
             $commercial_agent_id = carbon_get_post_meta($contract_id, 'commercial_agent');
             $company_id = carbon_get_post_meta($contract_id, 'company');
-
-          
     
-            $currency = wp_get_post_terms($company_id,"currency");
-          
-            $currency_code = !empty($currency) ? carbon_get_term_meta($currency[0]->term_id, 'currency_code') : "USD";
-            $currency_symbol = !empty($currency) ? carbon_get_term_meta($currency[0]->term_id, 'currency_symbol') : "$";
-            $currency_exchange_rate = !empty($currency) ? carbon_get_term_meta($currency[0]->term_id, 'currency_exhange_rate') : 1;
-          
+            $currency_terms = wp_get_post_terms($company_id, "currency");
+            $currency_code = !empty($currency_terms) ? carbon_get_term_meta($currency_terms[0]->term_id, 'currency_code') : "USD";
+            $currency_symbol = !empty($currency_terms) ? carbon_get_term_meta($currency_terms[0]->term_id, 'currency_symbol') : "$";
+            $currency_exchange_rate = !empty($currency_terms) ? carbon_get_term_meta($currency_terms[0]->term_id, 'currency_exhange_rate') : 1;
+    
             $commercial_agent_title = get_the_title($commercial_agent_id);
             $opportunity_title = get_the_title($opportunity_id);
     
@@ -46,7 +43,7 @@ class Payment
     
             $user = wp_get_current_user(); // Obtener el usuario actual
             $customer_email = $user->user_email; // Obtener el correo electrónico del usuario
-           
+    
             \Stripe\Stripe::setApiKey(carbon_get_theme_option("stripe_secret_key"));
             header('Content-Type: application/json');
     
@@ -61,7 +58,7 @@ class Payment
                 if ($currency_code !== 'USD' || empty($currency_code)) {
                     $conversion_message = " The price was automatically converted to US dollars. The exchange rate for your currency is equal to $currency_symbol$currency_exchange_rate ($currency_code) = 1 dollar.";
                 }
-                
+    
                 $product = \Stripe\Product::create([
                     'name' => "Sku: $sku, Opportunity: $opportunity_title",
                     'description' => "To: $commercial_agent_title.$conversion_message",
@@ -76,14 +73,16 @@ class Payment
                     'quantity' => 1,
                 ];
     
-                // Crear la sesión de checkout
+                // Crear la sesión de checkout con Stripe Tax habilitado
                 $checkout_session = \Stripe\Checkout\Session::create([
-                    'payment_method_types' => ['card',"link"], // Especificar métodos de pago compatibles
+                    'payment_method_types' => ['card', 'link'], // Especificar métodos de pago compatibles
                     'line_items' => $line_items,
                     'mode' => 'payment',
                     'customer' => $customer->id, // Asociar la sesión al cliente
                     'success_url' => home_url('/dashboard/company/payment/success/?session_id={CHECKOUT_SESSION_ID}'),
                     'cancel_url' => home_url('/dashboard/company/payment/cancel/?session_id={CHECKOUT_SESSION_ID}'),
+                    'tax_id_collection' => ['enabled' => true], // Habilitar la colección de ID de impuestos
+                    'automatic_tax' => ['enabled' => true], // Habilitar impuestos automáticos
                 ]);
     
                 // Crear el post type payment y actualizar los campos personalizados
@@ -121,6 +120,7 @@ class Payment
             echo "Solicitud no válida.";
         }
     }
+    
     
 
 

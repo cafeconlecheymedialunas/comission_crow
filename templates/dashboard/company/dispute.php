@@ -6,7 +6,7 @@ $disputes = ProfileUser::get_instance()->get_disputes_for_user();
 <div class="card mb-4 flex-row d-flex justify-content-between align-items-center">
     <h2 class="mb-0 d-inline"><?php echo __("Disputes"); ?></h2>
     <?php if(in_array("company", $current_user->roles)):?>
-        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal-dispute">Add new</button>
+        <button class="btn btn-primary btn-sm" id="open-dispute-modal">Add new</button>
     <?php endif;?>
 </div>
 <div class="row">

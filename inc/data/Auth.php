@@ -6,7 +6,7 @@ class Auth
     public function __construct()
     {
         add_shortcode('register_form', [$this,'registration_form']);
-        add_shortcode('login_form', [$this,'login_form']);
+        add_shortcode('login_form', [$this,'registration_form']);
         add_shortcode('password_reset_form', [$this,'password_reset_form']);
         add_shortcode('new_password_form', [$this,'new_password_form']);
         add_action('wp_ajax_nopriv_register_user', [$this,'register_user']);
@@ -15,21 +15,26 @@ class Auth
         add_action('wp_ajax_nopriv_set_new_password', [$this,'set_new_password']);
     }
 
+    
     public function registration_form()
     {
         if (!is_user_logged_in()) {
 
             $registration_enabled = get_option('users_can_register');
             if ($registration_enabled) {
-               
-               
                 ob_start();
-                $role = isset($_GET['role']) && !empty($_GET['role']) ? sanitize_text_field($_GET['role']):"";
+                $action = isset($_GET['action']) && !empty($_GET['action']) ? sanitize_text_field($_GET['action']) : "login";
+                $role = isset($_GET['role']) && !empty($_GET['role']) ? sanitize_text_field($_GET['role']) : "";
 
-                $title = ($role == "commercial_agent")?"Register as a Commercial Agent":"Register your company";
+                $title = ($role === "commercial_agent") ? "Register as a Commercial Agent" : "Register your company";
+
+                // Make sure to set the global variables to be accessible in the template
+                $GLOBALS['action'] = $action;
+                $GLOBALS['role'] = $role;
+                $GLOBALS['title'] = $title;
+
+                $template_path = 'templates/dashboard/form-login.php';
                 
-                $template_path = 'templates/dashboard/form-register.php';
-              
                 require locate_template($template_path);
                 return ob_get_clean();
             } else {
@@ -38,6 +43,7 @@ class Auth
             return $output;
         }
     }
+
 
     public function login_form()
     {
@@ -106,9 +112,8 @@ class Auth
         check_ajax_referer('register-nonce', 'security');
     
         $errors = [];
-        $field_errors = []; // Array to store errors for each field
+        $field_errors = [];
     
-        // Sanitize and validate form data
         $first_name = sanitize_text_field($_POST['first_name']);
         $last_name = sanitize_text_field($_POST['last_name']);
         $email = sanitize_email($_POST['user_email']);
@@ -116,18 +121,20 @@ class Auth
         $password_confirm = sanitize_text_field($_POST['user_pass_confirm']);
         $company_name = sanitize_text_field($_POST['company_name']);
         $role = sanitize_text_field($_POST['role']);
+        $terms_and_conditions = isset($_POST['terms_and_conditions']) ? sanitize_text_field($_POST['terms_and_conditions']) : '';
     
-        // Validate first name
+        if ($terms_and_conditions !== 'yes') {
+            $field_errors['terms_and_conditions'][] = __('You must accept the Terms and Conditions.');
+        }
+    
         if (empty($first_name)) {
             $field_errors['first_name'][] = __('Please enter your first name.');
         }
     
-        // Validate last name
         if (empty($last_name)) {
             $field_errors['last_name'][] = __('Please enter your last name.');
         }
     
-        // Validate email
         if (empty($email)) {
             $field_errors['user_email'][] = __('Please enter your email.');
         } elseif (!is_email($email)) {
@@ -136,7 +143,6 @@ class Auth
             $field_errors['user_email'][] = __('Email already exists. Please choose another one.');
         }
     
-        // Validate password
         if (empty($password)) {
             $field_errors['user_pass'][] = __('Please enter a password.');
         }
@@ -160,12 +166,10 @@ class Auth
             $field_errors['user_pass_confirm'][] = __('Passwords do not match.');
         }
     
-        // Validate company name if role is 'company'
         if ($role === 'company') {
             if (empty($company_name)) {
                 $field_errors['company_name'][] = __('Please enter your company name.');
             } else {
-                // Check if a company with the same name already exists
                 $company = new WP_Query([
                     'post_type' => 'company',
                     'title' => $company_name,
@@ -178,13 +182,11 @@ class Auth
             }
         }
     
-        // Check if there are any field-specific errors
         if (!empty($field_errors)) {
             wp_send_json_error(['fields' => $field_errors]);
             die();
         }
     
-        // Create the user
         $user_id = wp_insert_user([
             'user_login' => $email,
             'user_email' => $email,
@@ -196,11 +198,10 @@ class Auth
         ]);
     
         if (is_wp_error($user_id)) {
-            wp_send_json_error(['general' => ['There was an error creating the user.']]);
+            wp_send_json_error(['general' => 'There was an error creating the user.']);
             die();
         }
     
-        // Create post type based on role
         $post_id = 0;
         if ($role === 'company') {
             if (!empty($company_name)) {
@@ -211,16 +212,15 @@ class Auth
                     'post_author' => $user_id,
                 ]);
     
-                // Verify the post creation
                 if (is_wp_error($post_id)) {
-                    wp_send_json_error(['general' => ['There was an error creating the company post.']]);
+                    wp_send_json_error(['general' => 'There was an error creating the company post.']);
                     die();
                 }
     
                 carbon_set_post_meta($post_id, 'user_id', $user_id);
                 carbon_set_post_meta($post_id, 'company_name', $company_name);
             } else {
-                wp_send_json_error(['general' => ['Company name cannot be empty.']]);
+                wp_send_json_error(['general' => 'Company name cannot be empty.']);
                 die();
             }
         } elseif ($role === 'commercial_agent') {
@@ -231,28 +231,26 @@ class Auth
                 'post_author' => $user_id,
             ]);
     
-            // Verify the post creation
             if (is_wp_error($post_id)) {
-                wp_send_json_error(['general' => ['There was an error creating the commercial agent post.']]);
+                wp_send_json_error(['general' => 'There was an error creating the commercial agent post.']);
                 die();
             }
     
             carbon_set_post_meta($post_id, 'user_id', $user_id);
         }
     
-        // Return the user information as JSON response
         $user = get_user_by('id', $user_id);
         $role = $user->roles[0];
         $role = $role === "commercial_agent" ? "commercial-agent" : "company";
-
-        // Build the redirect URL
+    
         $redirect_url = site_url("auth");
-
+    
         wp_send_json_success(["redirect_url" => $redirect_url]);
-
+    
         wp_send_json_success($user);
         die();
     }
+    
     
     
 
@@ -297,7 +295,7 @@ class Auth
         $user = wp_signon($login_data, false);
     
         if (is_wp_error($user)) {
-            wp_send_json_error(['general' => [strip_tags($user->get_error_message())]]);
+            wp_send_json_error(['general' => strip_tags($user->get_error_message())]);
         } else {
             $role = $user->roles[0];
             $role = $role === "commercial_agent" ? "commercial-agent" : "company";
@@ -344,7 +342,7 @@ class Auth
         $reset_key = get_password_reset_key($user);
     
         if (is_wp_error($reset_key)) {
-            wp_send_json_error(['general' => [$reset_key->get_error_message()]]);
+            wp_send_json_error(['general' => $reset_key->get_error_message()]);
             die();
         }
     
@@ -358,7 +356,7 @@ class Auth
         if ($sent) {
             wp_send_json_success(__('Password reset email sent.'));
         } else {
-            wp_send_json_error(['general' => [__('Failed to send password reset email.')]]);
+            wp_send_json_error(['general' => __('Failed to send password reset email.')]);
         }
     
         die();
@@ -404,7 +402,7 @@ class Auth
         $user = check_password_reset_key($reset_key, $reset_login);
     
         if (is_wp_error($user)) {
-            wp_send_json_error(['general' => [$user->get_error_message()]]);
+            wp_send_json_error(['general' => $user->get_error_message()]);
             die();
         }
     
@@ -412,7 +410,7 @@ class Auth
         $reset = reset_password($user, $new_password);
     
         if (is_wp_error($reset)) {
-            wp_send_json_error(['general' => [$reset->get_error_message()]]);
+            wp_send_json_error(['general' => $reset->get_error_message()]);
             die();
         }
     

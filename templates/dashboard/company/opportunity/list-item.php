@@ -19,6 +19,9 @@
 
              $industry_terms = wp_get_post_terms($opportunity_id, "industry");
              $industry_names = array_map(fn($term) => esc_html($term->name), $industry_terms);
+             
+             $target_industry_terms = wp_get_post_terms($opportunity_id, "target_industry");
+             $target_industry_names = array_map(fn($term) => esc_html($term->name), $target_industry_terms);
 
              $language_terms = wp_get_post_terms($opportunity_id, "language");
              $language_names = array_map(fn($term) => esc_html($term->name), $language_terms);
@@ -47,6 +50,9 @@
                          <?php if ($industry_names): ?>
                              <li class="list-inline-item industry"><i class="fa-solid fa-list"></i><?php echo implode(', ', $industry_names); ?></li>
                          <?php endif;?>
+                         <?php if ($target_industry_names): ?>
+                             <li class="list-inline-item target_industry"><i class="fa-solid fa-list"></i><?php echo implode(', ', $target_industry_names); ?></li>
+                         <?php endif;?>
                          <?php if ($target_audience_names): ?>
                              <li class="list-inline-item target-audience"><i class="fa-solid fa-location-crosshairs"></i><?php echo implode(', ', $target_audience_names); ?></li>
                          <?php endif;?>
@@ -61,18 +67,16 @@
                        
                      </div>
               
-              
+                    <?php if(isset($display_price) && $display_price === true):?>
                      <div class="pricing">
                          <?php if ($price !== null): ?>
-                             <h5 class="price"><?php echo Helper::convert_price_to_selected_currency($price); $template = 'templates/info-price.php';
-            if (locate_template($template)) {
-                include locate_template($template);
-            }?></h5>
+                             <h5 class="price"><?php echo Helper::display_price_template(Helper::convert_price_to_selected_currency($price));?></h5>
                          <?php endif;?>
                          <?php if ($commission_value !== null): ?>
                              <p class="commissions">Commission: <?php echo esc_html($commission_value); ?> %</p>
                          <?php endif;?>
                      </div>
+                     <?php endif;?>
            
                      <a href="<?php echo home_url() . "/opportunity-item/?opportunity_id=" . $opportunity_id; ?>" class="btn btn-primary">Detail</a>
                

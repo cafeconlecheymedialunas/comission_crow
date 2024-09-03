@@ -53,7 +53,7 @@ get_header("dashboard");
 
     <div class="container pt-5 pb-5">
         <div class="row">
-            <div class="col-xl-8 result-section">
+            <div class="col-md-8 result-section">
                 <div id="results-section">
                     <div id="spinner" style="display: none;">
                         <div class="spinner-border" role="status">
@@ -63,7 +63,7 @@ get_header("dashboard");
                 </div>
             </div>
 
-            <div class="col-xl-4 filter-section">
+            <div class="col-md-4 filter-section">
                 <div class="card">
                 <h4>Filter by Attributes</h4>
 

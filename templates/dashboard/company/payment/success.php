@@ -111,20 +111,13 @@ if ($session_id):
                             <li class="list-group-item d-flex justify-content-between lh-condensed">
                                 <div>
                                     <span class="text-muted">
-                                        <?php echo esc_html(Helper::convert_price_to_selected_currency($item["price_paid"]));
-                                        $template = 'templates/info-price.php';
-                                        if (locate_template($template)) {
-                                            include locate_template($template);
-                                        } ?>
+                                        <?php echo Helper::display_price_template(Helper::convert_price_to_selected_currency($item["price_paid"]));
+                                        ?>
                                     </span>
                                     <small class="text-muted">X <?php echo esc_html($item["quantity"]); ?></small>
                                 </div>
                                 <h6 class="my-0 text-muted">
-                                    <?php echo esc_html(Helper::convert_price_to_selected_currency($item["subtotal"]));
-                                $template = 'templates/info-price.php';
-                                if (locate_template($template)) {
-                                    include locate_template($template);
-                                } ?>
+                                    <?php echo Helper::display_price_template(Helper::convert_price_to_selected_currency($item["subtotal"]));?>
                                 </h6>
                             </li>
                         <?php endforeach;?>
@@ -143,14 +136,14 @@ if ($session_id):
                     </ul>
                     <hr>
                     <p>
-                        <strong>Agent Commission:</strong><?php echo esc_html(Helper::convert_price_to_selected_currency($total_agent));
+                        <strong>Agent’s fee:</strong><?php echo esc_html(Helper::convert_price_to_selected_currency($total_agent));
                     $template = 'templates/info-price.php';
                     if (locate_template($template)) {
                         include locate_template($template);
                     } ?>
                     </p>
                     <p>
-                        <strong>Platform Fee:</strong> 
+                        <strong>Platform’s fee:</strong> 
                         <?php echo esc_html(Helper::convert_price_to_selected_currency($total_platform));
                         $template = 'templates/info-price.php';
                         if (locate_template($template)) {

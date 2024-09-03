@@ -45,6 +45,7 @@ class Admin
         $CustomTaxonomy->register('skill', ['commercial_agent'], 'Skill', 'Skills');
         $CustomTaxonomy->register('selling_method', ['commercial_agent'], 'Selling Method', 'Selling Methods');
         $CustomTaxonomy->register('industry', ['commercial_agent','company',"opportunity"], 'Industry', 'Industries');
+        $CustomTaxonomy->register('target_industry', ['company',"opportunity"], 'Target Industry', 'Target Industries');
         $CustomTaxonomy->register('seller_type', ['commercial_agent'], 'Seller Type', 'Seller Types');
         $CustomTaxonomy->register('target_audience', ['opportunity'], 'Target Audience', 'Target Audiences');
         $CustomTaxonomy->register('gender', ['opportunity'], 'Gender', 'Genders');

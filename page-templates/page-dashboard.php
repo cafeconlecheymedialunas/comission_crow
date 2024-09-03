@@ -59,7 +59,7 @@ $associated_post = ProfileUser::get_instance()->get_user_associated_post_type();
 <div class="dashboard pt-30">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-xl-3 col-lg-4">
+            <div class="col-md-3">
                 <div class="user-profile card mb-4 d-flex justify-content-center align-items-center">
                     <?php
                     if ($associated_post) {
@@ -80,7 +80,7 @@ $associated_post = ProfileUser::get_instance()->get_user_associated_post_type();
                 </div>
                 <?php include get_template_directory() . '/templates/dashboard/menu.php'; ?>
             </div>
-            <div class="col-xl-9 col-lg-8 position-relative">
+            <div class="col-md-9 position-relative">
                 <?php
                 // Verifica si el usuario tiene el rol apropiado y si la URL role coincide con el rol del usuario
                 if (user_has_role([$key_role])) {
