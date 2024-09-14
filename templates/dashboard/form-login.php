@@ -3,10 +3,10 @@
     <a class="nav-link active" id="simple-tab-0" data-bs-toggle="tab" href="#simple-tabpanel-0" role="tab" aria-controls="simple-tabpanel-0" aria-selected="true">Login</a>
   </li>
   <li class="nav-item" role="presentation">
-    <a class="nav-link" id="simple-tab-1" data-bs-toggle="tab" href="#simple-tabpanel-1" role="tab" aria-controls="simple-tabpanel-1" aria-selected="false">Register as a Agent</a>
+    <a class="nav-link" id="simple-tab-1" data-bs-toggle="tab" href="#simple-tabpanel-1" role="tab" aria-controls="simple-tabpanel-1" aria-selected="false">Register as Agent</a>
   </li>
   <li class="nav-item" role="presentation">
-    <a class="nav-link" id="simple-tab-2" data-bs-toggle="tab" href="#simple-tabpanel-2" role="tab" aria-controls="simple-tabpanel-2" aria-selected="false">Register a Company</a>
+    <a class="nav-link" id="simple-tab-2" data-bs-toggle="tab" href="#simple-tabpanel-2" role="tab" aria-controls="simple-tabpanel-2" aria-selected="false">Register as Company</a>
   </li>
 </ul>
 
@@ -41,7 +41,7 @@
 
   <!-- Tab 2 Content -->
   <div class="tab-pane" id="simple-tabpanel-1" role="tabpanel" aria-labelledby="simple-tab-1">
-    <h2 class="site-title" id="registration-title">Register as a Agent</h2>
+    <h2 class="site-title" id="registration-title">Register as Agent</h2>
     <div id="registration_errors"></div>
     <form id="registration-agent-form">
       <div class="row gx-1">
@@ -93,7 +93,7 @@
 
   <!-- Tab 3 Content -->
   <div class="tab-pane" id="simple-tabpanel-2" role="tabpanel" aria-labelledby="simple-tab-2">
-    <h1 class="site-title" id="registration-title">Register as a Company</h1>
+    <h1 class="site-title" id="registration-title">Register as Company</h1>
     <div id="registration_errors"></div>
     <form id="registration-company-form">
       <div class="row gx-1">

@@ -36,6 +36,7 @@ $files_to_require = [
     __DIR__ . '/inc/data/Deposit.php',
     __DIR__ . '/inc/data/Dispute.php',
     __DIR__ . '/inc/data/Opportunity.php',
+    __DIR__ . '/inc/data/StripeSessionPayment.php',
     __DIR__ . '/inc/data/Payment.php',
     __DIR__ . '/inc/data/Rating.php',
     __DIR__ . '/inc/core/Admin.php',

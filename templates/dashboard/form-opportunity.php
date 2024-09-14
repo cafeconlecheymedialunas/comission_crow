@@ -128,7 +128,7 @@ $currency = isset($opportunity_post) ? wp_get_post_terms($opportunity_post->ID, 
 
     <div class="col-md-6">
 
-        <label for="industry" class="form-label">Industry:</label>
+        <label for="industry" class="form-label">Target Industry:</label>
 
         <select name="industry[]" class="form-select">
 

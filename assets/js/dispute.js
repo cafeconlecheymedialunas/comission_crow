@@ -51,7 +51,7 @@ jQuery(document).ready(function ($) {
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, open modal",
+      confirmButtonText: "Yes, create dispute",
       cancelButtonText: "Cancel"
     }).then((result) => {
       if (result.isConfirmed) {

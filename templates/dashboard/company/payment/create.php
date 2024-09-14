@@ -31,7 +31,7 @@ if (!$commission_request) {
     echo '<div class="alert alert-danger" role="alert">This commission request does not exist.</div>';
     return;
 }
-
+var_dump($payment->posts);
 if ($payment->have_posts()) {
     echo '<div class="alert alert-info" role="alert">This commission request has already been paid.</div>';
     return;

@@ -59,20 +59,29 @@ get_header("dashboard");
 
 <div class="dashboard find-opportunities">
     <?php
-    $spinner_template = 'templates/page-header-title.php';
-    if (locate_template($spinner_template)) {
-        include locate_template($spinner_template);
+    $template = 'templates/page-header-title.php';
+    if (locate_template($template)) {
+        include locate_template($template);
     }
     ?>
     <div class="container pt-5 pb-5">
         <div class="row">
             <div class="col-md-8 result-section mb-5">
                 <div id="results-section">
-                    <div id="spinner" style="display: none;">
+                    <div id="spinner" >
                         <div class="spinner-border" role="status">
                             <span class="sr-only">Loading...</span>
                         </div>
                     </div>
+                    <style>
+                        #spinner{
+                            display:flex;
+                            justify-content:center;
+                            align-items:center;
+                            min-height:500px;
+                            
+                        }
+                    </style>
                 </div>
             </div>
 

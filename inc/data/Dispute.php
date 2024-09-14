@@ -141,9 +141,6 @@ class Dispute
             wp_send_json_error(['general' => 'You need a valid ID.']);
         }
 
-        // Imprimir el ID para depuración
-        error_log('Dispute ID: ' . $dispute_id);
-
         // Verificar si la disputa existe usando get_post
         $dispute = get_post($dispute_id);
 
@@ -168,16 +165,16 @@ class Dispute
         carbon_set_post_meta($commission_request_id, 'status_history', $status_commision_request_history);
         carbon_set_post_meta($commission_request_id, 'status', "payment_pending");
 
-        $dispute_id = wp_delete_post($dispute_id, true);
-
-        if (is_wp_error($dispute_id)) {
+        
+        
+        if (wp_delete_post(  $dispute_id, true)) {
+            $this->send_dispute_deleted_email_to_agent($dispute_id);
+            $this->send_dispute_deleted_email_to_company($dispute_id);
+            wp_send_json_success(['Dispute successfully deleted!']);
+           
+        }else{
             wp_send_json_error(['general' => 'Error deleting the post. Try again later.']);
         }
-
-        $this->send_dispute_deleted_email_to_agent($dispute_id);
-        $this->send_dispute_deleted_email_to_company($dispute_id);
-
-        wp_send_json_success(['Dispute successfully deleted!']);
         wp_die();
     }
     public function send_dispute_created_email_to_agent($dispute_id)

@@ -248,8 +248,7 @@ class ContainerCustomFields
                     ->add_options([$this->admin,'get_users']),
               
 
-                Field::make('select', 'user_winnerr_dispute', __('Winner Dispute:'))
-                    ->add_options([$this->admin,'get_users']),
+    
             
                     Field::make('date_time', 'date', __('Date')),
                 Field::make('rich_text', 'admin_decission_comments', __('Admin Comments:')),

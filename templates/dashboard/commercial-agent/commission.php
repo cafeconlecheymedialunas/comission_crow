@@ -11,7 +11,7 @@ $currency_code = !empty($currency) ? carbon_get_term_meta($currency[0]->term_id,
 $currency_symbol = !empty($currency) ? carbon_get_term_meta($currency[0]->term_id, 'currency_symbol') : "$";
 ?>
 <div class="card mb-4 flex-row d-flex justify-content-between align-items-center">
-    <h2 class="mb-0 d-inline"><?php echo __("Sended commission requests"); ?></h2>
+    <h2 class="mb-0 d-inline"><?php echo __("Commission requests"); ?></h2>
     <?php if(in_array("commercial_agent", $current_user->roles)):?>
         <button class="btn btn-primary commission-request-button btn-sm" data-bs-toggle="modal" data-bs-target="#modal-commission">Add new</button>
     <?php endif;?>

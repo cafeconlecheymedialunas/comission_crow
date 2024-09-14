@@ -45,7 +45,7 @@
               
           
                      <div class="detail">
-                         <h3 class="title"><?php the_title();?></h3>
+                         <h3 class="title"><?php echo get_the_title($opportunity_id);?></h3>
                          <ul class="list-inline">
                          <?php if ($industry_names): ?>
                              <li class="list-inline-item industry"><i class="fa-solid fa-list"></i><?php echo implode(', ', $industry_names); ?></li>

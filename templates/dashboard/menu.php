@@ -40,8 +40,6 @@
             <ul class="collapse" id="collapseExample">
                 <li class="dropdown-item"><a href="<?php echo esc_url($dasboard->get_role_url_link_dashboard_page('contract_all')); ?>"><i class="fa fa-fw fa-file-alt"></i>All</a></li>
                 <li class="dropdown-item"><a href="<?php echo esc_url($dasboard->get_role_url_link_dashboard_page('contract_ongoing')); ?>"><i class="fa fa-fw fa-spinner"></i>Ongoing</a></li>
-                <li class="dropdown-item"><a href="<?php echo esc_url($dasboard->get_role_url_link_dashboard_page('contract_requested')); ?>"><i class="fa fa-fw fa-paper-plane"></i>Requested</a></li>
-                <li class="dropdown-item"><a href="<?php echo esc_url($dasboard->get_role_url_link_dashboard_page('contract_received')); ?>"><i class="fa fa-fw fa-inbox"></i>Received</a></li>
             </ul>
         </li>
         <li>

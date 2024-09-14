@@ -35,7 +35,10 @@ $commercial_agent = new WP_Query([
 ]);
 
 if (!$commercial_agent_id || empty($commercial_agent->posts)) {
-    wp_redirect(home_url("/find-agents"));
+    get_header("dashboard");
+    echo '<div class="alert alert-danger">Commission Agent not found</div>';
+    get_footer();
+    ob_end_flush();
     exit;
 }
 $commercial_agent = $commercial_agent->posts[0];

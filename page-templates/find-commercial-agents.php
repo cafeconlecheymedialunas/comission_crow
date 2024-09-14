@@ -139,7 +139,7 @@ get_header("dashboard");
 
     <div class="mb-3">
         <label for="years_of_experience" class="form-label">Years of experience</label>
-        <input type="number" class="form-control filter" name="years_of_experience" id="years_of_experience" placeholder="Ej. 1 - 100%">
+        <input type="number" class="form-control filter" name="years_of_experience" id="years_of_experience">
     </div>
 </form>
                 </div>

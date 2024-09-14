@@ -64,15 +64,12 @@ $status_classes = [
                         [
                             'key' => 'commission_request_id',
                             'value' => $commission_request->ID,
-                        ],
-                        [
-                            'key' => 'status',
-                            'value' => ['payment_completed', 'payment_failed', 'payment_pending'],
-                            'compare' => 'IN',
-                        ],
+                        ]
                     ],
                 ];
-                $existing_payment = get_posts($payment_args);
+                $payment = new WP_Query($payment_args);
+         
+                $payment_status = carbon_get_post_meta($payment->ID, 'status');
                 
                 $total_cart_commission_request = carbon_get_post_meta($commission_request->ID, 'total_cart');
                 $total_agent_commission_request = carbon_get_post_meta($commission_request->ID, 'total_agent');
@@ -82,19 +79,27 @@ $status_classes = [
                 $last_update_text = Helper::get_last_update_by_and_date($commission_request->ID);
 
                 $status_class = isset($status_classes[$status]) ? $status_classes[$status] : 'badge bg-secondary';
-
+                
                 ?>
 
                 <tr>
                     <td><?php echo $commission_request->ID; ?></td>
                     <td><span class="txt-sm"><?php echo carbon_get_post_meta($contract_id, "sku"); ?></span></td>
                     <td>
-                        <a href="<?php echo home_url()."/public-profile/?user_id=".$another_user->ID; ?>">
-                            <?php echo esc_html($another_user->data->display_name); ?>
-                        </a>
+                    <?php
+                   
+                    if (in_array('company', $current_user->roles)) {
+
+            $link = home_url() . "/commercial-agent-item/?commercial_agent_id=" . $another_part->ID;
+            $display_name = esc_html($another_user->data->display_name);
+            echo '<a href="' . esc_url($link) . '">' . $display_name . '</a>';
+        } else {
+           
+            echo esc_html(carbon_get_post_meta($another_part->ID,"company_name"));
+        }?>
                     </td>
                     <td>
-                        <a href="<?php echo home_url()."/opportunity-item/?opportunity_id=".get_the_ID(); ?>">
+                        <a href="<?php echo home_url()."/opportunity-item/?opportunity_id=".$opportunity_id; ?>">
                             <?php echo get_the_title($opportunity_id); ?>
                         </a>
                     </td>
@@ -116,7 +121,7 @@ $status_classes = [
 
                             <?php if (in_array("company", $current_user->roles) && $commission_request):
                                 // Mostrar botón de disputa si no hay disputa abierta
-                                if (empty($existing_dispute) && empty($existing_payment)): ?>
+                                if (empty($existing_dispute) && $status != "payment_completed"): ?>
                                     <li class="list-inline-item">
                                         <a class="operation dispute-button-modal" id="open-dispute-modal" data-commission-request="<?php echo $commission_request->ID; ?>" data-bs-toggle="tooltip" data-bs-placement="right" title="Create a dispute">
                                             <i class="text-warning fa-solid fa-scale-balanced"></i>
@@ -124,7 +129,7 @@ $status_classes = [
                                     </li>
                                 <?php endif;
                              
-                                if (empty($existing_dispute) && (empty($existing_payment) || in_array($status, ['payment_canceled']))): ?>
+                                if (empty($existing_dispute) && ( $status == "payment_pending" OR $status == "payment_failed" && $status == "payment_cancelled") ): ?>
                                     <li class="list-inline-item">
                                         <a class="operation" href="<?php echo $dasboard->get_role_url_link_dashboard_page("payment_create"); ?>?commission_request_id=<?php echo $commission_request->ID; ?>" data-bs-toggle="tooltip" data-bs-placement="right" title="Pay Commission Request">
                                             <i class="text-success fa-solid fa-money-check-dollar"></i>

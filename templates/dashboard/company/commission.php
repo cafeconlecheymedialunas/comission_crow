@@ -4,7 +4,7 @@ $commission_requests = ProfileUser::get_instance()->get_commission_requests_for_
 
 ?>
 <div class="card mb-4">
-    <h2 class="mb-0"><?php echo __("Received commission requests"); ?></h2>
+    <h2 class="mb-0"><?php echo __("Commission requests"); ?></h2>
 </div>
 <div class="row">
     <div class="col-md-12">

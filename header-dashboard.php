@@ -137,8 +137,8 @@ $current_user = wp_get_current_user();
 							</div>
 						<?php else: ?>
 							<a class="btn btn-primary" href="<?php echo esc_url(home_url("/auth?action=login")); ?>">Login</a>
-							<a class="btn btn-secondary" href="<?php echo esc_url(home_url("/auth?action=register&role=commercial_agent")); ?>">Register as a Agent</a>
-              				<a class="btn btn-secondary" href="<?php echo esc_url(home_url("/auth?action=register&role=company")); ?>">Register your Company</a>
+							<a class="btn btn-secondary" href="<?php echo esc_url(home_url("/auth?action=register&role=commercial_agent")); ?>">Register as Agent</a>
+              				<a class="btn btn-secondary" href="<?php echo esc_url(home_url("/auth?action=register&role=company")); ?>">Register as Company</a>
 						<?php endif;?>
 	                    </div>
                     </div>

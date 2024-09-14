@@ -135,8 +135,8 @@ $current_user = wp_get_current_user();
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                             <li><a class="dropdown-item" href="<?php echo esc_url(home_url("/auth?action=login")); ?>">Login</a></li>
-                            <li><a class="dropdown-item" href="<?php echo esc_url(home_url("/auth?action=register&role=commercial_agent")); ?>">Register as an Agent</a></li>
-                            <li><a class="dropdown-item" href="<?php echo esc_url(home_url("/auth?action=register&role=company")); ?>">Register as a Company</a></li>
+                            <li><a class="dropdown-item" href="<?php echo esc_url(home_url("/auth?action=register&role=commercial_agent")); ?>">Register as Agent</a></li>
+                            <li><a class="dropdown-item" href="<?php echo esc_url(home_url("/auth?action=register&role=company")); ?>">Register as Company</a></li>
                         </ul>
                     <?php else: ?>
                         <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">

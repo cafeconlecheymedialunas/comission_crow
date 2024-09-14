@@ -111,11 +111,11 @@ jQuery(document).ready(function ($) {
         if (role === 'company') {
             $('#register-company-tab').addClass('active');
             $('#company_name_container').show();
-            $('#registration-title').text('Register as a Company');
+            $('#registration-title').text('Register as Company');
         } else if (role === 'commercial_agent') {
             $('#register-agent-tab').addClass('active');
             $('#company_name_container').hide();
-            $('#registration-title').text('Register as an Agent');
+            $('#registration-title').text('Register as Agent');
         } else {
             $('#register-agent-tab').removeClass('active');
             $('#register-company-tab').removeClass('active');

@@ -11,6 +11,7 @@ $location_terms = get_terms([
     "taxonomy" => "location",
     "hide_empty" => false,
 ]);
+
 $industry_terms = get_terms([
     "taxonomy" => "industry",
     "hide_empty" => false,
@@ -35,9 +36,9 @@ $currency_terms = get_terms([
     "taxonomy" => "currency",
     "hide_empty" => false,
 ]);
+
 $commercial_agent = CommercialAgent::get_instance();
 $commercial_agent_post = $commercial_agent->get_commercial_agent();
-
 
 $profile_image = isset($commercial_agent_post) ? [get_post_thumbnail_id($commercial_agent_post->ID)] : '';
 $selected_years_of_experience = isset($commercial_agent_post) ? carbon_get_post_meta($commercial_agent_post->ID, 'years_of_experience') : '';
@@ -49,12 +50,10 @@ $selected_industry = wp_get_post_terms($commercial_agent_post->ID, 'industry', [
 $selected_selling_method = wp_get_post_terms($commercial_agent_post->ID, 'selling_method', ['fields' => 'ids']);
 $selected_seller_type = wp_get_post_terms($commercial_agent_post->ID, 'seller_type', ['fields' => 'ids']);
 $selected_currency = wp_get_post_terms($commercial_agent_post->ID, 'currency', ['fields' => 'ids']);
-
-
 ?>
 <div class="row">
-	<div class="col-md-8">
-	    <div class="card">
+    <div class="col-md-8">
+        <div class="card">
             <h2>Commercial Agent</h2>
             <form id="agent-profile-form">
                 <div class="row">
@@ -67,19 +66,18 @@ $selected_currency = wp_get_post_terms($commercial_agent_post->ID, 'currency', [
                     <div class="col-md-12">
                         <label for="description" class="form-label">Description</label>
                         <div class="editor-container" data-target="description"></div>
-                        <input type="hidden" id="description" name="description" value="<?php echo isset($commercial_agent_post) ? $commercial_agent_post->post_content: ""; ?>">
+                        <input type="hidden" id="description" name="description" value="<?php echo isset($commercial_agent_post) ? esc_attr($commercial_agent_post->post_content) : ''; ?>">
                         <div class="error-message"></div>
                     </div>
                     
-                    <?php if($language_terms):?>
+                    <?php if (!empty($language_terms)): ?>
                     <div class="col-md-6">
                         <label for="language" class="form-label">Languages:</label>
                         <select name="language[]" id="language" multiple class="form-select">
                             <?php foreach ($language_terms as $term): ?>
                                 <option 
                                     value="<?php echo esc_attr($term->term_id); ?>" 
-                                    <?php echo !empty($term) &&  !empty($selected_languages) && in_array($term->term_id, $selected_languages) ? 'selected' : ''; ?>
-                                    >
+                                    <?php echo in_array($term->term_id, $selected_languages) ? 'selected' : ''; ?>>
                                     <?php echo esc_html($term->name); ?>
                                 </option>
                             <?php endforeach;?>
@@ -88,32 +86,31 @@ $selected_currency = wp_get_post_terms($commercial_agent_post->ID, 'currency', [
                     </div>
                     <?php endif;?>
                     
-                    <?php if($location_terms):?>
-                        <div class="col-md-6">
-                            <label for="location" class="form-label">Location:</label>
-                            <select name="location[]" id="location" class="form-select">
-                                <option value="">Select an option</option>
-                                <?php foreach ($location_terms as $term): ?>
-                                    <option 
-                                        value="<?php echo esc_attr($term->term_id); ?>" 
-                                        <?php selected($selected_location[0], $term->term_id); ?>>
-                                        <?php echo esc_html($term->name); ?>
-                                    </option>
-                                <?php endforeach;?>
-                            </select>
-                            <div class="error-message"></div>
-                        </div>
+                    <?php if (!empty($location_terms)): ?>
+                    <div class="col-md-6">
+                        <label for="location" class="form-label">Location:</label>
+                        <select name="location[]" id="location" class="form-select">
+                            <option value="">Select an option</option>
+                            <?php foreach ($location_terms as $term): ?>
+                                <option 
+                                    value="<?php echo esc_attr($term->term_id); ?>" 
+                                    <?php echo in_array($term->term_id, $selected_location) ? 'selected' : ''; ?>>
+                                    <?php echo esc_html($term->name); ?>
+                                </option>
+                            <?php endforeach;?>
+                        </select>
+                        <div class="error-message"></div>
+                    </div>
                     <?php endif;?>
                     
-                    <?php if($skill_terms):?>
+                    <?php if (!empty($skill_terms)): ?>
                     <div class="col-md-6">
                         <label for="skill" class=" w-100 form-label">Skills:</label>
                         <select name="skill[]" id="skill" multiple placeholder="Select a skill..." autocomplete="off">
                             <?php foreach ($skill_terms as $term): ?>
                                 <option 
                                     value="<?php echo esc_attr($term->term_id); ?>" 
-                                    <?php echo in_array($term->term_id, $selected_skills) ? 'selected' : ''; ?>
-                                    >
+                                    <?php echo in_array($term->term_id, $selected_skills) ? 'selected' : ''; ?>>
                                     <?php echo esc_html($term->name); ?>
                                 </option>
                             <?php endforeach;?>
@@ -122,93 +119,84 @@ $selected_currency = wp_get_post_terms($commercial_agent_post->ID, 'currency', [
                     </div>
                     <?php endif;?>
                     
-                    <?php if($industry_terms):?>
-                        <div class="col-md-6">
-                            <label for="industry" class="form-label">Industry:</label>
-                            <select name="industry[]" id="industry" class="form-select">
+                    <?php if (!empty($industry_terms)): ?>
+                    <div class="col-md-6">
+                        <label for="industry" class="form-label">Industry:</label>
+                        <select name="industry[]" id="industry" class="form-select">
+                            <option value="">Select an option</option>
+                            <?php foreach ($industry_terms as $term): ?>
+                                <option 
+                                    value="<?php echo esc_attr($term->term_id); ?>" 
+                                    <?php echo in_array($term->term_id, $selected_industry) ? 'selected' : ''; ?>>
+                                    <?php echo esc_html($term->name); ?>
+                                </option>
+                            <?php endforeach;?>
+                        </select>
+                        <div class="error-message"></div>
+                    </div>
+                    <?php endif;?>
+                    
+                    <?php if (!empty($seller_type_terms)): ?>
+                    <div class="col-md-6">
+                        <label for="seller_type" class="form-label">Seller Type:</label>
+                        <select name="seller_type[]" id="seller_type" class="form-select">
+                            <option value="">Select an option</option>
+                            <?php foreach ($seller_type_terms as $term): ?>
+                                <option 
+                                    value="<?php echo esc_attr($term->term_id); ?>" 
+                                    <?php echo in_array($term->term_id, $selected_seller_type) ? 'selected' : ''; ?>>
+                                    <?php echo esc_html($term->name); ?>
+                                </option>
+                            <?php endforeach;?>
+                        </select>
+                        <div class="error-message"></div>
+                    </div>
+                    <?php endif;?>
+                    
+                    <?php if (!empty($currency_terms)): ?>
+                    <div class="col-md-6">
+                        <label for="currency" class="form-label">Currency<button type="button" class="operation ms-2" data-bs-toggle="tooltip" data-bs-html="true" title="
+                            Select the currency you wish to use to display all prices on our platform.<br><br>
+                            What does this mean?<br>
+                            The currency you choose will be used to show the prices of all products and services in your account. This includes prices on invoices, quotes, and any other cost details you see on the platform.<br><br>
+                            Once you select a currency, all prices will be displayed in that currency. Make sure to choose the currency that you prefer or that best fits your country or region.<br><br>
+                            If you need to change the currency in the future, you can do so from this same section of your profile.
+                            ">
+                            <i class="fa-solid fa-circle-info text-primary"></i>
+                        </button>:</label>
+                        <div class="d-flex align-items-center">
+                            <select name="currency[]" class="form-select">
                                 <option value="">Select an option</option>
-                                <?php foreach ($industry_terms as $term): ?>
-                                    <option 
-                                        value="<?php echo esc_attr($term->term_id); ?>" 
-                                        <?php selected($selected_industry[0], $term->term_id); ?>>
+                                <?php foreach ($currency_terms as $term): ?>
+                                    <option
+                                        value="<?php echo esc_attr($term->term_id); ?>"
+                                        <?php echo in_array($term->term_id, $selected_currency) ? 'selected' : ''; ?>>
                                         <?php echo esc_html($term->name); ?>
                                     </option>
                                 <?php endforeach;?>
                             </select>
-                            <div class="error-message"></div>
                         </div>
-                    <?php endif;?>
-                    
-                    <?php if($seller_type_terms):?>
-                        <div class="col-md-6">
-                            <label for="seller_type" class="form-label">Seller Type:</label>
-                            <select name="seller_type[]" id="seller_type" class="form-select">
-                                <option value="">Select an option</option>
-                                <?php foreach ($seller_type_terms as $term): ?>
-                                    <option 
-                                        value="<?php echo esc_attr($term->term_id); ?>" 
-                                        <?php selected($selected_seller_type[0], $term->term_id); ?>>
-                                        <?php echo esc_html($term->name); ?>
-                                    </option>
-                                <?php endforeach;?>
-                            </select>
-                            <div class="error-message"></div>
-                        </div>
-                    <?php endif;?>
-                    
-                    <?php if ($currency_terms): ?>
-                        <div class="col-md-6">
-                            <label for="currency" class="form-label">Currency<button type="button" class="operation ms-2" data-bs-toggle="tooltip" data-bs-html="true" title="
-                                Select the currency you wish to use to display all prices on our platform.<br><br>
-                                What does this mean?<br>
-                                The currency you choose will be used to show the prices of all products and services in your account. This includes prices on invoices, quotes, and any other cost details you see on the platform.<br><br>
-                                Once you select a currency, all prices will be displayed in that currency. Make sure to choose the currency that you prefer or that best fits your country or region.<br><br>
-                                If you need to change the currency in the future, you can do so from this same section of your profile.
-                                ">
-                                <i class="fa-solid fa-circle-info text-primary"></i>
-                            </button>:</label>
-                            <div class="d-flex align-items-center">
-                                <select name="currency[]" class="form-select">
-                                    <option value="">Select an option</option>
-                                    <?php foreach ($currency_terms as $term): ?>
-                                        <option
-                                            value="<?php echo esc_attr($term->term_id); ?>"
-                                            <?php echo in_array($term->term_id, $selected_currency) ? 'selected' : ''; ?>
-                                        >
-                                            <?php echo esc_html($term->name); ?>
-                                        </option>
-                                    <?php endforeach;?>
-                                </select>
-                            </div>
-                            <div class="error-message"></div>
-                        </div>
+                        <div class="error-message"></div>
+                    </div>
                     <?php endif; ?>
+                    
                     <?php if (!empty($selling_method_terms)): ?>
-                        <div class="col-md-6">
-                            <label for="selling_method[]" class="form-label">Selling Methods:</label>
-                            <select name="selling_method[]" id="selling_method" class="form-select" multiple>
-                                <option value="">Select an option</option>
-                                <?php foreach ($selling_method_terms as $term): ?>
-                                    <option 
-                                        value="<?php echo esc_attr($term->term_id); ?>" 
-                                        <?php if (!empty($selected_selling_method) && in_array($term->term_id, $selected_selling_method)): ?>
-                                            selected
-                                        <?php endif; ?>>
-                                        <?php echo esc_html($term->name); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                            <div class="error-message"></div>
-                        </div>
+                    <div class="col-md-6">
+                        <label for="selling_method[]" class="form-label">Selling Methods:</label>
+                        <select name="selling_method[]" id="selling_method" class="form-select" multiple>
+                            <option value="">Select an option</option>
+                            <?php foreach ($selling_method_terms as $term): ?>
+                                <option 
+                                    value="<?php echo esc_attr($term->term_id); ?>" 
+                                    <?php echo in_array($term->term_id, $selected_selling_method) ? 'selected' : ''; ?>>
+                                    <?php echo esc_html($term->name); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <div class="error-message"></div>
+                    </div>
                     <?php endif; ?>
-              
-
-
-
-                 
-             
-
-
+                    
                     <div class="col-md-6">
                         <label for="years_of_experience">Years of Experience</label>
                         <input type="text" name="years_of_experience" id="years_of_experience" class="form-control" value="<?php echo esc_attr($selected_years_of_experience); ?>" placeholder="Years of Experience">
@@ -228,8 +216,7 @@ $selected_currency = wp_get_post_terms($commercial_agent_post->ID, 'currency', [
     
     <div class="col-md-4">
         <div class="card">
-            <?php include get_template_directory() .
-                "/templates/dashboard/form-password.php"; ?>
+            <?php include get_template_directory() . "/templates/dashboard/form-password.php"; ?>
         </div>
     </div>
 </div>

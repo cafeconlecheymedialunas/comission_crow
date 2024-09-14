@@ -34,9 +34,9 @@ class EmailMetaBox
         $email_options = [];
         if ($post->post_type === 'dispute') {
             $email_options = [
-                'dispute_approval_email_agent' => 'Send Dispute Approval Email to Commercial Agent',
+               
                 'dispute_approval_email_company' => 'Send Dispute Approval Email to Company',
-                'dispute_rejected_email_agent' => 'Send Dispute Rejected Email to Commercial Agent',
+                
                 'dispute_rejected_email_company' => 'Send Dispute Rejected Email to Company',
             ];
         } elseif ($post->post_type === 'deposit') {

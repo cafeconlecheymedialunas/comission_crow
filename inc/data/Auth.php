@@ -26,7 +26,7 @@ class Auth
                 $action = isset($_GET['action']) && !empty($_GET['action']) ? sanitize_text_field($_GET['action']) : "login";
                 $role = isset($_GET['role']) && !empty($_GET['role']) ? sanitize_text_field($_GET['role']) : "";
 
-                $title = ($role === "commercial_agent") ? "Register as a Commercial Agent" : "Register your company";
+                $title = ($role === "commercial_agent") ? "Register as Commercial Agent" : "Register as company";
 
                 // Make sure to set the global variables to be accessible in the template
                 $GLOBALS['action'] = $action;
