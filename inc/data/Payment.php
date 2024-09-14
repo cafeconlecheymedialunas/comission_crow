@@ -79,10 +79,9 @@ class Payment
                     'line_items' => $line_items,
                     'mode' => 'payment',
                     'customer' => $customer->id, // Asociar la sesión al cliente
-                    'success_url' => home_url('/dashboard/company/payment/success/?session_id={CHECKOUT_SESSION_ID}'),
+                    'success_url' => home_url('/dashboard/company/payment/success/?session_id={CHECKOUT_SESSION_ID}&redirect_confirm=true'),
                     'cancel_url' => home_url('/dashboard/company/payment/cancel/?session_id={CHECKOUT_SESSION_ID}'),
-                    'tax_id_collection' => ['enabled' => true], // Habilitar la colección de ID de impuestos
-                    'automatic_tax' => ['enabled' => true], // Habilitar impuestos automáticos
+                   
                 ]);
     
                 // Crear el post type payment y actualizar los campos personalizados
@@ -403,7 +402,7 @@ class Payment
         ];
 
         $query = new WP_Query($args);
-        $posts = $query->get_posts();
+        $posts = $query->posts;
         return (!empty($posts)) ? $posts[0] : null;
     }
 }
