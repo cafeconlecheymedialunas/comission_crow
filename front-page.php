@@ -54,7 +54,6 @@ $agent_benefits = carbon_get_post_meta(get_the_ID(), 'agent_benefits');
     require_once locate_template('templates/frontend/industries.php');
     require_once locate_template('templates/frontend/counters.php');
     require_once locate_template('templates/frontend/selected-agents.php');
-
     require_once locate_template('templates/frontend/blog.php');
     require_once locate_template('templates/frontend/hero-button.php');
 ?>
