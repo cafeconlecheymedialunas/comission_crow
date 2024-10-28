@@ -106,7 +106,44 @@ $years_of_experience = carbon_get_post_meta($commercial_agent->ID, "years_of_exp
                     <div class="tab-content" id="pills-tabContent">
                         <div class="tab-pane fade show active" id="pills-about" role="tabpanel" aria-labelledby="pills-about-tab">
                             <?php echo $commercial_agent->post_content; ?>
+                            <?php 
+                            $commission_requests = ProfileUser::get_instance()->get_commission_requests_for_user();
+
+                            $completed_commission_request = [];
+                            $pending_commission_request = [];
+                            foreach ($commission_requests as $commission_request) {
+                                $status = carbon_get_post_meta($commission_request->ID, "status");
+                                if ($status === "payment_completed") {
+                                    $completed_commission_request[] = $commission_request;
+                                }
+                            
+                                if ($status !== "payment_completed") {
+                                    $completed_commission_request[] = $commission_request;
+                                }
+                            
+                            }
+                            $on_going_contracts = ProfileUser::get_instance()->get_contracts(["accepted", "finishing", "finished"]);
+                            
+                            $total_incomes = Deposit::get_instance()->calculate_total_incomes();
+                            if (isset($pending_commission_request)): ?>
+                                        <div class="stats earnings">
+                                            <span><?php echo count($pending_commission_request); ?></span> Pending Commission
+                                        </div>
+                                    <?php endif; ?>
+
+                                    <?php if (isset($on_going_contracts)): ?>
+                                        <div class="stats contracts">
+                                            <span><?php echo count($on_going_contracts); ?></span> On Going Contracts
+                                        </div>
+                                    <?php endif; ?>
+
+                                    <?php if (isset($completed_commission_request)): ?>
+                                        <div class="stats orders">
+                                            <span><?php echo count($completed_commission_request); ?></span> Commissions paid
+                                        </div>
+                                    <?php endif; ?>
                         </div>
+                        
                  
                         <div class="tab-pane fade" id="pills-review" role="tabpanel" aria-labelledby="pills-review-tab">
                             <div class="reviews">
@@ -207,7 +244,7 @@ if(in_array("company",$current_user->roles) && $company):
                                                         <span class="star" data-value="5">&#9733;</span>
                                                     </div>
                                                     <div class="col-md-12">
-                                                            <label for="content" class="form-label">Content:</label>
+                                                            <label for="content" class="form-label"> Write a message to apply for this opportunity. It will be sent to the company along with your profile data:</label>
                                                             <div class="editor-container" data-target="content"></div>
                                                             <input type="hidden" id="content" name="content">
                                                             <div class="error-message"></div>

@@ -58,12 +58,12 @@ $selected_currency = wp_get_post_terms($commercial_agent_post->ID, 'currency', [
             <form id="agent-profile-form">
                 <div class="row">
                     <!-- User Fields -->
-                    <div class="col-md-12">
+                    <div class="col-md-12 mb-3">
                         <label for="profile_image" class="form-label">Profile Image</label>
                         <input type="file" id="profile_image" class="form-control" name="profile_image">
                         <div class="error-message"></div>
                     </div>
-                    <div class="col-md-12">
+                    <div class="col-md-12 mb-3">
                         <label for="description" class="form-label">Description</label>
                         <div class="editor-container" data-target="description"></div>
                         <input type="hidden" id="description" name="description" value="<?php echo isset($commercial_agent_post) ? esc_attr($commercial_agent_post->post_content) : ''; ?>">
@@ -71,7 +71,7 @@ $selected_currency = wp_get_post_terms($commercial_agent_post->ID, 'currency', [
                     </div>
                     
                     <?php if (!empty($language_terms)): ?>
-                    <div class="col-md-6">
+                    <div class="col-md-6 mb-3">
                         <label for="language" class="form-label">Languages:</label>
                         <select name="language[]" id="language" multiple class="form-select">
                             <?php foreach ($language_terms as $term): ?>
@@ -87,7 +87,7 @@ $selected_currency = wp_get_post_terms($commercial_agent_post->ID, 'currency', [
                     <?php endif;?>
                     
                     <?php if (!empty($location_terms)): ?>
-                    <div class="col-md-6">
+                    <div class="col-md-6 mb-3">
                         <label for="location" class="form-label">Location:</label>
                         <select name="location[]" id="location" class="form-select">
                             <option value="">Select an option</option>
@@ -104,7 +104,7 @@ $selected_currency = wp_get_post_terms($commercial_agent_post->ID, 'currency', [
                     <?php endif;?>
                     
                     <?php if (!empty($skill_terms)): ?>
-                    <div class="col-md-6">
+                    <div class="col-md-6 mb-3">
                         <label for="skill" class=" w-100 form-label">Skills:</label>
                         <select name="skill[]" id="skill" multiple placeholder="Select a skill..." autocomplete="off">
                             <?php foreach ($skill_terms as $term): ?>
@@ -120,7 +120,7 @@ $selected_currency = wp_get_post_terms($commercial_agent_post->ID, 'currency', [
                     <?php endif;?>
                     
                     <?php if (!empty($industry_terms)): ?>
-                    <div class="col-md-6">
+                    <div class="col-md-6 mb-3">
                         <label for="industry" class="form-label">Industry:</label>
                         <select name="industry[]" id="industry" class="form-select">
                             <option value="">Select an option</option>
@@ -137,7 +137,7 @@ $selected_currency = wp_get_post_terms($commercial_agent_post->ID, 'currency', [
                     <?php endif;?>
                     
                     <?php if (!empty($seller_type_terms)): ?>
-                    <div class="col-md-6">
+                    <div class="col-md-6 mb-3">
                         <label for="seller_type" class="form-label">Seller Type:</label>
                         <select name="seller_type[]" id="seller_type" class="form-select">
                             <option value="">Select an option</option>
@@ -154,7 +154,7 @@ $selected_currency = wp_get_post_terms($commercial_agent_post->ID, 'currency', [
                     <?php endif;?>
                     
                     <?php if (!empty($currency_terms)): ?>
-                    <div class="col-md-6">
+                    <div class="col-md-6 mb-3">
                         <label for="currency" class="form-label">Currency<button type="button" class="operation ms-2" data-bs-toggle="tooltip" data-bs-html="true" title="
                             Select the currency you wish to use to display all prices on our platform.<br><br>
                             What does this mean?<br>
@@ -181,7 +181,7 @@ $selected_currency = wp_get_post_terms($commercial_agent_post->ID, 'currency', [
                     <?php endif; ?>
                     
                     <?php if (!empty($selling_method_terms)): ?>
-                    <div class="col-md-6">
+                    <div class="col-md-6 mb-3">
                         <label for="selling_method[]" class="form-label">Selling Methods:</label>
                         <select name="selling_method[]" id="selling_method" class="form-select" multiple>
                             <option value="">Select an option</option>
@@ -197,7 +197,7 @@ $selected_currency = wp_get_post_terms($commercial_agent_post->ID, 'currency', [
                     </div>
                     <?php endif; ?>
                     
-                    <div class="col-md-6">
+                    <div class="col-md-6 mb-3">
                         <label for="years_of_experience">Years of Experience</label>
                         <input type="text" name="years_of_experience" id="years_of_experience" class="form-control" value="<?php echo esc_attr($selected_years_of_experience); ?>" placeholder="Years of Experience">
                         <div class="error-message"></div>

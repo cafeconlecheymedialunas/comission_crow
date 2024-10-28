@@ -119,10 +119,16 @@ $current_opportunity_company = carbon_get_post_meta($current_opportunity, "compa
             </div>
 
             <div class="col-md-12">
-              <label for="content" class="form-label">Add a message for the company</label>
-              <div class="editor-container" id="content" data-target="content"></div>
-              <input type="hidden" id="content" name="content">
-            </div>
+
+<label for="post_content" class="form-label">Content:</label>
+
+<div class="editor-container" data-target="post_content"></div>
+
+<input type="hidden" id="post_content" name="post_content" value="<?php echo isset($opportunity_post) ? esc_attr($opportunity_post->post_content):"";?>">
+
+<div class="error-message"></div>
+
+</div>
 
             <div class="col-md-6">
               <label for="minimal_price" class="form-label">Minimal Price:</label>

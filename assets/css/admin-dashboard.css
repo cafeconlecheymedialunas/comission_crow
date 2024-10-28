@@ -112,7 +112,7 @@ table.default-table img {
 .table-container {
   overflow-x: auto;
   overflow-y: hidden;
-  white-space: nowrap;
+ 
   /* Opcional: ajustar el ancho del contenedor si es necesario */
   max-width: 100%;
 }
@@ -633,7 +633,15 @@ height:auto;
 .commercial-agent-item .nav-pills .btn.btn-info{
 margin-right:20px;
 }
+.commercial-agent-item .seller-profile .btn.btn-info{
 
+    background-color:rgb(103 135 254 );
+    color:white;
+  }
+  .commercial-agent-item .seller-profile .btn.btn-info i{
+
+    margin-left:10px;
+  }
 .commercial-agent-item  .stats {
   text-align: left;
   display: inline-block;
@@ -719,3 +727,6 @@ margin-right:20px;
 
 
 
+.find-items-menu .navbar-nav{
+	display:flex;
+}

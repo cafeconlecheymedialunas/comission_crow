@@ -713,3 +713,6 @@ ol.wp-block-latest-comments {
 
 }
 
+.find-items-menu .navbar-nav{
+	display:flex;
+}

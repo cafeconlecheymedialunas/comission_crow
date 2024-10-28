@@ -22,6 +22,11 @@ class CommissionRequest
         $contract_id = sanitize_text_field($_POST['contract_id']);
         $comments = wp_kses_post($_POST["comments"]);
     
+        $customer_name = sanitize_text_field($_POST['customer_name']);
+        $customer_company = sanitize_text_field($_POST['customer_company']);
+        $customer_email = sanitize_email($_POST['customer_email']);
+        $customer_address = sanitize_text_field($_POST['customer_address']);
+        $customer_phone = sanitize_text_field($_POST['customer_phone']);
         if (empty($contract_id)) {
             wp_send_json_error(["general" => 'Contract ID is required.']);
         }
@@ -136,6 +141,13 @@ class CommissionRequest
         if ($total_to_pay <= 0.50) {
             wp_send_json_error(["general" => 'Payments can only be generated for amounts greater than 0.50 USD.']);
         }
+        if (empty($customer_name)) {
+            wp_send_json_error(['general' => 'Customer Name is required.']);
+        }
+        if (empty($customer_email) || !is_email($customer_email)) {
+            wp_send_json_error(['general' => 'A valid Email is required.']);
+        }
+    
         if (!empty($errors)) {
             wp_send_json_error(['fields' => $errors]);
             wp_die();
@@ -172,7 +184,12 @@ class CommissionRequest
         carbon_set_post_meta($post_id, "status", "pending");
         carbon_set_post_meta($post_id, "status_history", $status_history);
         carbon_set_post_meta($post_id, "initiating_user", get_current_user_id());
-    
+        carbon_set_post_meta($post_id, 'customer_name', $customer_name);
+        carbon_set_post_meta($post_id, 'customer_company', $customer_company);
+        carbon_set_post_meta($post_id, 'customer_email', $customer_email);
+        carbon_set_post_meta($post_id, 'customer_address', $customer_address);
+        carbon_set_post_meta($post_id, 'customer_phone', $customer_phone);
+
         $this->send_commission_request_email_to_agent($post_id);
         $this->send_commission_request_email_to_company($post_id);
     
@@ -437,6 +454,7 @@ class CommissionRequest
         }
         return $sent;
     }
+    
     private function send_commission_request_email_to_company($commission_request_id)
     {
         // Obtener detalles del pedido de comisión
@@ -445,23 +463,31 @@ class CommissionRequest
             error_log('Invalid commission request ID.');
             return;
         }
-
+    
         $contract_id = carbon_get_post_meta($commission_request_id, 'contract_id');
         $company_id = carbon_get_post_meta($contract_id, 'company');
         $company_user_id = get_post_meta($company_id, 'user', true);
         $company_user = get_user_by('ID', $company_user_id);
-
+    
         if (!$company_user) {
             error_log('Invalid company user ID.');
             return;
         }
-
+    
+        // Obtener los campos personalizados de la solicitud de comisión
+        $customer_name = carbon_get_post_meta($commission_request_id, 'customer_name');
+        $customer_company = carbon_get_post_meta($commission_request_id, 'customer_company');
+        $customer_email = carbon_get_post_meta($commission_request_id, 'customer_email');
+        $customer_address = carbon_get_post_meta($commission_request_id, 'customer_address');
+        $customer_phone = carbon_get_post_meta($commission_request_id, 'customer_phone');
+    
+        // Obtener detalles del contrato
         $company_name = get_post_meta($company_id, 'company_name', true);
         $commission_request_id = carbon_get_post_meta($commission_request_id, 'commission_request_id');
-
+    
         // Crear una instancia de la clase EmailSender
         $email_sender = new EmailSender();
-
+    
         // Definir los parámetros del correo electrónico
         $to = $company_user->user_email;
         $subject = 'New Commission Request Created';
@@ -470,12 +496,17 @@ class CommissionRequest
         <p><strong>Company:</strong> {$company_name}</p>
         <p><strong>Contract ID:</strong> {$contract_id}</p>
         <p><strong>Commission Request ID:</strong> {$commission_request_id}</p>
+        <p><strong>Customer Name:</strong> {$customer_name}</p>
+        <p><strong>Customer Company:</strong> {$customer_company}</p>
+        <p><strong>Customer Email:</strong> {$customer_email}</p>
+        <p><strong>Customer Address:</strong> {$customer_address}</p>
+        <p><strong>Customer Phone:</strong> {$customer_phone}</p>
         <p><strong>Details:</strong> {$commission_request->post_content}</p>
         <p>Thank you for your continued partnership.</p>";
-
+    
         // Enviar el correo electrónico
         $sent = $email_sender->send_email($to, $subject, $message);
-
+    
         if (!$sent) {
             $errors = $email_sender->get_error();
             foreach ($errors->get_error_messages() as $error_message) {
@@ -484,7 +515,7 @@ class CommissionRequest
         }
         return $sent;
     }
-
+    
     /* Cron para chequear la finalizacion de un contrato
 function schedule_contract_finalization_event()
 {

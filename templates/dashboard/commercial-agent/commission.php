@@ -19,7 +19,7 @@ $currency_symbol = !empty($currency) ? carbon_get_term_meta($currency[0]->term_i
 <div class="row">
     <div class="col-md-12">
         <div class="card">
-            <div class="table-container">
+            <div>
             <?php $template_path = 'templates/dashboard/table-commission.php';
 if (locate_template($template_path)) {
     include locate_template($template_path);

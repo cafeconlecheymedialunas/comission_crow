@@ -496,6 +496,13 @@
     font-size: 42px;
     text-align: center;
     color: white;
+    font-size: 24px;
+    margin-top: 20px;
+
+}
+.selected-agents .agent h2{
+    text-align: center;
+    word-spacing: 100vw;
 }
 
 .selected-agents .description {
@@ -532,7 +539,11 @@
     margin-top: 20px;
 }
 
-
+@media(max-width:768px) {
+.selected-agents .container {
+    max-width:400px;
+}
+}
 
 @media(min-width:768px) {
     .selected-agents h2 {
@@ -650,7 +661,7 @@
 
 }
 
-.blog .post-item img {
+.blog .post-item .image {
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
 }
@@ -698,7 +709,7 @@
 .blog .post-item h3 {
     font-weight: 600;
     font-size: 22px;
-    margin-top: 15px;
+    margin-top:0;
     line-height: 32px;
     margin-bottom: 0;
 }
@@ -802,3 +813,19 @@
       
     }
 }
+.benefits .benefit{
+    display:flex;
+  min-height:46px;
+}
+
+.benefits .benefit i{
+   margin-right: 15px;
+   margin-top:5px;
+   color:#28a745;
+   font-size: 1.5rem;
+} 
+
+.benefits .benefit p{
+    margin-bottom: 0;
+    line-height: 1.5rem;
+ } 

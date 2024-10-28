@@ -28,7 +28,7 @@ class Contract
         $opportunity_id = sanitize_text_field($_POST['opportunity_id']);
         $minimal_price = sanitize_text_field($_POST['minimal_price']);
         $commission = sanitize_text_field($_POST['commission']);
-        $content = wp_kses_post($_POST['content']);
+        $post_content = wp_kses_post($_POST['post_content']);
         
         // Validations
         if (empty($company_id)) {
@@ -132,11 +132,12 @@ class Contract
                 'general' => $general_errors,
             ]);
         }
+        
         $timestamp = current_time('timestamp'); // Obtiene el timestamp actual en segundos
         $sku = $opportunity->ID . "-" . $company->ID . "-" . $commercial_agent->ID . "-" . $timestamp;
         $contract_data = [
             'post_title' => "Sku: #" . $sku,
-            'post_content' => $content,
+            'post_content' => $post_content,
             'post_type' => 'contract',
             'post_status' => 'publish',
         ];

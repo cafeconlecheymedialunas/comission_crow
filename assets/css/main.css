@@ -131,3 +131,13 @@ footer .copy{
   color: #333;
   /* Color del texto del promedio */
 }
+
+.find-items-menu .navbar-nav{
+	display:flex!important;
+  flex-direction:row;
+  align-items:center;
+}
+
+.find-items-menu .navbar-nav li{
+	padding:0 12px;
+}

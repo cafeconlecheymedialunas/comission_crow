@@ -4,7 +4,7 @@ $current_user = wp_get_current_user();
 
 <form id="update-user-data" enctype="multipart/form-data">
     <h4>User</h4>
-    <div class="col-md-12">
+    <div class="col-md-12 mb-3">
         <label for="first_name" class="form-label">First Name:</label>
         <input 
             type="text" 
@@ -15,7 +15,7 @@ $current_user = wp_get_current_user();
         >
         <div class="error-message"></div>
     </div>
-    <div class="col-md-12">
+    <div class="col-md-12 mb-3">
         <label for="last_name" class="form-label">Last Name:</label>
         <input 
             type="text" 
@@ -26,7 +26,7 @@ $current_user = wp_get_current_user();
         >
         <div class="error-message"></div>
     </div>
-    <div class="col-md-12">
+    <div class="col-md-12 mb-3">
         <label for="user_email" class="form-label">Email:</label>
         <input 
             type="email" 
@@ -37,7 +37,7 @@ $current_user = wp_get_current_user();
         >
         <div class="error-message"></div>
     </div>
-    <div class="col-md-12">
+    <div class="col-md-12 mb-3">
         <label for="password" class="form-label">Password:</label>
         <input 
             type="password" 

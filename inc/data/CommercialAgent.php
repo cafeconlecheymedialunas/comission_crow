@@ -163,100 +163,101 @@ class CommercialAgent
 
     public function load_commercial_agents()
     {
-
         $industry_filter = isset($_GET['industry']) ? $_GET['industry'] : [];
         $language_filter = isset($_GET['language']) ? $_GET['language'] : [];
         $location_filter = isset($_GET['location']) ? $_GET['location'] : [];
         $seller_type_filter = isset($_GET['seller_type']) ? $_GET['seller_type'] : [];
         $selling_method_filter = isset($_GET['selling_method']) ? $_GET['selling_method'] : [];
         $years_of_experience = isset($_GET['years_of_experience']) ? intval($_GET['years_of_experience']) : null;
-
-        // Configuración básica de la consulta
+    
+        // Basic query configuration
         $query_args = array(
             'post_type' => 'commercial_agent',
             'posts_per_page' => -1,
         );
-
+    
+        // Apply tax queries if filters are set
         if ($industry_filter || $language_filter || $location_filter || $seller_type_filter || $selling_method_filter) {
             $tax_query = array('relation' => 'AND');
-
+    
             if ($language_filter) {
-                $tax_query['tax_query'][] = [
+                $tax_query[] = [
                     'taxonomy' => 'language',
                     'field' => 'term_id',
                     'terms' => $language_filter,
-                    'operator' => 'IN', // Todos los términos deben estar presentes
+                    'operator' => 'IN',
                 ];
             }
-
+    
             if ($selling_method_filter) {
-                $tax_query['tax_query'][] = [
+                $tax_query[] = [
                     'taxonomy' => 'selling_method',
                     'field' => 'term_id',
                     'terms' => $selling_method_filter,
-                    'operator' => 'IN', // Todos los términos deben estar presentes
+                    'operator' => 'IN',
                 ];
             }
-
+    
             if ($industry_filter) {
-                $tax_query['tax_query'][] = [
+                $tax_query[] = [
                     'taxonomy' => 'industry',
                     'field' => 'term_id',
                     'terms' => $industry_filter,
                     'operator' => 'IN',
                 ];
             }
-
+    
             if ($location_filter) {
-                $tax_query['tax_query'][] = [
+                $tax_query[] = [
                     'taxonomy' => 'location',
                     'field' => 'term_id',
                     'terms' => $location_filter,
                     'operator' => 'IN',
                 ];
             }
-
+    
             if ($seller_type_filter) {
-                $tax_query['tax_query'][] = [
+                $tax_query[] = [
                     'taxonomy' => 'seller_type',
                     'field' => 'term_id',
                     'terms' => $seller_type_filter,
                     'operator' => 'IN',
                 ];
             }
+    
             $query_args['tax_query'] = $tax_query;
         }
-
+    
+        // Meta query for years of experience
         if ($years_of_experience) {
             $meta_query = array('relation' => 'AND');
-            if ($years_of_experience) {
-                $query_args['meta_query'][] = [
-                    'key' => 'years_of_experience',
-                    'value' => $years_of_experience,
-                    'compare' => '>=',
-                    'type' => 'NUMERIC',
-                ];
-            }
+            $meta_query[] = [
+                'key' => 'years_of_experience',
+                'value' => $years_of_experience,
+                'compare' => '>=',
+                'type' => 'NUMERIC',
+            ];
+    
             $query_args['meta_query'] = $meta_query;
         }
-
+    
+        // Execute the query
         $commercial_agents = new WP_Query($query_args);
-
-        // Preparar la respuesta
+    
+        // Prepare the response
         if ($commercial_agents->have_posts()) {
-            foreach ($commercial_agents->posts as $commercial_agent):
-                $spinner_template = 'templates/dashboard/commercial-agent/list-item.php';
-                if (locate_template($spinner_template)) {
-                    include locate_template($spinner_template);
+            foreach ($commercial_agents->posts as $commercial_agent) {
+                $template = 'templates/dashboard/commercial-agent/list-item.php';
+                if (locate_template($template)) {
+                    include locate_template($template);
                 }
-            
-endforeach;
+            }
             wp_reset_postdata();
         } else {
             echo '<p>No agents found.</p>';
         }
-
-        wp_die(); // Termina la ejecución para solicitudes AJAX
+    
+        wp_die(); // Ends the execution for AJAX requests
     }
 
     public function get_contracts($statuses = [], $type = "")

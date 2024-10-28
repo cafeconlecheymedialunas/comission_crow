@@ -1,4 +1,8 @@
 jQuery(document).ready(function ($) {
+
+  
+
+
   $(".add-new-url").click(function (e) {
     e.preventDefault();
 

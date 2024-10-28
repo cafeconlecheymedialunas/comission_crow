@@ -19,37 +19,47 @@ if ($query->have_posts()): ?>
                     </div>
                 <?php endif;?>
                 <div class="blog-posts">
-        
                         <div class="row posts-list">
                             <?php while ($query->have_posts()): $query->the_post(); ?>
                                 <div class="col-sm-6 col-md-4">
                                     <div class="post-item">
                                     <?php if (has_post_thumbnail()): ?>
                                         <a href="<?php the_permalink();?>">
-                                            <?php the_post_thumbnail('full'); ?>
+                                       
+
+
+                 
+                        <?php 
+                        $feature_image_url = get_the_post_thumbnail_url();
+                        if ($feature_image_url) : ?>
+    <div class="image" style="background-image: url('<?php echo $feature_image_url; ?>'); width: 300px; 
+         height: 200px; 
+         background-size: cover; 
+         background-position: center; 
+         background-repeat: no-repeat; 
+          "></div>
+<?php endif; ?>
+                                            <?php get_the_post_thumbnail_url(); ?>
                                         </a>
                                     <?php endif;?>
                                     <div class="post-content">
-                                    <div class="post-meta d-flex">
-                                        <p class="post-author">
-                                            <?php echo get_avatar(get_the_author_meta('ID'), 40); ?>
-                                           <span class="name"> <?php echo get_the_author(); ?></span>
-                                        </p>
-                                        |
-                                        <p class="post-category">
-                                            <?php echo get_the_category_list(', '); ?>
-                                        </p>
-                                        </div>
                                         <h3 class="post-title"><a href="<?php the_permalink();?>"><?php the_title(); ?></a></h3>
-                                       
+                                        
+                                        <!-- Agregar descripción o extracto del post -->
+                                        <div class="post-description">
+                                            <?php echo wp_trim_words(get_the_excerpt(), 20, '...'); ?>
+                                        </div>
+
+                                        <div class="post-meta d-flex">
+                                            <!-- Puedes agregar más meta datos aquí si lo deseas -->
+                                        </div>
                                     </div>
                                     </div>
                                 </div>
                             <?php endwhile;?>
                         </div>
-                   
                     <?php wp_reset_postdata(); ?>
                 </div>
             </div>
         </div>
-        <?php endif;?>
+<?php endif; ?>

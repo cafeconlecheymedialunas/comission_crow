@@ -16,6 +16,7 @@ $status_classes = [
 <table class="table default-table">
     <thead>
         <tr>
+            <th scope="col"></th>
             <th scope="col">#ID</th>
             <th scope="col">#Contract SKU</th>
             <th scope="col"><?php echo in_array("commercial_agent", $current_user->roles) ? "Company" : "Agent"; ?></th>
@@ -25,7 +26,7 @@ $status_classes = [
             <th scope="col">Total Agent</th>
             <th scope="col">Status</th>
             <th scope="col">Last Update</th>
-            <th scope="col"></th>
+           
         </tr>
     </thead>
     <tbody>
@@ -38,7 +39,7 @@ $status_classes = [
                 $another_user = get_user_by("ID", $another_part_user_id);
 
                 $opportunity_id = carbon_get_post_meta($contract_id, 'opportunity');
-                $status = get_post_meta($commission_request->ID, "_status")[0];
+                $status = carbon_get_post_meta($commission_request->ID, 'status');
                 
                 // Verifica si hay una disputa abierta
                 $dispute_args = [
@@ -83,35 +84,7 @@ $status_classes = [
                 ?>
 
                 <tr>
-                    <td><?php echo $commission_request->ID; ?></td>
-                    <td><span class="txt-sm"><?php echo carbon_get_post_meta($contract_id, "sku"); ?></span></td>
-                    <td>
-                    <?php
-                   
-                    if (in_array('company', $current_user->roles)) {
-
-            $link = home_url() . "/commercial-agent-item/?commercial_agent_id=" . $another_part->ID;
-            $display_name = esc_html($another_user->data->display_name);
-            echo '<a href="' . esc_url($link) . '">' . $display_name . '</a>';
-        } else {
-           
-            echo esc_html(carbon_get_post_meta($another_part->ID,"company_name"));
-        }?>
-                    </td>
-                    <td>
-                        <a href="<?php echo home_url()."/opportunity-item/?opportunity_id=".$opportunity_id; ?>">
-                            <?php echo get_the_title($opportunity_id); ?>
-                        </a>
-                    </td>
-                    <td><?php echo Helper::display_price_template(Helper::convert_price_to_selected_currency($total_cart_commission_request));
-                    ?></td>
-                    <td><?php echo esc_html(carbon_get_post_meta($contract_id, "commission") . "%"); ?></td>
-                    <td><?php echo esc_html(Helper::convert_price_to_selected_currency($total_agent_commission_request)); ?></td>
-                    <td>
-                        <span class="<?php echo $status_class; ?>"><?php echo esc_html(ucwords(str_replace('_', ' ', $status))); ?></span>
-                    </td>
-                    <td><?php echo esc_html($last_update_text); ?></td>
-                    <td>
+                <td>
                         <ul class="p-0 mb-0 d-flex justify-content-center align-items-center">
                             <li class="list-inline-item">
                                 <a class="operation" data-bs-toggle="modal" data-bs-target="#chat-modal-<?php echo $another_user->data->ID; ?>" data-user-id="<?php echo esc_attr($another_user->data->ID); ?>" data-bs-toggle="tooltip" data-bs-placement="right" title="Chat with another part">
@@ -128,8 +101,8 @@ $status_classes = [
                                         </a>
                                     </li>
                                 <?php endif;
-                             
-                                if (empty($existing_dispute) && ( $status == "payment_pending" OR $status == "payment_failed" && $status == "payment_cancelled") ): ?>
+             
+                                if (empty($existing_dispute) && ( $payment_status == "pending" OR $payment_status == "payment_failed" OR $payment_status == "payment_cancelled") ): ?>
                                     <li class="list-inline-item">
                                         <a class="operation" href="<?php echo $dasboard->get_role_url_link_dashboard_page("payment_create"); ?>?commission_request_id=<?php echo $commission_request->ID; ?>" data-bs-toggle="tooltip" data-bs-placement="right" title="Pay Commission Request">
                                             <i class="text-success fa-solid fa-money-check-dollar"></i>
@@ -161,6 +134,35 @@ $status_classes = [
                             </div>
                         </ul>
                     </td>
+                    <td><?php echo $commission_request->ID; ?></td>
+                    <td><span style="font-size:12px;font-weight:500;">#<?php echo carbon_get_post_meta($contract_id, "sku"); ?></span></td>
+                    <td>
+                    <?php
+                   
+                    if (in_array('company', $current_user->roles)) {
+
+            $link = home_url() . "/commercial-agent-item/?commercial_agent_id=" . $another_part->ID;
+            $display_name = esc_html($another_user->data->display_name);
+            echo '<a href="' . esc_url($link) . '">' . $display_name . '</a>';
+        } else {
+           
+            echo esc_html(carbon_get_post_meta($another_part->ID,"company_name"));
+        }?>
+                    </td>
+                    <td>
+                        <a href="<?php echo home_url()."/opportunity-item/?opportunity_id=".$opportunity_id; ?>">
+                            <?php echo get_the_title($opportunity_id); ?>
+                        </a>
+                    </td>
+                    <td><?php echo Helper::display_price_template(Helper::convert_price_to_selected_currency($total_cart_commission_request));
+                    ?></td>
+                    <td><?php echo esc_html(carbon_get_post_meta($contract_id, "commission") . "%"); ?></td>
+                    <td><?php echo esc_html(Helper::convert_price_to_selected_currency($total_agent_commission_request)); ?></td>
+                    <td>
+                        <span class="<?php echo $status_class; ?>"><?php echo esc_html(ucwords(str_replace('_', ' ', $status))); ?></span>
+                    </td>
+                    <td><?php echo esc_html($last_update_text); ?></td>
+                   
                 </tr>
 
             <?php endforeach; ?>

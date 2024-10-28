@@ -35,6 +35,8 @@ $hero_button_description = carbon_get_post_meta(get_the_ID(), 'hero_button_descr
 $hero_button_image = carbon_get_post_meta(get_the_ID(), 'hero_button_image');
 $hero_button_button_text = carbon_get_post_meta(get_the_ID(), 'hero_button_button_text');
 $hero_button_image = wp_get_attachment_image($hero_button_image,"full");
+$company_benefits = carbon_get_post_meta(get_the_ID(), 'company_benefits');
+$agent_benefits = carbon_get_post_meta(get_the_ID(), 'agent_benefits');
 
 ?>
 
@@ -47,12 +49,13 @@ $hero_button_image = wp_get_attachment_image($hero_button_image,"full");
 
     require_once locate_template('templates/frontend/hero.php');
     require_once locate_template('templates/frontend/features.php');
+    require_once locate_template('templates/frontend/benefits.php');
     require_once locate_template('templates/frontend/opportunities.php');
     require_once locate_template('templates/frontend/industries.php');
-    require_once locate_template('templates/frontend/selected-agents.php');
     require_once locate_template('templates/frontend/counters.php');
+    require_once locate_template('templates/frontend/selected-agents.php');
+
     require_once locate_template('templates/frontend/blog.php');
-    require_once locate_template('templates/frontend/brands.php');
     require_once locate_template('templates/frontend/hero-button.php');
 ?>
 

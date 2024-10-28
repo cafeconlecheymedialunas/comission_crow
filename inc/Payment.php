@@ -79,20 +79,33 @@ class Payment
                     'line_items' => $line_items,
                     'mode' => 'payment',
                     'customer' => $customer->id, // Asociar la sesión al cliente
-                    'success_url' => home_url('/dashboard/company/payment/success/?session_id={CHECKOUT_SESSION_ID}'),
+                    'success_url' => home_url('/dashboard/company/payment/success/?session_id={CHECKOUT_SESSION_ID}&redirect_confirm=true'),
                     'cancel_url' => home_url('/dashboard/company/payment/cancel/?session_id={CHECKOUT_SESSION_ID}'),
+                   
                 ]);
     
-                // Crear el post type payment provisional y actualizar los campos personalizados
+                // Crear el post type payment y actualizar los campos personalizados
                 $payment_id = wp_insert_post([
                     'post_title' => 'Payment for Commission Request ' . $commission_request_id,
                     'post_type' => 'payment',
-                    'post_status' => 'draft', // Establecer como borrador
+                    'post_status' => 'publish',
                 ]);
     
                 carbon_set_post_meta($payment_id, "commission_request_id", $commission_request_id);
+                carbon_set_post_meta($payment_id, "total_cart", $total_cart);
+                carbon_set_post_meta($payment_id, "total_agent", $total_agent);
+                carbon_set_post_meta($payment_id, "total_platform", $total_platform);
+                carbon_set_post_meta($payment_id, "total_tax_service", $total_tax_service);
+                carbon_set_post_meta($payment_id, "total_paid", $total_paid);
+                carbon_set_post_meta($payment_id, "source", "stripe");
                 carbon_set_post_meta($payment_id, "payment_stripe_id", $checkout_session->id);
+                carbon_set_post_meta($payment_id, "date", current_time('mysql'));
                 carbon_set_post_meta($payment_id, "status", 'payment_pending'); // Inicializar el estado
+                carbon_set_post_meta($payment_id, "user", get_current_user_id());
+    
+                $status_commision_request_history = Helper::add_item_to_status_history($commission_request_id, "payment_pending");
+                carbon_set_post_meta($commission_request_id, 'status_history', $status_commision_request_history);
+                carbon_set_post_meta($commission_request_id, 'status', "payment_pending");
     
                 // Redirigir a la página de checkout de Stripe
                 header("HTTP/1.1 303 See Other");
@@ -106,135 +119,6 @@ class Payment
             echo "Solicitud no válida.";
         }
     }
-
-
-    public function handle_success($session_id)
-    {
-        $response = [
-            'success' => false,
-            'message' => '',
-            'data' => [],
-        ];
-
-        // Primero buscamos si ya existe un post con el estado 'payment_completed'
-        $existing_post_id = $this->get_existing_payment_post_id();
-
-        if ($existing_post_id) {
-            // Si ya hay un post con el estado 'payment_completed', recuperamos la información
-            $payment_id = $existing_post_id;
-            $response['success'] = true;
-            $response['message'] = 'Payment already processed.';
-            $response['data'] = $this->get_payment_data($payment_id);
-        } else {
-            // Si no existe, procesamos el pago
-            $payment_id = $this->get_post_id_by_stripe_session($session_id);
-
-            if (!$payment_id) {
-                $response['message'] = 'Payment not found.';
-                return $response;
-            }
-
-            // Configurar Stripe
-            \Stripe\Stripe::setApiKey(carbon_get_theme_option("stripe_secret_key"));
-            $session = \Stripe\Checkout\Session::retrieve($session_id);
-
-            if ($session->payment_status === 'paid') {
-                // Obtener detalles adicionales del pago
-                $commission_request_id = carbon_get_post_meta($payment_id, 'commission_request_id');
-                $total_cart = carbon_get_post_meta($commission_request_id, 'total_cart');
-                $items = carbon_get_post_meta($commission_request_id, 'items');
-                $total_agent = carbon_get_post_meta($commission_request_id, 'total_agent');
-                $total_platform = carbon_get_post_meta($commission_request_id, 'total_platform');
-                $total_tax_service = carbon_get_post_meta($commission_request_id, 'total_tax_service');
-                $total_paid = carbon_get_post_meta($commission_request_id, 'total_to_pay');
-
-                $contract_id = carbon_get_post_meta($commission_request_id, 'contract_id');
-                $sku = carbon_get_post_meta($contract_id, 'sku');
-
-                // Actualizar el post type payment con detalles completos
-                carbon_set_post_meta($payment_id, "total_cart", $total_cart);
-                carbon_set_post_meta($payment_id, "total_agent", $total_agent);
-                carbon_set_post_meta($payment_id, "total_platform", $total_platform);
-                carbon_set_post_meta($payment_id, "total_tax_service", $total_tax_service);
-                carbon_set_post_meta($payment_id, "total_paid", $total_paid);
-                carbon_set_post_meta($payment_id, "payment_stripe_id", $session->id);
-                carbon_set_post_meta($payment_id, "status", 'payment_completed');
-                carbon_set_post_meta($payment_id, "date", current_time('mysql'));
-
-                // Publicar el post
-                wp_update_post([
-                    'ID' => $payment_id,
-                    'post_status' => 'publish',
-                ]);
-
-                // Generar la factura
-                $invoice = $this->generate_invoice($payment_id);
-
-                // Enviar correos electrónicos
-                $this->send_create_agent_payment_email($payment_id);
-                $this->send_create_company_payment_email($payment_id);
-                $this->send_create_admin_payment_email($payment_id);
-
-                // Preparar los datos para devolver
-                $response['success'] = true;
-                $response['message'] = 'Payment successfully processed.';
-                $response['data'] = $this->get_payment_data($payment_id);
-            } else {
-                $response['message'] = 'Payment not completed.';
-            }
-        }
-
-        return $response;
-    }
-
-
-    private function get_existing_payment_post_id()
-    {
-        $args = [
-            'post_type' => 'payment',
-            'post_status' => 'publish',
-            'posts_per_page' => 1,
-            'fields' => 'ids',
-            'meta_query' => [
-                [
-                    'key' => 'status',
-                    'value' => 'payment_completed',
-                    'compare' => '=',
-                ],
-            ],
-        ];
-
-        $query = new WP_Query($args);
-        $posts = $query->get_posts();
-        return (!empty($posts)) ? $posts[0] : null;
-    }
-
-    
-
-    // Método para obtener los datos del pago
-    private function get_payment_data($payment_id)
-    {
-        $data = [];
-        if ($payment_id) {
-            $commission_request_id = carbon_get_post_meta($payment_id, 'commission_request_id');
-            $data = [
-                'payment_id' => $payment_id,
-                'commission_request_id' => $commission_request_id,
-                'total_cart' => carbon_get_post_meta($payment_id, 'total_cart'),
-                'total_agent' => carbon_get_post_meta($payment_id, 'total_agent'),
-                'total_platform' => carbon_get_post_meta($payment_id, 'total_platform'),
-                'total_tax_service' => carbon_get_post_meta($payment_id, 'total_tax_service'),
-                'total_paid' => carbon_get_post_meta($payment_id, 'total_paid'),
-                'payment_stripe_id' => carbon_get_post_meta($payment_id, 'payment_stripe_id'),
-                'sku' => carbon_get_post_meta($commission_request_id, 'sku'),
-                'date' => carbon_get_post_meta($payment_id, 'date'),
-            ];
-        }
-        return $data;
-    }
-
-    
-
     
     
 
@@ -506,7 +390,6 @@ class Payment
     {
         $args = [
             'post_type' => 'payment',
-            "post_status" => "draft",
             'meta_query' => [
                 [
                     'key' => 'payment_stripe_id',
@@ -519,7 +402,7 @@ class Payment
         ];
 
         $query = new WP_Query($args);
-        $posts = $query->get_posts();
+        $posts = $query->posts;
         return (!empty($posts)) ? $posts[0] : null;
     }
 }

@@ -69,18 +69,18 @@ $youtube_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'y
             <h4>Company</h4>
             <form id="company-profile-form">
                 <div class="row">
-                    <div class="col-md-12">
+                    <div class="col-md-12 mb-3">
                         <label for="company_name">Company Name</label>
                         <input type="text" name="company_name" class="form-control" value="<?php echo esc_attr($company_name); ?>" placeholder="Company Name">
                         <div class="error-message"></div>
                     </div>
-                    <div class="col-md-12">
+                    <div class="col-md-12 mb-3">
                         <label for="company_Logo" class="form-label">Company Logo:</label>
                         <input type="file" id="company_logo" name="company_logo" class="form-control">
                         <div class="error-message"></div>
                     </div>
 
-                    <div class="col-md-12">
+                    <div class="col-md-12 mb-3">
                         <label for="description" class="form-label">Description</label>
                         <div class="editor-container" data-target="post_content"></div>
                         <input type="hidden" id="post_content" name="post_content" value="<?php echo isset($company_post) ? $company_post->post_content : ""; ?>">
@@ -91,27 +91,27 @@ $youtube_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'y
                         <hr>
                         <h5>Billing Company Address</h5>
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-6 mb-3">
                                 <label for="company_street">Street</label>
                                 <input type="text" name="company_street" id="company_street" class="form-control" value="<?php echo esc_attr($company_street); ?>" placeholder="Street">
                                 <div class="error-message"></div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6 mb-3">
                                 <label for="company_number">Number</label>
                                 <input type="text" name="company_number" id="company_number" class="form-control" value="<?php echo esc_attr($company_number); ?>" placeholder="Number">
                                 <div class="error-message"></div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6 mb-3">
                                 <label for="company_city">City</label>
                                 <input type="text" name="company_city" id="company_city" class="form-control" value="<?php echo esc_attr($company_city); ?>" placeholder="City">
                                 <div class="error-message"></div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6 mb-3">
                                 <label for="company_state">State</label>
                                 <input type="text" name="company_state" id="company_state" class="form-control" value="<?php echo esc_attr($company_state); ?>" placeholder="State">
                                 <div class="error-message"></div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6 mb-3">
                                 <label for="company_postalcode">Postal Code</label>
                                 <input type="text" name="company_postalcode" id="company_postalcode" class="form-control" value="<?php echo esc_attr($company_postalcode); ?>" placeholder="Postal Code">
                                 <div class="error-message"></div>
@@ -122,7 +122,7 @@ $youtube_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'y
 
 
                     <?php if ($industry_terms): ?>
-                    <div class="col-md-6">
+                    <div class="col-md-6 mb-3">
                         <label for="industry" class="form-label">Industry:</label>
                         <select name="industry[]" class="form-select">
                             <?php foreach ($industry_terms as $term): ?>
@@ -138,7 +138,7 @@ $youtube_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'y
                     </div>
                     <?php endif;?>
                     <?php if ($target_industry_terms): ?>
-                    <div class="col-md-6">
+                    <div class="col-md-6 mb-3">
                         <label for="target_industry" class="form-label">Target Industries:</label>
                         <select name="target_industry[]" class="form-select">
                             <?php foreach ($target_industry_terms as $term): ?>
@@ -154,7 +154,7 @@ $youtube_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'y
                     </div>
                     <?php endif;?>
                     <?php if ($location_terms): ?>
-                        <div class="col-md-6">
+                        <div class="col-md-6 mb-3">
                             <label for="location" class="form-label">Location:</label>
                             <select name="location[]" class="form-select">
                                 <option value="">Select an option</option>
@@ -171,7 +171,7 @@ $youtube_url = isset($company_post) ? carbon_get_post_meta($company_post->ID, 'y
                         </div>
                     <?php endif;?>
                     <?php if ($currency_terms): ?>
-    <div class="col-md-6">
+    <div class="col-md-6 mb-3">
         <label for="currency" class="form-label">Currency<button type="button" class="operation ms-2" data-bs-toggle="tooltip" data-bs-html="true" title="
               Select the currency you wish to use to display all prices on our platform.<br><br>
 What does this mean?<br>
@@ -212,7 +212,7 @@ If you need to change the currency in the future, you can do so from this same s
 </script>
 
                     <?php if ($activity_terms): ?>
-                    <div class="col-md-6">
+                    <div class="col-md-6 mb-3">
                         <label for="activity" class="form-label">Activity:</label>
                         <select name="activity[]" class="form-select">
                             <option value="">Select an option</option>
@@ -230,7 +230,7 @@ If you need to change the currency in the future, you can do so from this same s
 
 
                     <?php if ($type_of_company_terms): ?>
-                        <div class="col-md-6">
+                        <div class="col-md-6 mb-3">
                             <label for="type_of_company" class="form-label">Company Type:</label>
                             <select name="type_of_company[]" class="form-select">
                                 <option value="">Select an option</option>
@@ -245,7 +245,7 @@ If you need to change the currency in the future, you can do so from this same s
                             <div class="error-message"></div>
                         </div>
                     <?php endif;?>
-                    <div class="col-md-6">
+                    <div class="col-md-6 mb-3">
                         <label for="employees_number">Number of employees</label>
                         <input type="text" name="employees_number" class="form-control" value="<?php echo esc_attr($employees_number); ?>" placeholder="Number of Employees">
                         <div class="error-message"></div>
@@ -256,38 +256,38 @@ If you need to change the currency in the future, you can do so from this same s
                         <hr>
                         <h5>Social Media</h5>
                         <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-6 mb-3">
                             <label for="website">Website</label>
                             <input type="text" name="website_url" class="form-control" value="<?php echo esc_attr($website_url); ?>" placeholder="Website">
                             <div class="error-message"></div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 mb-3">
                             <label for="facebook">Facebook</label>
                             <input type="text" name="facebook_url" class="form-control" value="<?php echo esc_attr($facebook_url); ?>" placeholder="Facebook">
                             <div class="error-message"></div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 mb-3">
                             <label for="instagram">Instagram</label>
                             <input type="text" name="instagram_url" class="form-control" value="<?php echo esc_attr($instagram_url); ?>" placeholder="Instagram">
                             <div class="error-message"></div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 mb-3">
                             <label for="twitter">Twitter</label>
                             <input type="text" name="twitter_url" class="form-control" value="<?php echo esc_attr($twitter_url); ?>" placeholder="Twitter">
                             <div class="error-message"></div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 mb-3">
                             <label for="linkedin">Linkedin</label>
                             <input type="text" name="linkedin_url" class="form-control" value="<?php echo esc_attr($linkedin_url); ?>" placeholder="Linkedin">
                             <div class="error-message"></div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 mb-3">
                             <label for="tiktok">Tik Tok</label>
                             <input type="text" name="tiktok_url" class="form-control" value="<?php echo esc_attr($tiktok_url); ?>" placeholder="Tik Tok">
                             <div class="error-message"></div>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-6 mb-3">
                             <label for="youtube">You Tube</label>
                             <input type="text" name="youtube_url" class="form-control" value="<?php echo esc_attr($youtube_url); ?>" placeholder="You Tube">
                             <div class="error-message"></div>

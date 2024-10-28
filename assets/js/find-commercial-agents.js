@@ -1,10 +1,9 @@
 jQuery(document).ready(function($) {
-    
     function fetchResults() {
         var form = $('#filters-form');
         var formData = form.serialize();
 
-        $('#spinner').show();
+        $('#spinner').show(); // Show spinner
 
         $.ajax({
             url: ajax_object.ajax_url,
@@ -12,27 +11,25 @@ jQuery(document).ready(function($) {
             data: formData + '&action=load_commercial_agents',
             success: function(response) {
                 $('#results-section').html(response);
-                console.log(response);
             },
             error: function(xhr, status, error) {
                 console.error('AJAX error:', status, error);
             },
             complete: function() {
-                $('#spinner').hide();
+                $('#spinner').hide(); // Hide spinner
             }
         });
     }
 
-    $('#filters-form').on('input', '.filter', function() {
-        fetchResults();
-    });
-
+    // Initial fetch
     fetchResults();
 
-    $('#clear-filters').on('click', function() {
+    // Trigger fetch when filters change
+    $('.filter').on('change', fetchResults);
 
-        $('#filters-form')[0].reset();
-        
-        fetchResults();
+    // Clear filters
+    $('#clear-filters').on('click', function() {
+        $('#filters-form').trigger("reset");
+        $('.filter').trigger('change'); // Trigger change event to refresh results
     });
 });

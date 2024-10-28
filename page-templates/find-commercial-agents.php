@@ -50,7 +50,6 @@ get_header("dashboard");
 ?>
 
 <div class="dashboard find-agents">
-
     <div class="container pt-5 pb-5">
         <div class="row">
             <div class="col-md-8 result-section">
@@ -60,90 +59,89 @@ get_header("dashboard");
                             <span class="sr-only">Loading...</span>
                         </div>
                     </div>
+                    <style>
+                        #spinner{
+                            display:flex;
+                            justify-content:center;
+                            align-items:center;
+                            min-height:500px;
+                            
+                        }
+                    </style>
                 </div>
             </div>
 
             <div class="col-md-4 filter-section">
                 <div class="card">
-                <h4>Filter by Attributes</h4>
+                    <h4>Filter by Attributes</h4>
 
-<form id="filters-form">
-    <div class="mb-3">
-        <button type="button" id="clear-filters" class="btn btn-secondary">Clear Filters</button>
-    </div>
+                    <form id="filters-form">
+                        <div class="mb-3">
+                            <button type="button" id="clear-filters" class="btn btn-secondary">Clear Filters</button>
+                        </div>
 
-    <?php if ($language_terms): ?>
-        <label class="form-label">Languages:</label>
-    <div class="mb-3 filter-container">
+                        <?php if ($language_terms): ?>
+                            <label class="form-label" for="languages-select">Languages:</label>
+                            <div class="mb-3 filter-container">
+                                <select class="form-select filter" name="language[]" id="languages-select" multiple>
+                                    <?php foreach ($language_terms as $term): ?>
+                                        <option value="<?php echo esc_attr($term->term_id); ?>"><?php echo esc_html($term->name); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        <?php endif; ?>
 
-        <?php foreach ($language_terms as $term): ?>
-            <div class="form-check form-switch">
-                <input class="form-check-input filter" type="checkbox" name="language[]" id="language-<?php echo esc_attr($term->term_id); ?>" value="<?php echo esc_attr($term->term_id); ?>">
-                <label class="form-check-label" for="language-<?php echo esc_attr($term->term_id); ?>"><?php echo esc_html($term->name); ?></label>
-            </div>
-        <?php endforeach;?>
-    </div>
-    <?php endif;?>
+                        <?php if ($industry_terms): ?>
+                            <label class="form-label" for="industry-select">Industry:</label>
+                            <div class="mb-3 filter-container">
+                                <select class="form-select filter" name="industry[]" id="industry-select" multiple>
+                                    <?php foreach ($industry_terms as $term): ?>
+                                        <option value="<?php echo esc_attr($term->term_id); ?>"><?php echo esc_html($term->name); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        <?php endif; ?>
 
-    <?php if ($industry_terms): ?>
-        <label class="form-label">Industry:</label>
-    <div class="mb-3 filter-container">
+                        <?php if ($location_terms): ?>
+                            <label class="form-label" for="location-select">Location:</label>
+                            <div class="mb-3 filter-container">
+                                <select class="form-select filter" name="location[]" id="location-select" multiple>
+                                    <?php foreach ($location_terms as $term): ?>
+                                        <option value="<?php echo esc_attr($term->term_id); ?>"><?php echo esc_html($term->name); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        <?php endif; ?>
 
-        <?php foreach ($industry_terms as $term): ?>
-            <div class="form-check form-switch">
-                <input class="form-check-input filter" type="checkbox" name="industry[]" id="industry-<?php echo esc_attr($term->term_id); ?>" value="<?php echo esc_attr($term->term_id); ?>">
-                <label class="form-check-label" for="industry-<?php echo esc_attr($term->term_id); ?>"><?php echo esc_html($term->name); ?></label>
-            </div>
-        <?php endforeach;?>
-    </div>
-    <?php endif;?>
+                        <?php if ($selling_method_terms): ?>
+                            <label class="form-label" for="selling-method-select">Selling Methods:</label>
+                            <div class="mb-3 filter-container">
+                                <select class="form-select filter" name="selling_method[]" id="selling-method-select" multiple>
+                                    <?php foreach ($selling_method_terms as $item): ?>
+                                        <option value="<?php echo esc_attr($item->term_id); ?>"><?php echo esc_html($item->name); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        <?php endif; ?>
 
-    <?php if ($location_terms): ?>
-        <label class="form-label">Location:</label>
-    <div class="mb-3 filter-container">
+                        <?php if ($seller_type_terms): ?>
+                            <label class="form-label" for="seller-type-select">Seller Type:</label>
+                            <div class="mb-3 filter-container">
+                                <select class="form-select filter" name="seller_type[]" id="seller-type-select" multiple>
+                                    <?php foreach ($seller_type_terms as $item): ?>
+                                        <option value="<?php echo esc_attr($item->term_id); ?>"><?php echo esc_html($item->name); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        <?php endif; ?>
 
-        <?php foreach ($location_terms as $term): ?>
-            <div class="form-check form-switch">
-                <input class="form-check-input filter" type="checkbox" name="location[]" id="location-<?php echo esc_attr($term->term_id); ?>" value="<?php echo esc_attr($term->term_id); ?>">
-                <label class="form-check-label" for="location-<?php echo esc_attr($term->term_id); ?>"><?php echo esc_html($term->name); ?></label>
-            </div>
-        <?php endforeach;?>
-    </div>
-    <?php endif;?>
+                        <div class="mb-3">
+                            <label for="years_of_experience" class="form-label">Years of experience</label>
+                            <input type="number" class="form-control filter" name="years_of_experience" id="years_of_experience">
+                        </div>
+                    </form>
 
-    <?php if ($selling_method_terms): ?>
-        <label class="form-label">Selling Methods:</label>
-    <div class="mb-3 filter-container">
-
-        <?php foreach ($selling_method_terms as $item): ?>
-            <div class="form-check form-switch">
-                <input class="form-check-input filter" type="checkbox" name="selling_method[]" id="selling_method-<?php echo esc_attr($item->term_id); ?>" value="<?php echo esc_attr($item->term_id); ?>">
-                <label class="form-check-label" for="selling_method-<?php echo esc_attr($item->term_id); ?>"><?php echo esc_html($item->name); ?></label>
-            </div>
-        <?php endforeach;?>
-    </div>
-    <?php endif;?>
-
-    <?php if ($seller_type_terms): ?>
-        <label class="form-label">Seller Type:</label>
-    <div class="mb-3 filter-container">
-
-        <?php foreach ($seller_type_terms as $item): ?>
-            <div class="form-check form-switch">
-                <input class="form-check-input filter" type="checkbox" name="seller_type[]" id="seller_type-<?php echo esc_attr($item->term_id); ?>" value="<?php echo esc_attr($item->term_id); ?>">
-                <label class="form-check-label" for="seller_type-<?php echo esc_attr($item->term_id); ?>"><?php echo esc_html($item->name); ?></label>
-            </div>
-        <?php endforeach;?>
-    </div>
-    <?php endif;?>
-
-    <div class="mb-3">
-        <label for="years_of_experience" class="form-label">Years of experience</label>
-        <input type="number" class="form-control filter" name="years_of_experience" id="years_of_experience">
-    </div>
-</form>
                 </div>
-
             </div>
         </div>
     </div>

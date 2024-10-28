@@ -36,7 +36,6 @@ $files_to_require = [
     __DIR__ . '/inc/data/Deposit.php',
     __DIR__ . '/inc/data/Dispute.php',
     __DIR__ . '/inc/data/Opportunity.php',
-    __DIR__ . '/inc/data/StripeSessionPayment.php',
     __DIR__ . '/inc/data/Payment.php',
     __DIR__ . '/inc/data/Rating.php',
     __DIR__ . '/inc/core/Admin.php',
@@ -151,7 +150,7 @@ function social_media_shortcode() {
     foreach ($social_media as $key => $data) {
         if ($data['url']) {
         
-            $output .= '<a href="' . esc_url($data['url']) . '" target="_blank" class="social-media-link d-flex align-items-center wrap justify-content-center rounded-circle ms-2 mb-2" style="width:40px;height:40px;background-color:#6787FE; color:white;">';
+            $output .= '<a href="' . esc_url($data['url']) . '" target="_blank" class="social-media-link d-flex align-items-center wrap justify-content-center rounded-circle ms-2 mb-2" style="width:30px;height:30px;background-color:#6787FE; color:white;">';
             $output .= '<i class="' . esc_attr($data['icon']) . '"></i>';
             $output .= '</a>';
        

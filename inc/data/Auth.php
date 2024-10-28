@@ -198,7 +198,7 @@ class Auth
         ]);
     
         if (is_wp_error($user_id)) {
-            wp_send_json_error(['general' => 'There was an error creating the user.']);
+            wp_send_json_error(['general' => $user_id->get_error_message()]);
             die();
         }
     

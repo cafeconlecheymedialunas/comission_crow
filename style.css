@@ -265,3 +265,7 @@ blockquote cite:before {
   -webkit-box-sizing: inherit;
   box-sizing: inherit;
 }
+
+.find-items-menu .navbar-nav{
+	display:flex;
+}
