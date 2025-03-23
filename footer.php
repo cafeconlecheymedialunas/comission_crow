@@ -1,0 +1,67 @@
+			<?php
+                // If Single or Archive (Category, Tag, Author or a Date based page).
+                if (is_single() || is_archive()) :
+                    ?>
+					</div><!-- /.col -->
+
+					<?php
+                                get_sidebar();
+                    ?>
+
+				</div><!-- /.row -->
+			<?php
+                endif;
+?>
+		</main><!-- /#main -->
+		<footer id="footer">
+			<div class="container">
+				<div class="row">
+					
+
+					<?php
+            if (has_nav_menu('footer-menu')) : // See function register_nav_menus() in functions.php
+               
+                wp_nav_menu(
+                    [
+                        'container'       => 'nav',
+                        'container_class' => 'col-md-6',
+                        //'fallback_cb'     => 'WP_Bootstrap4_Navwalker_Footer::fallback',
+                        'walker'          => new WP_Bootstrap4_Navwalker_Footer(),
+                        'theme_location'  => 'footer-menu',
+                        'items_wrap'      => '<ul class="menu nav justify-content-end">%3$s</ul>',
+                    ]
+                );
+            endif;
+
+if (is_active_sidebar('third_widget_area')) :
+    ?>
+						<div class="col-md-12">
+							<?php
+                dynamic_sidebar('third_widget_area');
+
+    if (current_user_can('manage_options')) :
+        ?>
+								<span class="edit-link"><a href="<?php echo esc_url(admin_url('widgets.php')); ?>" class="badge bg-secondary"><?php esc_html_e('Edit', 'comission_crow'); ?></a></span><!-- Show Edit Widget link -->
+							<?php
+    endif;
+    ?>
+						</div>
+					<?php
+endif;
+?>
+				</div><!-- /.row -->
+                <div class="row">
+						<p class="copy"><?php printf(esc_html__('&copy; %1$s %2$s. All rights reserved.', 'comission_crow'), wp_date('Y'), get_bloginfo('name', 'display')); ?></p>
+					</div>
+			</div><!-- /.container -->
+
+		</footer><!-- /#footer -->
+	</div><!-- /#wrapper -->
+	<?php
+        wp_footer();
+?>
+
+
+
+</body>
+</html>
